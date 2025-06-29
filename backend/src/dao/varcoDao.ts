@@ -19,4 +19,4 @@ class VarcoDao implements VarcoDAO {
     }
 }
 
-export const varcoDao = new VarcoDao();
+export default new VarcoDao();
