@@ -1,5 +1,5 @@
 import Varco from '../models/varco';
-import { varcoDao } from '../dao/varcoDao';
+import varcoDao from '../dao/varcoDao';
 
 class VarcoRepository {
     public async findVarco(id: number): Promise<Varco | undefined> {
