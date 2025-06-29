@@ -5,7 +5,7 @@
 import app from './app';
 import { initModels } from './models';
 
-const PORT = process.env.BACKEND_PORT || 3000;
+const BACKEND_PORT = process.env.BACKEND_PORT || 3000;
 
 // Avvio del server
 const startServer = async () => {
@@ -15,8 +15,8 @@ const startServer = async () => {
         console.log('Database sincronizzato con successo.');
 
         // Avvio del server
-        app.listen(PORT, () => {
-            console.log(`Server in ascolto sulla porta ${PORT}`);
+        app.listen(BACKEND_PORT, () => {
+            console.log(`Server in ascolto sulla porta ${BACKEND_PORT}`);
         });
     } catch (error) {
         console.error('Errore durante l\'avvio del server:', error);
