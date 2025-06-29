@@ -9,7 +9,8 @@ const validateRequest = (req: Request, res: Response, next: NextFunction) => {
 
   // Se ci sono errori accumulati allora ritorno l'errore
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    res.status(400).json({ errors: errors.array() });
+    next(new Error('Errore di validazione: ' + JSON.stringify(errors.array()))); // Passo l'errore al middleware di gestione degli errori
   }
   next(); // Passaggio dell'errore al middleware successivo
 };

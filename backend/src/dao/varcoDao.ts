@@ -1,7 +1,7 @@
-import Varco, { VarcoAttributes} from "../models/varco";
+import Varco, { VarcoAttributes } from "../models/varco";
 import { DAO } from "./daoInterface";
 
-interface VarcoDAO extends DAO<VarcoAttributes, number>{
+interface VarcoDAO extends DAO<VarcoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei varchi
 }
 
@@ -10,7 +10,7 @@ class VarcoDao implements VarcoDAO {
         try {
             const varco = await Varco.findByPk(id);
             if (!varco) {
-                return null; // Se il varco non esiste, ritorna null
+                throw new Error("Varco con id " + id + " non trovato");
             }
             return varco;
         } catch (error) {
@@ -44,7 +44,7 @@ class VarcoDao implements VarcoDAO {
                 where: { id_varco: id },
                 returning: true
             });
-            const updatedItem = await Varco.findAll({where: { id_varco: id }});
+            const updatedItem = await Varco.findAll({ where: { id_varco: id } });
             return [affectedCount, updatedItem];
         } catch (error) {
             throw new Error("Errore nell'aggiornamento del varco");
