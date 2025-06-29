@@ -17,7 +17,7 @@ export interface TransitoAttributes {
 }
 
 // Implementazione del modello Transito
-export class Transito extends Model<TransitoAttributes> {
+class Transito extends Model<TransitoAttributes> implements TransitoAttributes {
     public id_transito!: number;
     public veicolo!: number;
     public tratta!: number;

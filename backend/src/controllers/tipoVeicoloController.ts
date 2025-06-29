@@ -22,9 +22,9 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
     try {
         const tipoVeicolo = await tipoVeicoloDao.getById(id);
         if (!tipoVeicolo) {
-            return next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
+            res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" });
         } else {
-            res.status(StatusCodes.OK).json(tipoVeicolo);
+            next(res.status(StatusCodes.OK).json(tipoVeicolo));
         }
     } catch (error) {
         next(error);
@@ -36,8 +36,8 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
  */
 export const createTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const tipoVeicolo = await tipoVeicoloDao.create(req.body);
-        res.status(StatusCodes.CREATED).json(tipoVeicolo);
+        const nuovoTipoVeicolo = await tipoVeicoloDao.create(req.body);
+        res.status(StatusCodes.CREATED).json(nuovoTipoVeicolo);
     } catch (error) {
         next(error);
     }
@@ -54,7 +54,7 @@ export const updateTipoVeicolo = async (req: Request, res: Response, next: NextF
             const updatedTipoVeicolo = await tipoVeicoloDao.getById(id);
             res.status(StatusCodes.OK).json(updatedTipoVeicolo);
         } else {
-            res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" });
+            next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
         }
     } catch (error) {
         next(error);
@@ -71,7 +71,7 @@ export const deleteTipoVeicolo = async (req: Request, res: Response, next: NextF
         if (deleted) {
             res.status(StatusCodes.OK).json({ message: "Tipo di veicolo eliminato" });
         } else {
-            res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" });
+            next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
         }
     } catch (error) {
         next(error);

@@ -20,7 +20,13 @@ CREATE TABLE IF NOT EXISTS varco (
     km DOUBLE PRECISION,
     smart BOOLEAN,
     pioggia BOOLEAN DEFAULT FALSE,
-    utente INTEGER REFERENCES utente(id_utente)
+);
+
+-- Creazione tabella IS_VARCO --
+CREATE TABLE IF NOT EXISTS is_varco (
+    id_utente INTEGER REFERENCES utente(id_utente),
+    id_varco INTEGER REFERENCES varco(id_varco),
+    PRIMARY KEY (id_utente, id_varco)
 );
 
 -- Creazione tabella TIPO_VEICOLO --
@@ -84,15 +90,26 @@ INSERT INTO utente (nome, cognome, email, ruolo) VALUES
     ('', '', 'varco_8@example.com', 'varco');
 
 -- Inserimento dati tabella VARCO --
-INSERT INTO varco (nome_autostrada, km, smart, pioggia, utente) VALUES
-    ('A1', 10.5, TRUE, FALSE, 1),
-    ('A1', 50.2, TRUE, FALSE, 2),
-    ('A4', 120.3, FALSE, TRUE, 3),
-    ('A4', 160.8, FALSE, TRUE, 4),
-    ('A14', 75.0, TRUE, FALSE, 5),
-    ('A14', 125.6, TRUE, TRUE, 6),
-    ('A22', 40.1, FALSE, TRUE, 7),
-    ('A22', 89.7, FALSE, FALSE, 8);
+INSERT INTO varco (nome_autostrada, km, smart, pioggia) VALUES
+    ('A1', 10.5, TRUE, FALSE),
+    ('A1', 50.2, TRUE, FALSE),
+    ('A4', 120.3, FALSE, TRUE),
+    ('A4', 160.8, FALSE, TRUE),
+    ('A14', 75.0, TRUE, FALSE),
+    ('A14', 125.6, TRUE, TRUE),
+    ('A22', 40.1, FALSE, TRUE),
+    ('A22', 89.7, FALSE, FALSE);
+
+-- Inserimento dati tabella IS_VARCO --
+INSERT INTO is_varco (id_utente, id_varco) VALUES
+    (7, 2),
+    (8, 3),
+    (9, 4),
+    (10, 5),
+    (11, 6),
+    (12, 7),
+    (13, 8),
+    (14, 1),
 
 -- Inserimento dati tabella TIPO_VEICOLO --
 INSERT INTO tipo_veicolo (tipo, limite_velocita) VALUES
