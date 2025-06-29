@@ -22,7 +22,7 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
     try {
         const tipoVeicolo = await tipoVeicoloDao.getById(id);
         if (!tipoVeicolo) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" });
+            return next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
         } else {
             res.status(StatusCodes.OK).json(tipoVeicolo);
         }
