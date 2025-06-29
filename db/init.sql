@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS varco (
     id_varco SERIAL PRIMARY KEY,
     nome_autostrada VARCHAR(100),
     km DOUBLE PRECISION,
-    smart BOOLEAN DEFAULT FALSE,
+    smart BOOLEAN,
     pioggia BOOLEAN DEFAULT FALSE,
     utente INTEGER REFERENCES utente(id_utente)
 );
@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS tipo_veicolo (
 
 -- Creazione tabella VEICOLO --
 CREATE TABLE IF NOT EXISTS veicolo (
-    id_veicolo SERIAL PRIMARY KEY,
-    targa VARCHAR(8) UNIQUE NOT NULL,
+    targa VARCHAR(8) PRIMARY KEY,
     tipo_veicolo INTEGER REFERENCES tipo_veicolo(id_tipo_veicolo),
     utente INTEGER REFERENCES utente(id_utente)
 );
@@ -41,8 +40,8 @@ CREATE TABLE IF NOT EXISTS veicolo (
 -- Creazione tabella TRATTA --
 CREATE TABLE IF NOT EXISTS tratta (
     id_tratta SERIAL PRIMARY KEY,
-    varco_in INTEGER REFERENCES utente(id_utente),
-    varco_out INTEGER REFERENCES utente(id_utente),
+    varco_in INTEGER REFERENCES varco(id_varco),
+    varco_out INTEGER REFERENCES varco(id_varco),
     distanza DOUBLE PRECISION NOT NULL
 );
 
@@ -50,7 +49,7 @@ CREATE TABLE IF NOT EXISTS tratta (
 CREATE TABLE IF NOT EXISTS transito (
     id_transito SERIAL PRIMARY KEY,
     tratta INTEGER REFERENCES tratta(id_tratta),
-    veicolo INTEGER REFERENCES veicolo(id_veicolo),
+    veicolo INTEGER REFERENCES veicolo(targa),
     data_in TIMESTAMP NOT NULL,
     data_out TIMESTAMP NOT NULL,
     velocita_media DOUBLE PRECISION NOT NULL,
@@ -128,25 +127,25 @@ INSERT INTO tratta (varco_in, varco_out, distanza) VALUES
 -- Inserimento dati tabella TRANSITO --
 INSERT INTO transito (tratta, veicolo, data_in, data_out, velocita_media, delta_velocita) VALUES
 -- Veicolo 1, tratta 1, limite 130
-(1, 1, '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
+(1, 'AB123CD', '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
 -- Veicolo 2, tratta 1, limite 130
-(1, 2, '2025-06-28 09:00:00', '2025-06-28 09:15:00', 39.7 / (15.0/60), (39.7 / (15.0/60)) - 130), -- sopra limite (~158.8 km/h)
+(1, 'EF456GH', '2025-06-28 09:00:00', '2025-06-28 09:15:00', 39.7 / (15.0/60), (39.7 / (15.0/60)) - 130), -- sopra limite (~158.8 km/h)
 -- Veicolo 3, tratta 2, limite 80 - 20 = 60
-(2, 3, '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60), -- sopra limite (~97.2 km/h)
+(2, 'IJ789KL', '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60), -- sopra limite (~97.2 km/h)
 -- Veicolo 4, tratta 2, limite 130 - 20 = 110
-(2, 4, '2025-06-28 08:00:00', '2025-06-28 08:45:00', 40.5 / (45.0/60), (40.5 / (45.0/60)) - 110), -- sotto limite (~54 km/h)
+(2, 'MN321OP', '2025-06-28 08:00:00', '2025-06-28 08:45:00', 40.5 / (45.0/60), (40.5 / (45.0/60)) - 110), -- sotto limite (~54 km/h)
 -- Veicolo 5, tratta 3, limite 100
-(3, 5, '2025-06-28 09:00:00', '2025-06-28 09:25:00', 50.6 / (25.0/60), (50.6 / (25.0/60)) - 100), -- sopra limite (~121.44 km/h)
+(3, 'QR654ST', '2025-06-28 09:00:00', '2025-06-28 09:25:00', 50.6 / (25.0/60), (50.6 / (25.0/60)) - 100), -- sopra limite (~121.44 km/h)
 -- Veicolo 6, tratta 3, limite 80
-(3, 6, '2025-06-28 09:00:00', '2025-06-28 09:20:00', 50.6 / (20.0/60), (50.6 / (20.0/60)) - 80), -- sopra limite (~151.8 km/h)
+(3, 'UV987WX', '2025-06-28 09:00:00', '2025-06-28 09:20:00', 50.6 / (20.0/60), (50.6 / (20.0/60)) - 80), -- sopra limite (~151.8 km/h)
 -- Veicolo 7, tratta 4, limite 60
-(4, 7, '2025-06-28 09:00:00', '2025-06-28 09:20:00', 49.6 / (20.0/60), (49.6 / (20.0/60)) - 60), -- sopra limite (~148.8 km/h)
+(4, 'YZ741AB', '2025-06-28 09:00:00', '2025-06-28 09:20:00', 49.6 / (20.0/60), (49.6 / (20.0/60)) - 60), -- sopra limite (~148.8 km/h)
 -- Veicolo 8, tratta 4, limite 130
-(4, 8, '2025-06-28 08:00:00', '2025-06-28 08:50:00', 49.6 / (50.0/60), (49.6 / (50.0/60)) - 130), -- sotto limite (~59.52 km/h)
+(4, 'CD852EF', '2025-06-28 08:00:00', '2025-06-28 08:50:00', 49.6 / (50.0/60), (49.6 / (50.0/60)) - 130), -- sotto limite (~59.52 km/h)
 -- Veicolo 9, tratta 1, limite 130
-(1, 9, '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
+(1, 'GH963IJ', '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
 -- Veicolo 10, tratta 2, limite 80 - 20 = 60
-(2, 10, '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60); -- sopra limite (~97.2 km/h)
+(2, 'KL159MN', '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60); -- sopra limite (~97.2 km/h)
 
 -- Inserimento dati tabella MULTA --
 INSERT INTO multa (transito, importo) VALUES
