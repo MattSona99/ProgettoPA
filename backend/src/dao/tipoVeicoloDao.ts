@@ -102,7 +102,6 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
             throw error;
         }
     }
-
 }
 
 export default new TipoVeicoloDao();
