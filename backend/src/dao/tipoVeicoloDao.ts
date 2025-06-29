@@ -12,6 +12,7 @@ class TipoVeicoloDAO implements TipoVeicoloDAO {
     
     /**
      * Funzione per ottenere tutti i tipi di veicolo.
+     * 
      * @returns {Promise<TipoVeicolo[]>} Una promessa che risolve con un array di tipi di veicolo.
      */
     public async getAll(): Promise<TipoVeicolo[]> {
@@ -25,6 +26,7 @@ class TipoVeicoloDAO implements TipoVeicoloDAO {
 
     /**
      * Funzione che recupera un tipo di veicolo da un ID.
+     * 
      * @param {number} id - L'ID del tipo di veicolo da recuperare.
      * @returns {Promise<TipoVeicolo | null>} Una promessa che risolve con il tipo di veicolo trovato o null se non trovato.
      */
@@ -41,6 +43,27 @@ class TipoVeicoloDAO implements TipoVeicoloDAO {
             throw error;
         }
     }
+
+    /**
+     * Funzione che crea un nuovo tipo di veicolo.
+     * 
+     * @param {Partial<TipoVeicolo>} item - L'oggetto parziale del tipo di veicolo da creare.
+     * @returns {Promise<TipoVeicolo>} Una promessa che risolve con il nuovo tipo di veicolo creato.
+     */
+    public async create(item: Partial<TipoVeicolo>): Promise<TipoVeicolo> {
+        try {
+            return await TipoVeicolo.create(item);
+        } catch (error) {
+            // ERRORE
+            throw error;
+        }
+    }
+
+
+
+
+
+
 }
 
 export default new TipoVeicoloDAO();
