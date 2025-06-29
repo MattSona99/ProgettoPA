@@ -11,7 +11,7 @@ export interface TipoVeicoloAttributes {
 }
 
 // Implementazione del modello TipoVeicolo
-export class TipoVeicolo extends Model<TipoVeicoloAttributes> {
+class TipoVeicolo extends Model<TipoVeicoloAttributes> implements TipoVeicoloAttributes {
   public id_tipo_veicolo!: number;
   public tipo!: string;
   public limite_velocita!: number;

@@ -1,6 +1,7 @@
 import Database from '../utils/database';
 import Utente from './utente';
 import Varco from './varco';
+import IsVarco from './isVarco';
 import TipoVeicolo from './tipoVeicolo';
 import Veicolo from './veicolo';
 import Tratta from './tratta';
@@ -13,13 +14,17 @@ const sequelize = Database.getInstance();
  * Inizializzazione delle relazioni tra i modelli
  */
 
-// Un utente può avere molti Veicoli
+// Un Utente può avere molti Veicoli
 Utente.hasMany(Veicolo, { foreignKey: 'utente' });
 Veicolo.belongsTo(Utente, { foreignKey: 'utente' });
 
-// Un utente può avere un solo Varco
-Utente.hasOne(Varco, { foreignKey: 'utente' });
-Varco.belongsTo(Utente, { foreignKey: 'utente' });
+// Un Utente può avere solo un Varco
+Utente.hasOne(IsVarco, { foreignKey: 'id_utente' });
+IsVarco.belongsTo(Utente, { foreignKey: 'id_utente' });
+
+// Un Varco può avere solo un Utente
+Varco.hasOne(IsVarco, { foreignKey: 'id_varco' });
+IsVarco.belongsTo(Varco, { foreignKey: 'id_varco' });
 
 // Un TipoVeicolo può essere associato a molti Veicoli
 TipoVeicolo.hasMany(Veicolo, { foreignKey: 'tipo_veicolo' });
@@ -46,6 +51,7 @@ const db = {
   sequelize,
   Utente,
   Varco,
+  IsVarco,
   TipoVeicolo,
   Veicolo,
   Tratta,

@@ -13,7 +13,7 @@ export interface MultaAttributes {
 }
 
 // Implementazione del modello Multa
-export class Multa extends Model<MultaAttributes> {
+class Multa extends Model<MultaAttributes> implements MultaAttributes {
   public id_multa!: number;
   public uuid_pagamento!: string;
   public transito!: number;

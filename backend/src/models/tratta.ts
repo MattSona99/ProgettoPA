@@ -13,7 +13,7 @@ export interface TrattaAttributes {
 }
 
 // Implementazione del modello Tratta
-export class Tratta extends Model<TrattaAttributes> {
+class Tratta extends Model<TrattaAttributes> implements TrattaAttributes {
   public id_tratta!: number;
   public varco_in!: number;
   public varco_out!: number;

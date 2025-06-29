@@ -14,7 +14,7 @@ export interface VeicoloAttributes {
 }
 
 // Implementazione del modello Veicolo
-export class Veicolo extends Model<VeicoloAttributes> {
+class Veicolo extends Model<VeicoloAttributes> implements VeicoloAttributes {
   public targa!: string;
   public tipo_veicolo!: number;
   public utente!: number;

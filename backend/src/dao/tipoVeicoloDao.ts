@@ -7,8 +7,8 @@ interface TipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
     // Metodi specifici per TipoVeicolo, se necessari
 }
 
-// Classe TipoVeicoloDAO che implementa l'interfaccia TipoVeicoloDAO
-class TipoVeicoloDAO implements TipoVeicoloDAO {
+// Classe TipoVeicoloDao che implementa l'interfaccia TipoVeicoloDAO
+class TipoVeicoloDao implements TipoVeicoloDAO {
     
     /**
      * Funzione per ottenere tutti i tipi di veicolo.
@@ -102,7 +102,6 @@ class TipoVeicoloDAO implements TipoVeicoloDAO {
             throw error;
         }
     }
-
 }
 
-export default new TipoVeicoloDAO();
+export default new TipoVeicoloDao();

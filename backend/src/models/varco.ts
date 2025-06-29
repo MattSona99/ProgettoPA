@@ -15,7 +15,7 @@ export interface VarcoAttributes {
 }
 
 // Implementazione del modello Varco
-class Varco extends Model<VarcoAttributes> {
+class Varco extends Model<VarcoAttributes> implements VarcoAttributes {
   public id_varco!: number;
   public nome_autostrada!: string;
   public km!: number;
