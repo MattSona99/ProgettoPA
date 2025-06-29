@@ -5,7 +5,7 @@ export const getVarcoById = async (req: Request, res: Response, next: NextFuncti
     const {id} = req.params;
     const varco = await varcoRepository.findVarco(parseInt(id));
     if (!varco) {
-        return next(res.status(404).json({ message: "Varco non trovato" }));
+        res.status(404).json({ message: "Varco non trovato" });
     }
-    return next(res.status(200).json(varco));
+    res.status(200).json(varco);
 }
