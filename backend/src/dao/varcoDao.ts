@@ -41,12 +41,12 @@ class VarcoDao implements VarcoDAO {
             if (!existingVarco) {
                 throw new Error("Varco non trovato");
             }
-            const [affectedCount] = await Varco.update(item, {
+            const [indexedCount] = await Varco.update(item, {
                 where: { id_varco: id },
                 returning: true
             });
             const updatedItem = await Varco.findAll({ where: { id_varco: id } });
-            return [affectedCount, updatedItem];
+            return [indexedCount, updatedItem];
         } catch (error) {
             throw new Error("Errore nell'aggiornamento del varco");
         }
