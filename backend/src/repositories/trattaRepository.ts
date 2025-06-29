@@ -1,23 +1,19 @@
-import Tratta from '../models/tratta';
-import { DAO } from './daoInterface';
-import { TrattaAttributes } from '../models/tratta';
+import trattaDao from "../dao/trattaDao";
+import Tratta from "../models/tratta";
+import { TrattaAttributes } from "../models/tratta";
 
-// Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
-interface TrattaDAO extends DAO<TrattaAttributes, number> {
-    // Metodi specifici per Tratta, se necessari
-}
-
-// Classe TrattaDao che implementa l'interfaccia TrattaDAO
-class TrattaDao implements TrattaDAO {
-    
+/**
+ * Classe TrattaRepository che gestisce le operazioni relative alle tratte.
+ */
+class TrattaRepository {
     /**
      * Funzione per ottenere tutte le tratte.
      * 
      * @returns {Promise<Tratta[]>} Una promessa che risolve con un array di tratte.
      */
-    public async getAll(): Promise<Tratta[]> {
+    public async getAllTratte(): Promise<Tratta[]> {
         try {
-            return await Tratta.findAll();
+            return await trattaDao.getAll();
         } catch (error) {
             // ERRORE
             throw error;
@@ -30,9 +26,9 @@ class TrattaDao implements TrattaDAO {
      * @param {number} id - L'ID della tratta da recuperare.
      * @returns {Promise<Tratta | null>} Una promessa che risolve con la tratta trovata o null se non trovata.
      */
-    public async getById(id: number): Promise<Tratta | null> {
+    public async getTrattaById(id: number): Promise<Tratta | null> {
         try {
-            return await Tratta.findByPk(id);
+            return await trattaDao.getById(id);
         } catch (error) {
             // ERRORE
             throw error;
@@ -45,9 +41,9 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async create(item: TrattaAttributes): Promise<Tratta> {
+    public async createTratta(item: TrattaAttributes): Promise<Tratta> {
         try {
-            return await Tratta.create(item);
+            return await trattaDao.create(item);
         } catch (error) {
             // ERRORE
             throw error;
@@ -61,16 +57,9 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
+    public async updateTratta(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
         try {
-            const tratta = await Tratta.findByPk(id);
-            if (!tratta) {
-                // ERRORE
-                return [0, []];
-            }
-            const [rows] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
-            const updated = await Tratta.findAll({ where: { id_tratta: id } });
-            return [rows, updated];
+            return await trattaDao.update(id, item);
         } catch (error) {
             // ERRORE
             throw error;
@@ -83,9 +72,9 @@ class TrattaDao implements TrattaDAO {
      * @param {number} id - L'ID della tratta da eliminare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number): Promise<number> {
+    public async deleteTratta(id: number): Promise<number> {
         try {
-            return await Tratta.destroy({ where: { id_tratta: id } });
+            return await trattaDao.delete(id);
         } catch (error) {
             // ERRORE
             throw error;
@@ -93,4 +82,4 @@ class TrattaDao implements TrattaDAO {
     }
 }
 
-export default new TrattaDao();
+export default new TrattaRepository();

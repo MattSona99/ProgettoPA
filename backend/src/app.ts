@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import varcoRoutes from './routes/varcoRoutes';
 import tipoVeicoloRoutes from './routes/tipoVeicoloRoutes';
 import veicoloRoutes from './routes/veicoloRoutes';
+import trattaRoutes from './routes/trattaRoutes';
 
 // Caricamento delle variabili d'ambiente (.env)
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/', varcoRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', veicoloRoutes)
+app.use('/', trattaRoutes);
 
 // Middleware per la gestione di rotte non esistenti
 app.use((req, res) => {
