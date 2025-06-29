@@ -6,7 +6,7 @@ import {
     updateVeicolo,
     deleteVeicolo
 } from '../controllers/veicoloController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import {
     validateGetVeicoloById,
     validateCreateVeicolo,
@@ -21,9 +21,9 @@ router.use(authMiddleware)
 
 // Rotte per la gestione dei veicoli
 router.get('/veicoli', getAllVeicoli);
-router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);
-router.post('/veicoli', validateCreateVeicolo, createVeicolo);
-router.put('/veicoli/:targa', validateUpdateVeicolo, updateVeicolo);
-router.delete('/veicoli/:targa', validateDeleteVeicolo, deleteVeicolo);
+router.get('/veicoli/:targa', authorize['operatore'], validateGetVeicoloById, getVeicoloById);
+router.post('/veicoli', authorize['operatore'], validateCreateVeicolo, createVeicolo);
+router.put('/veicoli/:targa', authorize['operatore'], validateUpdateVeicolo, updateVeicolo);
+router.delete('/veicoli/:targa', authorize['operatore'], validateDeleteVeicolo, deleteVeicolo);
 
 export default router;
