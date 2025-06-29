@@ -8,6 +8,7 @@ import tipoVeicoloRoutes from './routes/tipoVeicoloRoutes';
 import veicoloRoutes from './routes/veicoloRoutes';
 import trattaRoutes from './routes/trattaRoutes';
 import transitoRoutes from './routes/transitoRoutes';
+import authRoutes from './routes/authRoutes';
 // Caricamento delle variabili d'ambiente (.env)
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 // Middleware per la gestione delle richieste JSON
 app.use(express.json());
 
+app.use('/', authRoutes);
 app.use('/', varcoRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', veicoloRoutes)
