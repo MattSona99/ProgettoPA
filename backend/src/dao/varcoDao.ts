@@ -1,3 +1,4 @@
+import { Transaction } from "sequelize";
 import Varco, { VarcoAttributes } from "../models/varco";
 import { DAO } from "./daoInterface";
 
@@ -26,15 +27,15 @@ class VarcoDao implements VarcoDAO {
         }
     }
 
-    public async create(item: Varco): Promise<Varco> {
+    public async create(item: Varco, options?: { transaction?: Transaction }): Promise<Varco> {
         try {
-            return await Varco.create(item);
+            return await Varco.create(item, options);
         } catch (error) {
             throw new Error("Errore nella creazione del varco");
         }
     }
 
-    public async update(id: number, item: VarcoAttributes): Promise<[number, VarcoAttributes[]]> {
+    public async update(id: number, item: VarcoAttributes): Promise<[number, Varco[]]> {
         try {
             const existingVarco = await Varco.findByPk(id);
             if (!existingVarco) {
@@ -51,10 +52,11 @@ class VarcoDao implements VarcoDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const deletedCount = await Varco.destroy({
-                where: { id_varco: id }
+                where: { id_varco: id },
+                ...options
             });
             if (deletedCount === 0) {
                 throw new Error("Varco non trovato");

@@ -1,18 +1,17 @@
 import {Router} from 'express';
 import {authMiddleware, authorize} from '../middleware/authMiddleware';
-import {getVarcoById} from '../controllers/varcoController';
-import {validateGetVarcoById} from '../middleware/validate/varcoValidate';
+import {getVarcoById, createVarco, updateVarco, deleteVarco} from '../controllers/varcoController';
+import {validateCreateVarco, validateGetVarcoById, validateUpdateVarco, validateDeleteVarco} from '../middleware/validate/varcoValidate';
 
 const router = Router();
-
 
 // Middleware di autenticazione per tutte le rotte
 router.use(authMiddleware);
 
 // Rotte per la gestione dei varchi
 router.get('/varco/:id', authorize(['operatore']), validateGetVarcoById, getVarcoById);
-// router.post('/varco', createVarco);
-// router.put('/varco/:id', updateVarco);
-// router.delete('/varco/:id', deleteVarco);
+router.post('/varco', authorize(['operatore']), validateCreateVarco, createVarco);
+router.put('/varco/:id', authorize(['operatore']), validateUpdateVarco, updateVarco);
+router.delete('/varco/:id', authorize(['operatore']), validateDeleteVarco, deleteVarco);
 
 export default router;
