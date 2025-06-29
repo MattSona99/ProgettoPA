@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { varcoRepository } from '../repositories/varcoRepository';
+import varcoRepository from '../repositories/varcoRepository';
 
 export const getVarcoById = async (req: Request, res: Response, next: NextFunction) => {
     const {id} = req.params;

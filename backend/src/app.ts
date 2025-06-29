@@ -3,7 +3,7 @@
  */
 import express from 'express';
 import dotenv from 'dotenv';
-import varcoRoutes from './routes/varcoRoute';
+import varcoRoutes from './routes/varcoRoutes';
 import tipoVeicoloRoutes from './routes/tipoVeicoloRoutes';
 
 // Caricamento delle variabili d'ambiente (.env)

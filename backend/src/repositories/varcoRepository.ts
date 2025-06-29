@@ -15,4 +15,4 @@ class VarcoRepository {
     }
 }
 
-export const varcoRepository = new VarcoRepository();
+export default new VarcoRepository();
