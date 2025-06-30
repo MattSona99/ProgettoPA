@@ -3,6 +3,7 @@ import utenteDao from '../dao/utenteDao';
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
 import { VeicoloAttributes } from '../models/veicolo';
+import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
@@ -49,9 +50,14 @@ class VeicoloRepository {
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
     public async createVeicolo(item: VeicoloAttributes): Promise<Veicolo> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction()
         try {
-            return await veicoloDao.create(item);
+            const nuovoVeicolo = await veicoloDao.create(item, { transaction });
+            await transaction.commit()
+            return nuovoVeicolo;
         } catch (error) {
+            await transaction.rollback()
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);;
         }
     }
@@ -77,10 +83,18 @@ class VeicoloRepository {
      * @param {string} targa - La targa del veicolo da eliminare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async deleteVeicolo(targa: string): Promise<number> {
+    public async deleteVeicolo(targa: string): Promise<boolean> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
         try {
-            return await veicoloDao.delete(targa);
+            const deleted = await veicoloDao.delete(targa, { transaction });
+            if (!deleted) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+            }
+            await transaction.commit();
+            return true;
         } catch (error) {
+            await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
         }
     }

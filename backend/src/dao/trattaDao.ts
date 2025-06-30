@@ -2,6 +2,7 @@ import Tratta from '../models/tratta';
 import { DAO } from './daoInterface';
 import { TrattaAttributes } from '../models/tratta';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { Transaction } from 'sequelize';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
 interface TrattaDAO extends DAO<TrattaAttributes, number> {
@@ -44,7 +45,7 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async create(item: TrattaAttributes): Promise<Tratta> {
+    public async create(item: TrattaAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
         try {
             return await Tratta.create(item);
         } catch (error) {
@@ -79,7 +80,7 @@ class TrattaDao implements TrattaDAO {
      * @param {number} id - L'ID della tratta da eliminare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction}): Promise<number> {
         try {
             return await Tratta.destroy({ where: { id_tratta: id } });
         } catch (error) {

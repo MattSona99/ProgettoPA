@@ -2,6 +2,7 @@ import Veicolo from '../models/veicolo';
 import { DAO } from './daoInterface';
 import { VeicoloAttributes } from '../models/veicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { Transaction } from 'sequelize';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
 interface VeicoloDAO extends DAO<VeicoloAttributes, string> {
@@ -48,7 +49,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async create(item: VeicoloAttributes): Promise<Veicolo> {
+    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
         try {
             return await Veicolo.create(item);
         } catch (error) {
@@ -83,7 +84,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {string} targa - La targa del veicolo da eliminare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(targa: string): Promise<number> {
+    public async delete(targa: string, options?: { transaction?: Transaction}): Promise<number> {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {

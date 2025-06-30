@@ -2,6 +2,7 @@ import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
 import Tratta from "../models/tratta";
 import { TrattaAttributes } from "../models/tratta";
+import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
@@ -47,9 +48,14 @@ class TrattaRepository {
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
     public async createTratta(item: TrattaAttributes): Promise<Tratta> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
         try {
-            return await trattaDao.create(item);
+            const nuovaTratta = await trattaDao.create(item, { transaction });
+            await transaction.commit();
+            return nuovaTratta;
         } catch (error) {
+            await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
         }
     }
@@ -76,9 +82,14 @@ class TrattaRepository {
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe eliminate.
      */
     public async deleteTratta(id: number): Promise<number> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
         try {
-            return await trattaDao.delete(id);
+            const deleted = await trattaDao.delete(id, { transaction });
+            await transaction.commit();
+            return deleted;
         } catch (error) {
+            await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
         }
     }
