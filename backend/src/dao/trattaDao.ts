@@ -1,6 +1,7 @@
 import Tratta from '../models/tratta';
 import { DAO } from './daoInterface';
 import { TrattaAttributes } from '../models/tratta';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
 interface TrattaDAO extends DAO<TrattaAttributes, number> {
@@ -19,8 +20,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.findAll();
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     }
 
@@ -34,8 +34,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.findByPk(id);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della tratta.");
         }
     }
 
@@ -49,8 +48,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.create(item);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della tratta.");
         }
     }
 
@@ -65,15 +63,13 @@ class TrattaDao implements TrattaDAO {
         try {
             const tratta = await Tratta.findByPk(id);
             if (!tratta) {
-                // ERRORE
-                return [0, []];
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata.");
             }
             const [rows] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
             const updated = await Tratta.findAll({ where: { id_tratta: id } });
             return [rows, updated];
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento della tratta.");
         }
     }
 
@@ -87,8 +83,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.destroy({ where: { id_tratta: id } });
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione della tratta.");
         }
     }
 }

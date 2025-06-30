@@ -1,17 +1,18 @@
 import Varco from '../models/varco';
 import varcoDao from '../dao/varcoDao';
 import Database from '../utils/database';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 class VarcoRepository {
     public async findVarco(id: number): Promise<Varco | null> {
         try{
             const varco = await varcoDao.getById(id);
             if (!varco) {
-                throw new Error("Varco con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato.");
             }
             return varco;
         } catch (error) {
-            throw new Error("Errore nel recupero del varco");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del varco.");
         }
     }
 
@@ -24,7 +25,7 @@ class VarcoRepository {
             return newVarco;
         } catch (error) {
             await transaction.rollback();
-            throw new Error("Errore nella creazione del varco");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del varco.");
         }
     }
 
@@ -32,11 +33,11 @@ class VarcoRepository {
         try {
             const updatedVarco = await varcoDao.update(id, varcoData);
             if (!updatedVarco) {
-                throw new Error("Varco con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato.");
             }
             return updatedVarco;
         } catch (error) {
-            throw new Error("Errore nell'aggiornamento del varco");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del varco.");
         }
     }
 
@@ -46,13 +47,13 @@ class VarcoRepository {
         try {
             const deleted = await varcoDao.delete(id, { transaction });
             if (!deleted) {
-                throw new Error("Varco con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato.");
             }
             await transaction.commit();
             return true;
         } catch (error) {
             await transaction.rollback();
-            throw new Error("Errore nella cancellazione del varco");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella cancellazione del varco.");
         }
     }
 }

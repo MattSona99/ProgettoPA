@@ -1,6 +1,7 @@
 import trattaDao from "../dao/trattaDao";
 import Tratta from "../models/tratta";
 import { TrattaAttributes } from "../models/tratta";
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
  * Classe TrattaRepository che gestisce le operazioni relative alle tratte.
@@ -15,8 +16,7 @@ class TrattaRepository {
         try {
             return await trattaDao.getAll();
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     }
 
@@ -30,8 +30,7 @@ class TrattaRepository {
         try {
             return await trattaDao.getById(id);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della tratta.");
         }
     }
 
@@ -45,8 +44,7 @@ class TrattaRepository {
         try {
             return await trattaDao.create(item);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della tratta.");
         }
     }
 
@@ -61,8 +59,7 @@ class TrattaRepository {
         try {
             return await trattaDao.update(id, item);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento della tratta.");
         }
     }
 
@@ -76,8 +73,7 @@ class TrattaRepository {
         try {
             return await trattaDao.delete(id);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione della tratta.");
         }
     }
 }

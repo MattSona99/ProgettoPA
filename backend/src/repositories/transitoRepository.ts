@@ -1,17 +1,19 @@
 import Transito from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+
 class TransitoRepository {
     
     public async findTransito(id: number): Promise<Transito | null> {
         try {
             const transito = await transitoDao.getById(id);
             if (!transito) {
-                throw new Error("Transito con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato.");
             }
             return transito;
-        } catch (error: any) {
-            throw new Error("Errore nel recupero del transito: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del transito.");
         }
     }
 
@@ -22,9 +24,9 @@ class TransitoRepository {
             const newTransito = await transitoDao.create(transitoData, { transaction });
             await transaction.commit();
             return newTransito;
-        } catch (error: any) {
+        } catch (error) {
             await transaction.rollback();
-            throw new Error("Errore nella creazione del transito: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito.");
         }
     }
 
@@ -32,11 +34,11 @@ class TransitoRepository {
         try {
             const updatedTransito = await transitoDao.update(id, transitoData);
             if (!updatedTransito) {
-                throw new Error("Transito con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato.");
             }
             return updatedTransito;
-        } catch (error: any) {
-            throw new Error("Errore nell'aggiornamento del transito: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del transito.");
         }
     }
 
@@ -46,13 +48,13 @@ class TransitoRepository {
         try {
             const deleted = await transitoDao.delete(id, { transaction });
             if (!deleted) {
-                return false;
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato.");
             }
             await transaction.commit();
             return true;
-        } catch (error: any) {
+        } catch (error) {
             await transaction.rollback();
-            throw new Error("Errore nella cancellazione del transito: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella cancellazione del transito.");
         }
     }
 }

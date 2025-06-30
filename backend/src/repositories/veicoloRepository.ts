@@ -1,6 +1,7 @@
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
 import { VeicoloAttributes } from '../models/veicolo';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
  * Classe VeicoloRepository che gestisce le operazioni relative ai veicoli.
@@ -16,8 +17,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.getAll();
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
     }
 
@@ -31,8 +31,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.getById(targa);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del veicolo.");
         }
     }
 
@@ -46,8 +45,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.create(item);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del veicolo.");
         }
     }
 
@@ -62,8 +60,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.update(targa, item);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del veicolo.");
         }
     }
 
@@ -77,8 +74,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.delete(targa);
         } catch (error) {
-            // ERRORE
-            throw error;
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del veicolo.");
         }
     }
 }

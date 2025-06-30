@@ -1,6 +1,7 @@
 import {DAO} from './daoInterface';
 import Utente, {UtenteAttributes} from '../models/utente';
 import {Transaction} from 'sequelize';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 interface UtenteDAO extends DAO<UtenteAttributes, number> {
     // metodi da aggiungere nel caso specifico degli utenti
@@ -11,8 +12,8 @@ class UtenteDao implements UtenteDAO {
     public async getAll(): Promise<Utente[]> {
         try {
             return await Utente.findAll();
-        } catch (error: any) {
-            throw new Error("Errore nel recupero degli utenti: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero degli utenti.");
         }
     }
 
@@ -20,11 +21,11 @@ class UtenteDao implements UtenteDAO {
         try {
             const utente = await Utente.findByPk(id);
             if (!utente) {
-                throw new Error("Utente con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Utente non trovato.");
             }
             return utente;
-        } catch (error: any) {
-            throw new Error("Errore nel recupero dell'utente: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dell'utente.");
         }
     }
 
@@ -32,19 +33,19 @@ class UtenteDao implements UtenteDAO {
         try {
             const utente = await Utente.findOne({ where: { email } });
             if (!utente) {
-                throw new Error("Utente con email " + email + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Utente non trovato.");
             }
             return utente;
-        } catch (error: any) {
-            throw new Error("Errore nel recupero dell'utente per email: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dell'utente.");
         }
     }
 
     public async create(utente: Utente, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
             return await Utente.create(utente, options);
-        } catch (error: any) {
-            throw new Error("Errore nella creazione dell'utente: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione dell'utente: " + error.message);
         }
     }
 
@@ -52,7 +53,7 @@ class UtenteDao implements UtenteDAO {
         try {
             const existingUtente = await Utente.findByPk(id);
             if (!existingUtente) {
-                throw new Error("Utente con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Utente non trovato.");
             }
             const [indexedCount] = await Utente.update(utente, {
                 where: { id_utente: id },
@@ -60,8 +61,8 @@ class UtenteDao implements UtenteDAO {
             });
             const updatedItem = await Utente.findAll({ where: { id_utente: id } });
             return [indexedCount, updatedItem];
-        } catch (error: any) {
-            throw new Error("Errore nell'aggiornamento dell'utente: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento dell'utente.");
         }
     }
 
@@ -72,11 +73,11 @@ class UtenteDao implements UtenteDAO {
                 ...options
             });
             if (deletedCount === 0) {
-                throw new Error("Utente con id " + id + " non trovato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Utente non trovato.");
             }
             return deletedCount;
-        } catch (error: any) {
-            throw new Error("Errore nella cancellazione dell'utente: " + error.message);
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione dell'utente.");
         }
     }
 }

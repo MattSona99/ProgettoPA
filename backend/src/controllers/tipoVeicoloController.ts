@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import tipoVeicoloDao from '../dao/tipoVeicoloDao';
 import { StatusCodes } from 'http-status-codes';
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
  * Funzione per ottenere tutti i tipi di Veicolo.
@@ -10,7 +11,7 @@ export const getAllTipoVeicolo = async (req: Request, res: Response, next: NextF
         const tipiVeicolo = await tipoVeicoloDao.getAll();
         res.status(StatusCodes.OK).json(tipiVeicolo);
     } catch (error) {
-        next(error);
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei tipi di veicolo."));
     }
 };
 
@@ -22,12 +23,12 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
     try {
         const tipoVeicolo = await tipoVeicoloDao.getById(id);
         if (!tipoVeicolo) {
-            res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" });
+            return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."))
         } else {
             next(res.status(StatusCodes.OK).json(tipoVeicolo));
         }
     } catch (error) {
-        next(error);
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del tipo di veicolo."));
     }
 };
 
@@ -39,7 +40,7 @@ export const createTipoVeicolo = async (req: Request, res: Response, next: NextF
         const nuovoTipoVeicolo = await tipoVeicoloDao.create(req.body);
         res.status(StatusCodes.CREATED).json(nuovoTipoVeicolo);
     } catch (error) {
-        next(error);
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del tipo di veicolo."));
     }
 };
 
@@ -54,10 +55,10 @@ export const updateTipoVeicolo = async (req: Request, res: Response, next: NextF
             const updatedTipoVeicolo = await tipoVeicoloDao.getById(id);
             res.status(StatusCodes.OK).json(updatedTipoVeicolo);
         } else {
-            next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
+            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."));
         }
     } catch (error) {
-        next(error);
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del tipo di veicolo."));
     }
 };
 
@@ -71,9 +72,9 @@ export const deleteTipoVeicolo = async (req: Request, res: Response, next: NextF
         if (deleted) {
             res.status(StatusCodes.OK).json({ message: "Tipo di veicolo eliminato" });
         } else {
-            next(res.status(StatusCodes.NOT_FOUND).json({ message: "Tipo di veicolo non trovato" }));
+            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."));
         }
     } catch (error) {
-        next(error);
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del tipo di veicolo."));
     }
 };
