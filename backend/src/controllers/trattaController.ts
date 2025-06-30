@@ -58,7 +58,7 @@ export const deleteTratta = async (req: Request, res: Response, next: NextFuncti
     try {
         const deleted = await trattaRepository.deleteTratta(id);
         if (deleted) {
-            res.status(StatusCodes.OK).json({ message: "Tratta eliminata con successo" });
+            res.status(StatusCodes.OK).json({ message: "Tratta eliminata con successo." });
         } else {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }

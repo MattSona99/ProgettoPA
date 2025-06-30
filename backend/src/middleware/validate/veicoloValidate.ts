@@ -15,15 +15,15 @@ export const validateGetVeicoloById = [
 
 export const validateCreateVeicolo = [
     body('targa').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
-    body('tipo_veicolo').isInt().withMessage('Tipo veicolo deve essere un numero intero.'),
-    body('utente').isInt().withMessage('Utente deve essere un numero intero.'),
+    body('tipo_veicolo').isInt({ min: 1 }).withMessage('Tipo veicolo ID deve essere un numero intero positivo.'),
+    body('utente').isInt({ min: 1 }).withMessage('Utente ID deve essere un numero intero positivo.'),
     validateRequest
 ];
 
 export const validateUpdateVeicolo = [
     param('targa').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
-    body('tipo_veicolo').isInt().withMessage('Tipo veicolo deve essere un numero intero.'),
-    body('utente').isInt().withMessage('Utente deve essere un numero intero.'),
+    body('tipo_veicolo').optional().isInt({ min: 1 }).withMessage('Tipo veicolo ID deve essere un numero intero positivo.'),
+    body('utente').optional().isInt({ min: 1 }).withMessage('Utente ID deve essere un numero intero positivo.'),
     validateRequest
 ];
 

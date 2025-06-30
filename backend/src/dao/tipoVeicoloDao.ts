@@ -34,11 +34,11 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         try{
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
             }
             return tipoVeicolo;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del tipo di veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del tipo di veicolo con id ${id}.`);
         }
     }
 
@@ -52,7 +52,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         try {
             return await TipoVeicolo.create(item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del tipo di veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del tipo di veicolo con id ${item.id_tipo_veicolo}.`);
         }
     }
 
@@ -68,13 +68,13 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
             }
             const [rows] = await TipoVeicolo.update(item, { where: { id_tipo_veicolo: id }, returning: true });
             const updated = await TipoVeicolo.findAll({ where: { id_tipo_veicolo: id } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del tipo di veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del tipo di veicolo con id ${id}.`);
         }
     }
 
@@ -88,11 +88,11 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
             }
             return await TipoVeicolo.destroy({ where: { id_tipo_veicolo: id } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del tipo di veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del tipo di veicolo con id ${id}.`);
         }
     }
 }

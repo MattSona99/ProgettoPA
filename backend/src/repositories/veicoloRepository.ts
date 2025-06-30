@@ -1,3 +1,5 @@
+import tipoVeicoloDao from '../dao/tipoVeicoloDao';
+import utenteDao from '../dao/utenteDao';
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
 import { VeicoloAttributes } from '../models/veicolo';
@@ -11,11 +13,12 @@ class VeicoloRepository {
     /**
      * Funzione per ottenere tutti i veicoli.
      * 
-     * @returns {Promise<Veicolo[]>} - Una promessa che risolve con un array di veicoli.
+     * @returns {Promise<any[]>} - Una promessa che risolve con un array di più Promise.
      */
-    public async getAllVeicoli(): Promise<Veicolo[]> {
+    public async getAllVeicoli(): Promise<any[]> {
         try {
-            return await veicoloDao.getAll();
+            const veicoli = await veicoloDao.getAll();
+            return await Promise.all(veicoli.map(veicolo => this.enrichVeicolo(veicolo)));
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
@@ -29,9 +32,13 @@ class VeicoloRepository {
      */
     public async getVeicoloById(targa: string): Promise<Veicolo | null> {
         try {
-            return await veicoloDao.getById(targa);
+            const veicolo = await veicoloDao.getById(targa);
+            if (!veicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+            }
+            return await this.enrichVeicolo(veicolo);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
         }
     }
 
@@ -45,7 +52,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.create(item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);;
         }
     }
 
@@ -60,7 +67,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.update(targa, item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
         }
     }
 
@@ -74,7 +81,26 @@ class VeicoloRepository {
         try {
             return await veicoloDao.delete(targa);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+        }
+    }
+
+    // HELPER PRIVATI
+
+    /**
+     * Funzione di stampa per le informazioni dei veicoli.
+     */
+    private async enrichVeicolo(veicolo: Veicolo): Promise<any> {
+        try {
+            const tipo_veicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
+            const utente = await utenteDao.getById(veicolo.utente);
+            return {
+                ...veicolo.dataValues,
+                tipo_veicolo: tipo_veicolo ? tipo_veicolo.dataValues : null,
+                utente: utente ? utente.dataValues : null
+            };
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
     }
 }

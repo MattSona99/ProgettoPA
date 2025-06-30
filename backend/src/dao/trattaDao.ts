@@ -34,7 +34,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.findByPk(id);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
         }
     }
 
@@ -48,7 +48,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.create(item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
         }
     }
 
@@ -63,13 +63,13 @@ class TrattaDao implements TrattaDAO {
         try {
             const tratta = await Tratta.findByPk(id);
             if (!tratta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
             }
             const [rows] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
             const updated = await Tratta.findAll({ where: { id_tratta: id } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -83,7 +83,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.destroy({ where: { id_tratta: id } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
         }
     }
 }

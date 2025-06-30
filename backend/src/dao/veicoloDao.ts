@@ -20,7 +20,6 @@ class VeicoloDao implements VeicoloDAO {
         try {
             return await Veicolo.findAll();
         } catch (error) {
-            // ERRORE
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
     }
@@ -35,12 +34,11 @@ class VeicoloDao implements VeicoloDAO {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
             return veicolo;
         } catch (error) {
-            // ERRORE
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
         }
     }
 
@@ -54,8 +52,7 @@ class VeicoloDao implements VeicoloDAO {
         try {
             return await Veicolo.create(item);
         } catch (error) {
-            // ERRORE
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);
         }
     }
 
@@ -70,13 +67,13 @@ class VeicoloDao implements VeicoloDAO {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
             const [rows] = await Veicolo.update(item, { where: { targa: targa }, returning: true });
             const updated = await Veicolo.findAll({ where: { targa: targa } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
         }
     }
 
@@ -90,11 +87,11 @@ class VeicoloDao implements VeicoloDAO {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
             return await Veicolo.destroy({ where: { targa: targa } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del veicolo.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
         }
     }
 }

@@ -30,7 +30,7 @@ class TrattaRepository {
         try {
             return await trattaDao.getById(id);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
         }
     }
 
@@ -44,7 +44,7 @@ class TrattaRepository {
         try {
             return await trattaDao.create(item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
         }
     }
 
@@ -59,7 +59,7 @@ class TrattaRepository {
         try {
             return await trattaDao.update(id, item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -73,7 +73,7 @@ class TrattaRepository {
         try {
             return await trattaDao.delete(id);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione della tratta.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
         }
     }
 }
