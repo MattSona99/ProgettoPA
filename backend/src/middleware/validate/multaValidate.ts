@@ -16,7 +16,8 @@ export const validateCreateMulta = [
 ];
 
 export const validateGetMulteByTargheEPeriodo = [
-    param('targa').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
+    param('targa').isArray({ min: 1 }).withMessage('Targhe deve essere un array con almeno un elemento.'),
+    param('targa.*').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
     param('dataIn').isDate().withMessage('Data di inizio deve essere una data valida.'),
     param('dataOut').isDate().withMessage('Data di fine deve essere una data valida.'),
     validateRequest

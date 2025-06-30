@@ -1,6 +1,9 @@
 import multaDao from "../dao/multaDao";
+import transitoDao from "../dao/transitoDao";
+import trattaDao from "../dao/trattaDao";
 import Multa from "../models/multa";
 import { MultaAttributes } from "../models/multa";
+import Utente from "../models/utente";
 import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
 
@@ -36,16 +39,15 @@ class multaRepository {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string): Promise<MultaAttributes[]> {
+    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: Utente): Promise<any[]> {
         try {
-            return await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut);
+            return await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
         } catch (error) {
             throw HttpErrorFactory.createError(
                 HttpErrorCodes.InternalServerError,
                 `Errore nel recupero delle multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
         }
     }
-
 }
 
 export default new multaRepository();
