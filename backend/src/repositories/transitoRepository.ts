@@ -52,7 +52,7 @@ class TransitoRepository {
                 }
                 await transaction.commit();
                 return newTransito;
-            } else if (ruolo.smart) { // Se il ruolo è di un varco smart, si crea il transito
+            } else if (ruolo.smart) { // Se un varco è smart, si crea il transito
                 const newTransito = await transitoDao.create(transito, { transaction });
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
