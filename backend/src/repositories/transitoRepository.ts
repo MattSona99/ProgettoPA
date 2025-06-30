@@ -1,10 +1,10 @@
-import Transito from '../models/transito';
+import Transito, { TransitoAttributes } from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
-import { MultaAttributes } from '../models/multa';
+import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -36,7 +36,7 @@ class TransitoRepository {
      * @param ruolo - Il ruolo dell'utente.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async createTransito(transito: Transito, ruolo: Varco | null = null): Promise<Transito> {
+    public async createTransito(transito: TransitoAttributes, ruolo: Varco | null = null): Promise<Transito> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
@@ -47,7 +47,7 @@ class TransitoRepository {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                    const multa: MultaAttributes = this.createMulta(newTransito);
+                    const multa: MultaCreationAttributes = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
                 }
                 await transaction.commit();
@@ -58,22 +58,13 @@ class TransitoRepository {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                    const multa: MultaAttributes = this.createMulta(newTransito);
+                    const multa = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
                 }
                 await transaction.commit();
                 return newTransito;
-            } else { // Altrimenti, si crea il transito con l'id del varco
-                const newTransito = await transitoDao.create(transito, { transaction });
-                if (!newTransito) {
-                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
-                }
-                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                    const multa: MultaAttributes = this.createMulta(newTransito);
-                    await multaDao.create(multa, { transaction });
-                }
-                await transaction.commit();
-                return newTransito;
+            } else { // Se il ruolo è di un varco non smart, non si può creare un transito
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco non è di tipo smart, quindi non può creare transiti.`);
             }
         } catch (error) {
             await transaction.rollback();
@@ -130,14 +121,14 @@ class TransitoRepository {
      * @param transito - Il transito associato alla multa.
      * @returns - L'oggetto parziale della multa da creare.
      */
-    private createMulta(transito: Transito): MultaAttributes {
-        // Creazione di una multa associata al transito
-        const costoMulta = transito.delta_velocita * 10; // Esempio di calcolo del costo della multa
+    private createMulta(transito: Transito): MultaCreationAttributes {
+        // Calcolo dell'importo della multa (esempio)
+        const importo = transito.delta_velocita * 10;
+
+        // Restituisci solo i campi richiesti da MultaCreationAttributes (senza id_multa e uuid_pagamento)
         return {
-            id_multa: 0, 
-            uuid_pagamento: '', // Generato successivamente
             transito: transito.id_transito,
-            importo: costoMulta
+            importo: importo
         };
     }
 }

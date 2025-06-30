@@ -48,7 +48,7 @@ class TransitoDao implements TransitoDAO {
      * @param transito - L'oggetto transito da creare.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async create(transito: Transito, options?: { transaction?: Transaction }): Promise<Transito> {
+    public async create(transito: TransitoAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(transito, options);
         } catch (error) {

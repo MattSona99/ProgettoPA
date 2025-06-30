@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
 import varcoDao from '../dao/varcoDao';
+import varcoRepository from '../repositories/varcoRepository';
 
 /**
  * Funzione per ottenere un transito da un ID.
@@ -36,26 +37,24 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             }
             res.status(StatusCodes.CREATED).json(createdTransito);
         } else if (ruolo === 'varco') { // Il varco può essere di 2 tipologie: smart o non smart
-            const varcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
-            if (!varcoAssociato) { // Non so se è necessario visto che per effettuare una chiamata bisogna essere autenticati e lo si è solo se si è un utente
+            // Verifica se l'utente è associato a un varco
+            const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
+            if (!isVarcoAssociato) {
                 return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente."));
             }
-            const varco = await varcoDao.getById(varcoAssociato.id_varco);
+            // Recupera il varco associato all'utente
+            const varco = await varcoRepository.findVarco(isVarcoAssociato.id_varco);
             if (!varco) {
                 return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
             }
-            if (varco.smart) {
-                const createdTransito = await transitoRepository.createTransito(newTransito, varco);
-                if (!createdTransito) {
-                    next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
-                }
-                res.status(StatusCodes.CREATED).json(createdTransito);
-            }
+            // Creazione del transito a seconda del tipo di varco
             const createdTransito = await transitoRepository.createTransito(newTransito, varco);
             if (!createdTransito) {
                 next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
             }
             res.status(StatusCodes.CREATED).json(createdTransito);
+        } else {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti."));
         }
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito."));

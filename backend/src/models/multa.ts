@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import Database from '../utils/database';
 import Transito from './transito';
 
@@ -12,8 +12,10 @@ export interface MultaAttributes {
   importo: number;
 }
 
+export interface MultaCreationAttributes extends Optional<MultaAttributes, 'id_multa' | 'uuid_pagamento'> {}
+
 // Implementazione del modello Multa
-class Multa extends Model<MultaAttributes> implements MultaAttributes {
+class Multa extends Model<MultaAttributes, MultaCreationAttributes> implements MultaAttributes {
   public id_multa!: number;
   public uuid_pagamento!: string;
   public transito!: number;

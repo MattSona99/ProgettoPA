@@ -1,4 +1,4 @@
-import Multa from "../models/multa";
+import Multa, { MultaCreationAttributes } from "../models/multa";
 import { DAO } from "./daoInterface";
 import { MultaAttributes } from "../models/multa";
 import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
@@ -54,7 +54,7 @@ class MultaDao implements MultaDAO {
      * @param item - L'oggetto parziale della multa da creare.
      * @returns - Una promessa che risolve con la nuova multa creata.
      */
-    public async create(item: MultaAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
+    public async create(item: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
             return await Multa.create(item);
         } catch (error) {
