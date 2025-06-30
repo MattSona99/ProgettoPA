@@ -74,6 +74,27 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
 }
 
 /**
+ * Funzione per creare un transito tramite un varco non smart.
+*/
+export const createTransitoByVarco = async (req: Request, res: Response, next: NextFunction) => {
+    // Verifica se il file è stato caricato correttamente
+    if (!req.file) {
+        return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "File non fornito o non valido."));
+    }
+    try {
+        const file = req.file.buffer;
+        // Processamento dell'immagine della targa per ottenere di ritorno la stessa
+        // Utilizzo di tesseract.js o un altro OCR per leggere la targa
+        const targa = await transitoRepository.processImage(file);
+        if (!targa) {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile leggere la targa dal file immagine."));
+        }
+        res.status(StatusCodes.OK).json({ targa });
+    } catch (error) {
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito tramite varco."));
+    }
+}
+/**
  * Funzione per aggiornare un transito esistente.
  */
 export const updateTransito = async (req: Request, res: Response, next: NextFunction) => {

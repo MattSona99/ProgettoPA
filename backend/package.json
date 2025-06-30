@@ -4,6 +4,7 @@
   "description": "Backend per il progetto di Programmazione Avanzata di gestione dei tutor",
   "main": "dist/server.js",
   "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "serve": "node dist/server.js"
@@ -15,14 +16,18 @@
     "express-validator": "^7.2.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "save": "^2.9.0",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^8.5.0",
+    "@types/multer": "^1.4.13",
+    "@types/tesseract.js": "^0.0.2",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.9.4"

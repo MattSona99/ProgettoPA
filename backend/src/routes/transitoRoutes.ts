@@ -9,10 +9,12 @@ import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import {
     getTransitoById,
     createTransito,
+    createTransitoByVarco,
     updateTransito,
     deleteTransito,
     getAllTransiti
 } from '../controllers/transitoController';
+import { uploadImage } from '../middleware/upload';
 
 const router = Router();
 
@@ -23,6 +25,7 @@ router.use(authMiddleware);
 router.get('/transito', authorize(['operatore']), getAllTransiti);
 router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
 router.post('/transito', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
+router.post('/transito', authorize(['varco']), uploadImage.single('image'), createTransitoByVarco);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
 

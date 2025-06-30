@@ -5,6 +5,7 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
+import Tesseract from 'tesseract.js';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -127,6 +128,16 @@ class TransitoRepository {
         }
     }
 
+    public async processImage(file: any): Promise<string | null> {
+        try {
+            const { data: { text } } = await Tesseract.recognize(file, 'ita')
+            const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
+            const match = text.match(regex);
+            return match ? match[0] : null;
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel processamento dell'immagine della targa.");
+        }
+    }
     // HELPER PRIVATI
 
     /**
