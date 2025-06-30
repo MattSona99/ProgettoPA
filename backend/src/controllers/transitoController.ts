@@ -7,6 +7,18 @@ import varcoDao from '../dao/varcoDao';
 import varcoRepository from '../repositories/varcoRepository';
 
 /**
+ * Funzione per ottenere tutti i transiti.
+ */
+export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const transiti = await transitoRepository.findAllTransiti();
+        res.status(StatusCodes.OK).json(transiti);
+    } catch (error) {
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti."));
+    }
+};
+
+/**
  * Funzione per ottenere un transito da un ID.
  */
 export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {

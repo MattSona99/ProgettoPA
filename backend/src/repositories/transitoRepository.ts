@@ -12,6 +12,18 @@ import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 class TransitoRepository {
 
     /**
+     * Funzione per ottenere tutti i transiti.
+     * 
+     * @returns - Una promessa che risolve con un array di transiti.
+     */
+    public async findAllTransiti(): Promise<Transito[]> {
+        try {
+            return await transitoDao.getAll();
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti.");
+        }
+    }
+    /**
      * Funzione per ottenere un transito da un ID.
      * 
      * @param id - L'ID del transito da recuperare.

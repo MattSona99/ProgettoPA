@@ -10,7 +10,8 @@ import {
     getTransitoById,
     createTransito,
     updateTransito,
-    deleteTransito
+    deleteTransito,
+    getAllTransiti
 } from '../controllers/transitoController';
 
 const router = Router();
@@ -19,6 +20,7 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione del transito
+router.get('/transito', authorize(['operatore']), getAllTransiti);
 router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
 router.post('/transito', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
