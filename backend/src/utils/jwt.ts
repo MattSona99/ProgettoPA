@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 // Caricamento della variabile d'ambiente JWT_SECRET
 const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("La variabile d'ambiente JWT_SECRET non è definita");
+}
 
 // Funzione per generare un token JWT
 // Il payload deve contenere almeno l'id dell'utente e il ruolo 
@@ -11,7 +14,7 @@ export const generateToken = (payload: JwtPayload): string => {
     try {
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
         return token;
-    } catch (error) {
+    } catch (error: any) {
         throw new Error("Errore nella generazione del token JWT: " + error.message);
     }
 }
@@ -22,7 +25,7 @@ export const verifyToken = (token: string): JwtPayload => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         return decoded as JwtPayload;
-    } catch (error) {
+    } catch (error: any) {
         if (error instanceof jwt.JsonWebTokenError) {
             throw new Error("Token JWT non valido: " + error.message);
         }

@@ -11,7 +11,7 @@ class UtenteDao implements UtenteDAO {
     public async getAll(): Promise<Utente[]> {
         try {
             return await Utente.findAll();
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero degli utenti: " + error.message);
         }
     }
@@ -23,7 +23,7 @@ class UtenteDao implements UtenteDAO {
                 throw new Error("Utente con id " + id + " non trovato");
             }
             return utente;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero dell'utente: " + error.message);
         }
     }
@@ -35,7 +35,7 @@ class UtenteDao implements UtenteDAO {
                 throw new Error("Utente con email " + email + " non trovato");
             }
             return utente;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero dell'utente per email: " + error.message);
         }
     }
@@ -43,7 +43,7 @@ class UtenteDao implements UtenteDAO {
     public async create(utente: Utente, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
             return await Utente.create(utente, options);
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nella creazione dell'utente: " + error.message);
         }
     }
@@ -60,7 +60,7 @@ class UtenteDao implements UtenteDAO {
             });
             const updatedItem = await Utente.findAll({ where: { id_utente: id } });
             return [indexedCount, updatedItem];
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nell'aggiornamento dell'utente: " + error.message);
         }
     }
@@ -75,7 +75,7 @@ class UtenteDao implements UtenteDAO {
                 throw new Error("Utente con id " + id + " non trovato");
             }
             return deletedCount;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nella cancellazione dell'utente: " + error.message);
         }
     }

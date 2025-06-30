@@ -3,14 +3,14 @@
  */
 import { validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 const validateRequest = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req); // Recupero gli errori di validazione
 
   // Se ci sono errori accumulati allora ritorno l'errore
   if (!errors.isEmpty()) {
-    res.status(400).json({ errors: errors.array() });
-    next(new Error('Errore di validazione: ' + JSON.stringify(errors.array()))); // Passo l'errore al middleware di gestione degli errori
+    throw new Error(`Errore di validazione: ${errors.array().map(err => err.msg).join(', ')}`);
   }
   next(); // Passaggio dell'errore al middleware successivo
 };

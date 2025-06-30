@@ -11,7 +11,7 @@ class TransitoDao implements TransitoDAO {
     public async getAll(): Promise<Transito[]> {
         try {
             return await Transito.findAll();
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero dei transiti: " + error.message);
         }
     }
@@ -22,7 +22,7 @@ class TransitoDao implements TransitoDAO {
                 throw new Error("Transito con id " + id + " non trovato");
             }
             return transito;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero del transito: " + error.message);
         }
     }
@@ -30,7 +30,7 @@ class TransitoDao implements TransitoDAO {
     public async create(transito: Transito, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(transito, options);
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nella creazione del transito: " + error.message);
         }
     }
@@ -45,7 +45,7 @@ class TransitoDao implements TransitoDAO {
             const updatedTransito = await Transito.findAll({ where: { id_transito: id } });
 
             return [indexedCount, updatedTransito];
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nell'aggiornamento del transito: " + error.message);
         }
     }
@@ -57,7 +57,7 @@ class TransitoDao implements TransitoDAO {
                 throw new Error("Transito con id " + id + " non trovato");
             }
             return deleted;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nella cancellazione del transito: " + error.message);
         }
     }

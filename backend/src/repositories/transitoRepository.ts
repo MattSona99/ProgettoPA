@@ -10,7 +10,7 @@ class TransitoRepository {
                 throw new Error("Transito con id " + id + " non trovato");
             }
             return transito;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nel recupero del transito: " + error.message);
         }
     }
@@ -22,7 +22,7 @@ class TransitoRepository {
             const newTransito = await transitoDao.create(transitoData, { transaction });
             await transaction.commit();
             return newTransito;
-        } catch (error) {
+        } catch (error: any) {
             await transaction.rollback();
             throw new Error("Errore nella creazione del transito: " + error.message);
         }
@@ -35,7 +35,7 @@ class TransitoRepository {
                 throw new Error("Transito con id " + id + " non trovato");
             }
             return updatedTransito;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error("Errore nell'aggiornamento del transito: " + error.message);
         }
     }
@@ -50,7 +50,7 @@ class TransitoRepository {
             }
             await transaction.commit();
             return true;
-        } catch (error) {
+        } catch (error: any) {
             await transaction.rollback();
             throw new Error("Errore nella cancellazione del transito: " + error.message);
         }

@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
 import Database from '../utils/database';
-import Utente from './utente';
 
 const sequelize = Database.getInstance();
 
@@ -11,7 +10,6 @@ export interface VarcoAttributes {
   km: number;
   smart: boolean;
   pioggia: boolean;
-  utente: number;
 }
 
 // Implementazione del modello Varco
@@ -21,7 +19,6 @@ class Varco extends Model<VarcoAttributes> implements VarcoAttributes {
   public km!: number;
   public smart!: boolean;
   public pioggia!: boolean;
-  public utente!: number;
 }
 
 // Inizializzazione del modello Varco
@@ -48,14 +45,6 @@ Varco.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    },
-    utente: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Utente,
-        key: 'id_utente'
-      }
     }
   },
   {

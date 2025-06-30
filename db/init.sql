@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS varco (
     nome_autostrada VARCHAR(100),
     km DOUBLE PRECISION,
     smart BOOLEAN,
-    pioggia BOOLEAN DEFAULT FALSE,
+    pioggia BOOLEAN DEFAULT FALSE
 );
 
 -- Creazione tabella IS_VARCO --
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS tratta (
 CREATE TABLE IF NOT EXISTS transito (
     id_transito SERIAL PRIMARY KEY,
     tratta INTEGER REFERENCES tratta(id_tratta),
-    veicolo INTEGER REFERENCES veicolo(targa),
+    veicolo VARCHAR(8) REFERENCES veicolo(targa),
     data_in TIMESTAMP NOT NULL,
     data_out TIMESTAMP NOT NULL,
     velocita_media DOUBLE PRECISION NOT NULL,
@@ -109,7 +109,7 @@ INSERT INTO is_varco (id_utente, id_varco) VALUES
     (11, 6),
     (12, 7),
     (13, 8),
-    (14, 1),
+    (14, 1);
 
 -- Inserimento dati tabella TIPO_VEICOLO --
 INSERT INTO tipo_veicolo (tipo, limite_velocita) VALUES
