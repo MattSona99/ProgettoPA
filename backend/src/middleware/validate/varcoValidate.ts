@@ -1,6 +1,10 @@
 import { body, param } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
+/**
+ * Validazioni per le rotte di Varco
+ */
+
 export const validateGetVarcoById = [
      param('id').isInt({min: 1}).withMessage('ID deve essere un numero intero.'),
     validateRequest

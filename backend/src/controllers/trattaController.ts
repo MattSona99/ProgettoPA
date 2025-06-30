@@ -15,6 +15,9 @@ export const getAllTratte = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+/**
+ * Funzione per ottenere una tratta da un ID. 
+ */
 export const getTrattaById = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
     try {
@@ -29,6 +32,9 @@ export const getTrattaById = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+/**
+ * Funzione per creare una nuova tratta.
+ */
 export const createTratta = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const nuovaTratta = await trattaRepository.createTratta(req.body);
@@ -38,6 +44,9 @@ export const createTratta = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+/**
+ * Funzione per aggiornare una tratta esistente.
+ */
 export const updateTratta = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
     try {
@@ -53,6 +62,9 @@ export const updateTratta = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+/**
+ * Funzione per eliminare una tratta.
+ */
 export const deleteTratta = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
     try {

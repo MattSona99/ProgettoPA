@@ -3,6 +3,9 @@ import varcoRepository from '../repositories/varcoRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
+/**
+ * Funzione per ottenere un varco da un ID.
+ */
 export const getVarcoById = async (req: Request, res: Response, next: NextFunction) => {
     const {id} = req.params;
     try {
@@ -16,6 +19,9 @@ export const getVarcoById = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+/**
+ * Funzione per creare un nuovo varco.
+ */
 export const createVarco = async (req: Request, res: Response, next: NextFunction) => {
     const newVarco = req.body;
     try {
@@ -26,6 +32,9 @@ export const createVarco = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+/**
+ * Funzione per aggiornare un varco esistente.
+ */
 export const updateVarco = async (req: Request, res: Response, next: NextFunction) => {
     const {id} = req.params;
     const updatedData = req.body;
@@ -40,6 +49,9 @@ export const updateVarco = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+/**
+ * Funzione per eliminare un varco.
+ */
 export const deleteVarco = async (req: Request, res: Response, next: NextFunction) => {
     const {id} = req.params;
     try {

@@ -1,7 +1,17 @@
-import {Router} from 'express';
-import {authMiddleware, authorize} from '../middleware/authMiddleware';
-import {getVarcoById, createVarco, updateVarco, deleteVarco} from '../controllers/varcoController';
-import {validateCreateVarco, validateGetVarcoById, validateUpdateVarco, validateDeleteVarco} from '../middleware/validate/varcoValidate';
+import { Router } from 'express';
+import {
+    getVarcoById,
+    createVarco,
+    updateVarco,
+    deleteVarco
+} from '../controllers/varcoController';
+import { authMiddleware, authorize } from '../middleware/authMiddleware';
+import {
+    validateCreateVarco,
+    validateGetVarcoById,
+    validateUpdateVarco,
+    validateDeleteVarco
+} from '../middleware/validate/varcoValidate';
 
 const router = Router();
 

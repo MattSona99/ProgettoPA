@@ -5,7 +5,6 @@ import {
     createTipoVeicolo,
     updateTipoVeicolo,
     deleteTipoVeicolo,
-
 } from '../controllers/tipoVeicoloController';
 import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import {

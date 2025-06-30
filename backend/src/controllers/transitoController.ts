@@ -5,6 +5,9 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
 import varcoDao from '../dao/varcoDao';
 
+/**
+ * Funzione per ottenere un transito da un ID.
+ */
 export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -18,6 +21,9 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
     }
 }
 
+/**
+ * Funzione per creare un nuovo transito.
+ */
 export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     const newTransito = req.body;
     const ruolo = (req as any).user.ruolo;  // Ruolo dell'utente passato nell'header
@@ -56,6 +62,9 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+/**
+ * Funzione per aggiornare un transito esistente.
+ */
 export const updateTransito = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const updatedData = req.body;
@@ -70,6 +79,9 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+/**
+ * Funzione per eliminare un transito.
+ */
 export const deleteTransito = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {

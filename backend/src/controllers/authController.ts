@@ -4,6 +4,9 @@ import utenteDao from "../dao/utenteDao";
 import { generateToken } from "../utils/jwt";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
+/**
+ * Funzione per effettuare il login dell'utente.
+ */
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     const email = req.body.email;
     // Controlla se l'email è presente nel corpo della richiesta

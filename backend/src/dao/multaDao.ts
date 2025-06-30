@@ -9,6 +9,7 @@ import Utente from "../models/utente";
 import Tratta from "../models/tratta";
 import Varco from "../models/varco";
 
+// Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface MultaDAO extends DAO<MultaAttributes, number> {
     // metodi da aggiungere nel caso specifico delle multe
 }
@@ -57,7 +58,7 @@ class MultaDao implements MultaDAO {
         try {
             return await Multa.create(item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della multa.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della multa con ID ${item.id_multa}.`);
         }
     }
 
