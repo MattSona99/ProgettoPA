@@ -5,6 +5,9 @@ import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
 import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
 import Veicolo from "../models/veicolo";
+import Utente from "../models/utente";
+import Tratta from "../models/tratta";
+import Varco from "../models/varco";
 
 interface MultaDAO extends DAO<MultaAttributes, number> {
     // metodi da aggiungere nel caso specifico delle multe
@@ -105,11 +108,26 @@ class MultaDao implements MultaDAO {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string): Promise<MultaAttributes[]> {
+    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: Utente): Promise<Multa[]> {
         try {
             const multe = await Multa.findAll({
                 include: [{
                     model: Transito,
+                    include: [
+                        {
+                            model: Veicolo,
+                            where: utente.ruolo === 'automobilista'
+                                ? { targa: { [Op.in]: targhe }, id_utente: utente.id_utente }
+                                : { targa: { [Op.in]: targhe } }
+                        },
+                        {
+                            model: Tratta,
+                            include: [
+                                { model: Varco, as: 'varco_in' },
+                                { model: Varco, as: 'varco_out' }
+                            ]
+                        }
+                    ],
                     where: {
                         [Op.or]: [
                             { data_in: { [Op.between]: [dataIn, dataOut] } },
@@ -119,15 +137,7 @@ class MultaDao implements MultaDAO {
                                 data_out: { [Op.gte]: dataOut }
                             }
                         ]
-                    },
-                    include: [{
-                        model: Veicolo,
-                        where: {
-                            targa: {
-                                [Op.in]: targhe
-                            }
-                        }
-                    }]
+                    }
                 }]
             });
 
