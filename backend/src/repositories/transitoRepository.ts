@@ -46,6 +46,7 @@ class TransitoRepository {
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+                // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                     const multa: MultaCreationAttributes = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
@@ -57,6 +58,7 @@ class TransitoRepository {
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+                // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                     const multa = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
