@@ -2,6 +2,7 @@ import Transito from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import Varco from '../models/varco';
 
 class TransitoRepository {
     
@@ -17,13 +18,32 @@ class TransitoRepository {
         }
     }
 
-    public async createTransito(transitoData: Transito): Promise<Transito> {
+    public async createTransito(transito: Transito, ruolo: Varco | null = null): Promise<Transito> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const newTransito = await transitoDao.create(transitoData, { transaction });
-            await transaction.commit();
-            return newTransito;
+            // Se il ruolo è 'operatore', si forza l'inserimento del transito
+            if (ruolo === null) {
+                const newTransito = await transitoDao.create(transito, { transaction });
+                if (!newTransito) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
+                }
+                await transaction.commit();
+                return newTransito;
+            }else if (ruolo.smart) { // Se il ruolo è di un varco smart, si crea il transito
+                const newTransito = await transitoDao.create(transito, { transaction });
+                if (!newTransito) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
+                }
+                await transaction.commit();
+                return newTransito;
+            } else { // Altrimenti, si crea il transito con l'id del varco
+                const newTransito = await transitoDao.create(transito, { transaction });
+                if (!newTransito) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
+                }
+                return newTransito;
+            }
         } catch (error) {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito.");

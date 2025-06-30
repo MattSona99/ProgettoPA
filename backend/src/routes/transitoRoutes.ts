@@ -8,7 +8,7 @@ const router = Router();
 router.use(authMiddleware);
 // Rotte per la gestione del transito
 router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
-router.post('/transito', authorize(['operatore']), validateCreateTransito, createTransito);
+router.post('/transito', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
 
