@@ -20,8 +20,8 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
 
 export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     const newTransito = req.body;
-    const ruolo = req.headers['role'];  // Ruolo dell'utente passato nell'header
-    const id_utente = req.headers['id_utente']; // ID dell'utente passato nell'header
+    const ruolo = (req as any).user.ruolo;  // Ruolo dell'utente passato nell'header
+    const id_utente = (req as any).user.id; // ID dell'utente passato nell'header
     try {
         if (ruolo === 'operatore') { // Operatore forza manualmente l'inserimento del transito
             const createdTransito = await transitoRepository.createTransito(newTransito);

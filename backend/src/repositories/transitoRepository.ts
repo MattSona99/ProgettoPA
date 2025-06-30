@@ -3,9 +3,11 @@ import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
+import multaDao from '../dao/multaDao';
+import { MultaAttributes } from '../models/multa';
 
 class TransitoRepository {
-    
+
     public async findTransito(id: number): Promise<Transito | null> {
         try {
             const transito = await transitoDao.getById(id);
@@ -28,12 +30,20 @@ class TransitoRepository {
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
                 }
+                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+                    const multa: MultaAttributes = this.createMulta(newTransito);
+                    await multaDao.create(multa, { transaction });
+                }
                 await transaction.commit();
                 return newTransito;
-            }else if (ruolo.smart) { // Se il ruolo è di un varco smart, si crea il transito
+            } else if (ruolo.smart) { // Se il ruolo è di un varco smart, si crea il transito
                 const newTransito = await transitoDao.create(transito, { transaction });
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
+                }
+                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+                    const multa: MultaAttributes = this.createMulta(newTransito);
+                    await multaDao.create(multa, { transaction });
                 }
                 await transaction.commit();
                 return newTransito;
@@ -42,6 +52,11 @@ class TransitoRepository {
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito.");
                 }
+                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+                    const multa: MultaAttributes = this.createMulta(newTransito);
+                    await multaDao.create(multa, { transaction });
+                }
+                await transaction.commit();
                 return newTransito;
             }
         } catch (error) {
@@ -76,6 +91,17 @@ class TransitoRepository {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella cancellazione del transito.");
         }
+    }
+
+    private createMulta(transito: Transito): MultaAttributes {
+        // Creazione di una multa associata al transito
+        const costoMulta = transito.delta_velocita * 10; // Esempio di calcolo del costo della multa
+        return {
+            id_multa: 0, 
+            uuid_pagamento: '', // Generato successivamente
+            transito: transito.id_transito,
+            importo: costoMulta
+        };
     }
 }
 
