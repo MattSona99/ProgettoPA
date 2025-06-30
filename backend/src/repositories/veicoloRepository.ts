@@ -88,7 +88,7 @@ class VeicoloRepository {
     // HELPER PRIVATI
 
     /**
-     * Funzione di stampa per le informazioni dei veicoli.
+     * Funzione di stampa per le informazioni aggiuntive sui veicoli.
      */
     private async enrichVeicolo(veicolo: Veicolo): Promise<any> {
         try {

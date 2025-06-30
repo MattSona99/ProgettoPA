@@ -1,4 +1,5 @@
 import trattaDao from "../dao/trattaDao";
+import varcoDao from "../dao/varcoDao";
 import Tratta from "../models/tratta";
 import { TrattaAttributes } from "../models/tratta";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -14,7 +15,8 @@ class TrattaRepository {
      */
     public async getAllTratte(): Promise<Tratta[]> {
         try {
-            return await trattaDao.getAll();
+            const tratte = await trattaDao.getAll();
+            return await Promise.all(tratte.map(tratta => this.enrichTratta(tratta)));
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
@@ -28,7 +30,11 @@ class TrattaRepository {
      */
     public async getTrattaById(id: number): Promise<Tratta | null> {
         try {
-            return await trattaDao.getById(id);
+            const tratta = await trattaDao.getById(id);
+            if (!tratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            }
+            return await this.enrichTratta(tratta);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
         }
@@ -74,6 +80,25 @@ class TrattaRepository {
             return await trattaDao.delete(id);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
+        }
+    }
+
+    // HELPER PRIVATI
+
+    /**
+     * Funzione di stampa per le informazioni aggiuntive sulle tratte.
+     */
+    private async enrichTratta(tratta: Tratta): Promise<any> {
+        try {
+            const varco_in = await varcoDao.getById(tratta.varco_in);
+            const varco_out = await varcoDao.getById(tratta.varco_out);
+            return {
+                ...tratta.dataValues,
+                varco_in: varco_in ? varco_in.dataValues : null,
+                varco_out: varco_out ? varco_out.dataValues : null
+            }
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     }
 }
