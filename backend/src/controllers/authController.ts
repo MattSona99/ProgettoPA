@@ -21,5 +21,4 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dell'utente."))
     }
-    }
 }

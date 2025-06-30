@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { StatusCodes } from 'http-status-codes';
 import { verifyToken } from '../utils/jwt';
-
+import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 dotenv.config(); // Caricamento delle variabili d'ambiente dal file .env
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -16,19 +16,18 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         // Controllo se il token è presente nell'intestazione della richiesta
         const token = req.header('Authorization')?.replace('Bearer ', ''); // Estrazione del token dall'intestazione della richiesta
         if (!token) {
-            throw new Error('Token mancante o malformato.');
+            throw HttpErrorFactory.createError(HttpErrorCodes.InvalidToken, 'Token mancante.');
         }
         const payload = verifyToken(token); // Verifica e decodifica del token
         if (!payload) {
-            throw new Error('Token non valido o scaduto.');
+            throw HttpErrorFactory.createError(HttpErrorCodes.TokenExpiredError, 'Token scaduto.');
         }
 
         (req as any).user = payload; // Aggiunta del payload alla richiesta
         next();
     } catch (error) {
-        next(error)
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, 'Errore nella verifica del token.'));
     }
-
 }
 
 /**
@@ -40,11 +39,11 @@ export const authorize = (roles: string[]) => {
             // Recupero dell'utente dalla richiesta
             const user = (req as any).user;
             if (!user) {
-                throw new Error('Utente non autenticato.');
+                throw HttpErrorFactory.createError(HttpErrorCodes.Forbidden, 'Utente non autenticato.');
             }
             // Verifica del ruolo dell'utente
             if (!roles.includes(user.ruolo)) {
-                throw new Error('Utente non autorizzato.');
+                throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, 'Utente non autorizzato.');
             }
             next();
         } catch (error) {

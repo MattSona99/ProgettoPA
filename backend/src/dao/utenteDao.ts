@@ -45,7 +45,7 @@ class UtenteDao implements UtenteDAO {
         try {
             return await Utente.create(utente, options);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione dell'utente: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione dell'utente.");
         }
     }
 
