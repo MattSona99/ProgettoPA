@@ -1,5 +1,5 @@
 import {DAO} from "./daoInterface";
-import Transito, {TransitoAttributes} from "../models/transito";
+import Transito, {TransitoAttributes, TransitoCreationAttributes} from "../models/transito";
 import {Transaction} from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
@@ -48,7 +48,7 @@ class TransitoDao implements TransitoDAO {
      * @param transito - L'oggetto transito da creare.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async create(transito: TransitoAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
+    public async create(transito: TransitoCreationAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(transito, options);
         } catch (error) {

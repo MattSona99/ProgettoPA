@@ -1,4 +1,4 @@
-import Tratta from '../models/tratta';
+import Tratta, { TrattaCreationAttributes } from '../models/tratta';
 import { DAO } from './daoInterface';
 import { TrattaAttributes } from '../models/tratta';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -45,9 +45,9 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async create(item: TrattaAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
+    public async create(item: TrattaCreationAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
         try {
-            return await Tratta.create(item);
+            return await Tratta.create(item, options);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
         }

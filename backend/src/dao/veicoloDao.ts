@@ -1,4 +1,4 @@
-import Veicolo from '../models/veicolo';
+import Veicolo, { VeicoloCreationAttributes } from '../models/veicolo';
 import { DAO } from './daoInterface';
 import { VeicoloAttributes } from '../models/veicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -49,9 +49,9 @@ class VeicoloDao implements VeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
+    public async create(item: VeicoloCreationAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
         try {
-            return await Veicolo.create(item);
+            return await Veicolo.create(item, options);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);
         }

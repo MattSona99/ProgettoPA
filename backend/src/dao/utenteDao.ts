@@ -1,5 +1,5 @@
 import {DAO} from './daoInterface';
-import Utente, {UtenteAttributes} from '../models/utente';
+import Utente, {UtenteAttributes, UtenteCreationAttributes} from '../models/utente';
 import {Transaction} from 'sequelize';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
@@ -67,7 +67,7 @@ class UtenteDao implements UtenteDAO {
      * @param utente - L'oggetto parziale dell'utente da creare.
      * @returns - Una promessa che risolve con l'utente creato.
      */
-    public async create(utente: Utente, options?: { transaction?: Transaction }): Promise<Utente> {
+    public async create(utente: UtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
             return await Utente.create(utente, options);
         } catch (error) {

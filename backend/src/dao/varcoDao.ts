@@ -1,5 +1,5 @@
 import { Transaction } from "sequelize";
-import Varco, { VarcoAttributes } from "../models/varco";
+import Varco, { VarcoAttributes, VarcoCreationAttributes } from "../models/varco";
 import { DAO } from "./daoInterface";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
@@ -48,7 +48,7 @@ class VarcoDao implements VarcoDAO {
      * @param item - L'oggetto parziale del varco da creare.
      * @returns - Una promessa che risolve con il nuovo varco creato.
      */
-    public async create(item: Varco, options?: { transaction?: Transaction }): Promise<Varco> {
+    public async create(item: VarcoCreationAttributes, options?: { transaction?: Transaction }): Promise<Varco> {
         try {
             return await Varco.create(item, options);
         } catch (error) {

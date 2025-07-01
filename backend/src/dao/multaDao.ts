@@ -56,7 +56,7 @@ class MultaDao implements MultaDAO {
      */
     public async create(item: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
-            return await Multa.create(item);
+            return await Multa.create(item, options);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della multa con ID ${item.id_multa}.`);
         }

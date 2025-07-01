@@ -1,4 +1,5 @@
-import TipoVeicolo from '../models/tipoVeicolo';
+import TipoVeicolo, { TipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
+import { Transaction } from 'sequelize';
 import { DAO } from './daoInterface';
 import { TipoVeicoloAttributes } from '../models/tipoVeicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -48,9 +49,9 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @param {TipoVeicolo} item - L'oggetto parziale del tipo di veicolo da creare.
      * @returns {Promise<TipoVeicolo>} - Una promessa che risolve con il nuovo tipo di veicolo creato.
      */
-    public async create(item:TipoVeicolo): Promise<TipoVeicolo> {
+    public async create(item:TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
         try {
-            return await TipoVeicolo.create(item);
+            return await TipoVeicolo.create(item, options);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del tipo di veicolo con id ${item.id_tipo_veicolo}.`);
         }
