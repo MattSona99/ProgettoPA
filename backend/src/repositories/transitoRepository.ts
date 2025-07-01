@@ -187,7 +187,7 @@ class TransitoRepository {
     }
 
     private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media e della velocita media con la velocita limitevelocita: number, velocitaLimite: number): number {
-        const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getTime()) / 60;
+        const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getMinutes()) / 60;
         const velocitaMedia = distanza / (tempoPercorrenza);
         const deltaVelocita = velocitaMedia - limiteVelocita;
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
