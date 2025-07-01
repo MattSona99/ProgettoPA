@@ -86,7 +86,7 @@ class TrattaRepository {
             if (!trattaToUpdate) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
             }
-            
+
             // Controllo quali id dei varchi sono stati inseriti
             if (!tratta.varco_in && !tratta.varco_out) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Devi inserire almeno un varco.");
@@ -162,16 +162,21 @@ class TrattaRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I due varchi devono essere diversi tra loro.");
             }
 
-            // Controllo se il nuovo varco é uguale al precedente
-            if ((varcoOut.id_varco === trattaToUpdate.varco_out || varcoOut.id_varco === trattaToUpdate.varco_in) || (varcoIn.id_varco === trattaToUpdate.varco_out || varcoIn.id_varco === trattaToUpdate.varco_in)) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Entrambi i nuovi varchi devono essere diversi dai precedenti.");
+            // Controllo se i nuovi varchi sono uguali ai precedenti
+            if (
+                (varcoOut.id_varco === trattaToUpdate.varco_out
+                    || varcoOut.id_varco === trattaToUpdate.varco_in)
+                && (varcoIn.id_varco === trattaToUpdate.varco_out
+                    || varcoIn.id_varco === trattaToUpdate.varco_in)
+            ) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Almeno uno dei 2 varchi deve essere diverso dal precedente.");
             }
 
             // Controllo se i nuovo varchi si trovano sulla stessa autostrada
             if (!(varcoOut.nome_autostrada === varcoIn.nome_autostrada)) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I varchi si devono trovare sulla stessa autostrada.");
             }
-
+            
             // Completo e modifico il tratto
             const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
             const trattaCompleta: TrattaAttributes = {
