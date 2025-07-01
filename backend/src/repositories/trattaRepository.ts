@@ -1,5 +1,7 @@
+import transitoDao from "../dao/transitoDao";
 import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
+import Transito from "../models/transito";
 import Tratta from "../models/tratta";
 import { TrattaAttributes, TrattaCreationAttributes } from "../models/tratta";
 import Varco from "../models/varco";
@@ -84,9 +86,7 @@ class TrattaRepository {
             if (!trattaToUpdate) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
             }
-            console.log(trattaToUpdate.id_tratta);
-            console.log("Tratta inserita con varco in: " + tratta.varco_in + " e varco out: " + tratta.varco_out);
-
+            
             // Controllo quali id dei varchi sono stati inseriti
             if (!tratta.varco_in && !tratta.varco_out) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Devi inserire almeno un varco.");
@@ -127,10 +127,6 @@ class TrattaRepository {
                 if (!varcoOut) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco out non trovato.");
                 }
-
-                console.log("Id del nuovo varco: " + varcoOut.id_varco);
-                console.log("Id del precedente varco in: " + trattaToUpdate.varco_in);
-                console.log("Id del precedente varco out: " + trattaToUpdate.varco_out);
 
                 // Controllo se il nuovo varco é uguale al precedente
                 if (varcoOut.id_varco === trattaToUpdate.varco_out || varcoOut.id_varco === trattaToUpdate.varco_in) {
@@ -200,6 +196,10 @@ class TrattaRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const transito = await Transito.findOne({ where: { tratta: id } });
+            if (transito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare una tratta perchè associata ad un transito.");
+            }
             const deleted = await trattaDao.delete(id, { transaction });
             await transaction.commit();
             return deleted;
