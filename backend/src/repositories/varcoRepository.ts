@@ -9,6 +9,19 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 class VarcoRepository {
 
     /**
+     * Funzione per ottenere tutti i varchi.
+     * 
+     * @returns - Una promessa che risolve con un array di varchi.
+     */
+    public async getAllVarco(): Promise<Varco[]> {
+        try {
+            return await varcoDao.getAll();
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
+        }
+    }
+
+    /**
      * Funzione per ottenere un varco da un ID.
      * 
      * @param id - L'ID del varco da recuperare.

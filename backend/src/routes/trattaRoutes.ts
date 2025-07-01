@@ -21,7 +21,7 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle tratte
-router.get('/tratte', getAllTratte);
+router.get('/tratte', authorize(['operatore']), getAllTratte);
 router.get('/tratte/:id', authorize(['operatore']), validateGetTrattaById, getTrattaById);
 router.post('/tratte', authorize(['operatore']), validateCreateTratta, createTratta);
 router.put('/tratte/:id', authorize(['operatore']), validateUpdateTratta, updateTratta);

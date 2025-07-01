@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+    getAllVarco,
     getVarcoById,
     createVarco,
     updateVarco,
@@ -19,6 +20,7 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione dei varchi
+router.get('/varco', authorize(['operatore']), getAllVarco);
 router.get('/varco/:id', authorize(['operatore']), validateGetVarcoById, getVarcoById);
 router.post('/varco', authorize(['operatore']), validateCreateVarco, createVarco);
 router.put('/varco/:id', authorize(['operatore']), validateUpdateVarco, updateVarco);
