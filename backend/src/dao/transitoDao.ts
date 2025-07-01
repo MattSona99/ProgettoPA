@@ -63,7 +63,7 @@ class TransitoDao implements TransitoDAO {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
-    public async update(id: number, transito: Transito): Promise<[number, Transito[]]> {
+    public async update(id: number, transito: Transito, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
         try {
             const existingTransito = await Transito.findByPk(id);
             if (!existingTransito) {
@@ -74,7 +74,7 @@ class TransitoDao implements TransitoDAO {
 
             return [indexedCount, updatedTransito];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del transito con ID ${id}.`);
         }
     }
 
@@ -93,7 +93,7 @@ class TransitoDao implements TransitoDAO {
             }
             return deleted;
         } catch (error: any) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del transito con ID ${id}.`);
         }
     }
 }

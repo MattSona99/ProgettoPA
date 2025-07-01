@@ -107,7 +107,7 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
         }
         res.status(StatusCodes.OK).json(updatedTransito);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del transito."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del transito."));
     }
 }
 
@@ -123,6 +123,6 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         }
         res.status(StatusCodes.NO_CONTENT).json({ message: "Transito eliminato con successo" });
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del transito."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del transito."));
     }
 }

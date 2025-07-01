@@ -65,7 +65,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @returns {Promise<[number, TipoVeicolo[]]>} - Una promessa che risolve con un array di tipi di veicolo.
      */
 
-    public async update(id: number, item: TipoVeicolo): Promise<[number, TipoVeicolo[]]> {
+    public async update(id: number, item: TipoVeicolo, options?: { transaction?: Transaction }): Promise<[number, TipoVeicolo[]]> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
@@ -85,7 +85,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @param {number} id - L'ID del tipo di veicolo da eliminare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {

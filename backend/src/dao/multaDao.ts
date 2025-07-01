@@ -69,7 +69,7 @@ class MultaDao implements MultaDAO {
      * @param item - L'oggetto parziale della multa da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: MultaAttributes): Promise<[number, MultaAttributes[]]> {
+    public async update(id: number, item: MultaAttributes, options?: { transaction?: Transaction }): Promise<[number, MultaAttributes[]]> {
         try {
             const multa = await Multa.update(item, { where: { id_multa: id } });
             if (!multa) {
@@ -79,7 +79,7 @@ class MultaDao implements MultaDAO {
             const updated = await Multa.findAll({ where: { id_multa: id } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della multa con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della multa con ID ${id}.`);
         }
     }
 
@@ -97,7 +97,7 @@ class MultaDao implements MultaDAO {
             }
             return await Multa.destroy({ where: { id_multa: id } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della multa con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della multa con ID ${id}.`);
         }
     }
 

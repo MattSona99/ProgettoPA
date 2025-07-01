@@ -79,7 +79,7 @@ export const updateVeicolo = async (req: Request, res: Response, next: NextFunct
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del veicolo."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del veicolo."));
     }
 }
 
@@ -102,6 +102,6 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del veicolo."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del veicolo."));
     }
 }

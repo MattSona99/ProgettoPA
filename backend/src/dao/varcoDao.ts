@@ -63,7 +63,7 @@ class VarcoDao implements VarcoDAO {
      * @param item - L'oggetto parziale del varco da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
-    public async update(id: number, item: VarcoAttributes): Promise<[number, Varco[]]> {
+    public async update(id: number, item: VarcoAttributes, options?: { transaction?: Transaction }): Promise<[number, Varco[]]> {
         try {
             const existingVarco = await Varco.findByPk(id);
             if (!existingVarco) {
@@ -76,7 +76,7 @@ class VarcoDao implements VarcoDAO {
             const updatedItem = await Varco.findAll({ where: { id_varco: id } });
             return [indexedCount, updatedItem];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del varco con ID ${id}.`);
         }
     }
 
@@ -98,7 +98,7 @@ class VarcoDao implements VarcoDAO {
             }
             return deletedCount;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del varco con ID ${id}.`);
         }
     }
 }

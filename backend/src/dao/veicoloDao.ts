@@ -63,7 +63,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(targa: string, item: VeicoloAttributes): Promise<[number, Veicolo[]]> {
+    public async update(targa: string, item: VeicoloAttributes, options?: { transaction?: Transaction }): Promise<[number, Veicolo[]]> {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
@@ -73,7 +73,7 @@ class VeicoloDao implements VeicoloDAO {
             const updated = await Veicolo.findAll({ where: { targa: targa } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del veicolo con targa ${targa}.`);
         }
     }
 
@@ -91,7 +91,7 @@ class VeicoloDao implements VeicoloDAO {
             }
             return await Veicolo.destroy({ where: { targa: targa } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del veicolo con targa ${targa}.`);
         }
     }
 }

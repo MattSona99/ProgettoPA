@@ -71,7 +71,7 @@ class TrattaRepository {
         try {
             return await trattaDao.update(id, item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -90,7 +90,7 @@ class TrattaRepository {
             return deleted;
         } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della tratta con ID ${id}.`);
         }
     }
 

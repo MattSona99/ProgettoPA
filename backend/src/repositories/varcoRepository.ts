@@ -73,7 +73,7 @@ class VarcoRepository {
             }
             return updatedVarco;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del varco con ID ${id}.`);
         }
     }
 
@@ -95,7 +95,7 @@ class VarcoRepository {
             return true;
         } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del varco con ID ${id}.`);
         }
     }
 }

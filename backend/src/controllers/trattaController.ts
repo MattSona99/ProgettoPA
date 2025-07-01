@@ -58,7 +58,7 @@ export const updateTratta = async (req: Request, res: Response, next: NextFuncti
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento della tratta."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento della tratta."));
     }
 };
 
@@ -75,6 +75,6 @@ export const deleteTratta = async (req: Request, res: Response, next: NextFuncti
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione della tratta."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione della tratta."));
     }
 };

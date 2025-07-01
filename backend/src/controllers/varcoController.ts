@@ -57,7 +57,7 @@ export const updateVarco = async (req: Request, res: Response, next: NextFunctio
         }
         res.status(StatusCodes.OK).json(updatedVarco);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del varco."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del varco."));
     }
 }
 
@@ -73,6 +73,6 @@ export const deleteVarco = async (req: Request, res: Response, next: NextFunctio
         }
         res.status(StatusCodes.NO_CONTENT).json({ message: "Varco eliminato con successo" });
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del varco."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del varco."));
     }
 }

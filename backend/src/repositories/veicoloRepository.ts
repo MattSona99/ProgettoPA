@@ -73,7 +73,7 @@ class VeicoloRepository {
         try {
             return await veicoloDao.update(targa, item);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del veicolo con targa ${targa}.`);
         }
     }
 
@@ -95,7 +95,7 @@ class VeicoloRepository {
             return true;
         } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del veicolo con targa ${targa}.`);
         }
     }
 

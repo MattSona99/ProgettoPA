@@ -60,7 +60,7 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
+    public async update(id: number, item: TrattaAttributes, options?: { transaction?: Transaction}): Promise<[number, Tratta[]]> {
         try {
             const tratta = await Tratta.findByPk(id);
             if (!tratta) {
@@ -70,7 +70,7 @@ class TrattaDao implements TrattaDAO {
             const updated = await Tratta.findAll({ where: { id_tratta: id } });
             return [rows, updated];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -84,7 +84,7 @@ class TrattaDao implements TrattaDAO {
         try {
             return await Tratta.destroy({ where: { id_tratta: id } });
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della tratta con ID ${id}.`);
         }
     }
 }

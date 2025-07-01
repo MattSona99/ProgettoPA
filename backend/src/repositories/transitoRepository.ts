@@ -102,7 +102,7 @@ class TransitoRepository {
             }
             return updatedTransito;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del transito con ID ${id}.`);
         }
     }
 
@@ -124,7 +124,7 @@ class TransitoRepository {
             return true;
         } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del transito con ID ${id}.`);
         }
     }
 

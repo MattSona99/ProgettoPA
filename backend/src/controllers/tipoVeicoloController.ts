@@ -25,7 +25,7 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
         if (!tipoVeicolo) {
             return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."))
         } else {
-            next(res.status(StatusCodes.OK).json(tipoVeicolo));
+            res.status(StatusCodes.OK).json(tipoVeicolo);
         }
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del tipo di veicolo."));
@@ -49,16 +49,17 @@ export const createTipoVeicolo = async (req: Request, res: Response, next: NextF
  */
 export const updateTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
+
     try {
         const [updated] = await tipoVeicoloDao.update(id, req.body);
         if (updated) {
             const updatedTipoVeicolo = await tipoVeicoloDao.getById(id);
             res.status(StatusCodes.OK).json(updatedTipoVeicolo);
         } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."));
+            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, 'Tipo di veicolo non trovato.'));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiornamento del tipo di veicolo."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, 'Errore nell\'aggiornamento del tipo di veicolo.'));
     }
 };
 
@@ -75,6 +76,6 @@ export const deleteTipoVeicolo = async (req: Request, res: Response, next: NextF
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tipo di veicolo non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'eliminazione del tipo di veicolo."));
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del tipo di veicolo."));
     }
 };
