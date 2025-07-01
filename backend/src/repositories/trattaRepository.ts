@@ -74,12 +74,117 @@ class TrattaRepository {
      * Funzione per aggiornare una tratta.
      * 
      * @param {number} id - L'ID della tratta da aggiornare.
-     * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
+     * @param {TrattaAttributes} tratta - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async updateTratta(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
+    public async updateTratta(id: number, tratta: TrattaAttributes): Promise<[number, Tratta[]]> {
         try {
-            return await trattaDao.update(id, item);
+            // Controlla se la tratta esiste
+            const trattaToUpdate = await trattaDao.getById(id);
+            if (!trattaToUpdate) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            }
+            console.log(trattaToUpdate.id_tratta);
+            console.log("Tratta inserita con varco in: " + tratta.varco_in + " e varco out: " + tratta.varco_out);
+
+            // Controllo quali id dei varchi sono stati inseriti
+            if (!tratta.varco_in && !tratta.varco_out) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Devi inserire almeno un varco.");
+            }
+
+            if (tratta.varco_in && !tratta.varco_out) {
+                console.log("------------- HO SOLO IL VARCO IN ---------------");
+                // Controllo se il varco in esiste
+                const varcoIn = await varcoDao.getById(tratta.varco_in);
+                if (!varcoIn) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco in non trovato.");
+                }
+
+                // Controllo se il nuovo varco è uguale ad uno dei 2 precedenti
+                if (varcoIn.id_varco === trattaToUpdate.varco_in || varcoIn.id_varco === trattaToUpdate.varco_out) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Il nuovo varco deve essere diverso dal precedente.");
+                }
+
+                // Controllo se il nuovo varco si trova sulla stessa autostrada
+                const varcoOut = await varcoDao.getById(trattaToUpdate.varco_out);
+                if (!(varcoIn.nome_autostrada === varcoOut?.nome_autostrada)) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I varchi si devono trovare sulla stessa autostrada.");
+                }
+
+                // Completo e modifico il tratto
+                const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
+                const trattaCompleta: TrattaAttributes = {
+                    ...trattaModificata,
+                    id_tratta: id,
+                    distanza: trattaModificata.distanza !== undefined ? trattaModificata.distanza : 0
+                };
+                return await trattaDao.update(id, trattaCompleta);
+            }
+            else if (tratta.varco_out && !tratta.varco_in) {
+                console.log("------------- HO SOLO IL VARCO OUT ---------------");
+                // Controllo se il varco out esiste
+                const varcoOut = await varcoDao.getById(tratta.varco_out);
+                if (!varcoOut) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco out non trovato.");
+                }
+
+                console.log("Id del nuovo varco: " + varcoOut.id_varco);
+                console.log("Id del precedente varco in: " + trattaToUpdate.varco_in);
+                console.log("Id del precedente varco out: " + trattaToUpdate.varco_out);
+
+                // Controllo se il nuovo varco é uguale al precedente
+                if (varcoOut.id_varco === trattaToUpdate.varco_out || varcoOut.id_varco === trattaToUpdate.varco_in) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Il nuovo varco deve essere diverso dal precedente.");
+                }
+
+                // Controllo se il nuovo varco si trova sulla stessa autostrada
+                const varcoIn = await varcoDao.getById(trattaToUpdate.varco_in);
+                if (!(varcoOut.nome_autostrada === varcoIn?.nome_autostrada)) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I varchi si devono trovare sulla stessa autostrada.");
+                }
+
+                // Completo e modifico il tratto
+                const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
+                const trattaCompleta: TrattaAttributes = {
+                    ...trattaModificata,
+                    id_tratta: id,
+                    distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
+                };
+                return await trattaDao.update(id, trattaCompleta);
+            }
+            console.log("------------- HO I DUE VARCHI ---------------");
+
+            // Controllo se entrambi i varchi esistono
+            const varcoOut = await varcoDao.getById(tratta.varco_out);
+            const varcoIn = await varcoDao.getById(tratta.varco_in);
+            if (!varcoOut || !varcoIn) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Almeno uno dei 2 varchi non esiste.");
+            }
+
+            // Controllo che i 2 varchi non siano uguali
+            if (varcoOut.id_varco === varcoIn.id_varco) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I due varchi devono essere diversi tra loro.");
+            }
+
+            // Controllo se il nuovo varco é uguale al precedente
+            if ((varcoOut.id_varco === trattaToUpdate.varco_out || varcoOut.id_varco === trattaToUpdate.varco_in) || (varcoIn.id_varco === trattaToUpdate.varco_out || varcoIn.id_varco === trattaToUpdate.varco_in)) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Entrambi i nuovi varchi devono essere diversi dai precedenti.");
+            }
+
+            // Controllo se i nuovo varchi si trovano sulla stessa autostrada
+            if (!(varcoOut.nome_autostrada === varcoIn.nome_autostrada)) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I varchi si devono trovare sulla stessa autostrada.");
+            }
+
+            // Completo e modifico il tratto
+            const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
+            const trattaCompleta: TrattaAttributes = {
+                ...trattaModificata,
+                id_tratta: id,
+                distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
+            };
+            return await trattaDao.update(id, trattaCompleta);
+
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della tratta con ID ${id}.`);
         }
@@ -125,7 +230,7 @@ class TrattaRepository {
 
     private completeTratta(tratta: TrattaCreationAttributes, varcoIn: Varco, varcoOut: Varco): TrattaCreationAttributes {
         const distanza = Math.abs(varcoIn.km - varcoOut.km);
-        return {...tratta, distanza: distanza};
+        return { ...tratta, varco_in: varcoIn.id_varco, varco_out: varcoOut.id_varco, distanza: distanza };
     }
 }
 

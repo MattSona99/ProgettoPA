@@ -60,7 +60,7 @@ class TrattaDao implements TrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: TrattaAttributes, options?: { transaction?: Transaction}): Promise<[number, Tratta[]]> {
+    public async update(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
         try {
             const tratta = await Tratta.findByPk(id);
             if (!tratta) {
