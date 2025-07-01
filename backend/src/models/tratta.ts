@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import Database from '../utils/database';
 import Varco from './varco';
 
@@ -11,9 +11,11 @@ export interface TrattaAttributes {
   varco_out: number;
   distanza: number;
 }
+// Interfaccia per le proprietà di creazione del modello Tratta
+export interface TrattaCreationAttributes extends Optional<TrattaAttributes, 'id_tratta'> {}
 
 // Implementazione del modello Tratta
-class Tratta extends Model<TrattaAttributes> implements TrattaAttributes {
+class Tratta extends Model<TrattaAttributes, TrattaCreationAttributes> implements TrattaAttributes {
   public id_tratta!: number;
   public varco_in!: number;
   public varco_out!: number;

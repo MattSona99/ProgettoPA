@@ -12,6 +12,7 @@ export interface MultaAttributes {
   importo: number;
 }
 
+// Interfaccia per le proprietà di creazione del modello Multa
 export interface MultaCreationAttributes extends Optional<MultaAttributes, 'id_multa' | 'uuid_pagamento'> {}
 
 // Implementazione del modello Multa

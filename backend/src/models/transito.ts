@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import Database from '../utils/database';
 import Veicolo from './veicolo';
 import Tratta from './tratta';
@@ -8,16 +8,20 @@ const sequelize = Database.getInstance();
 // Interfaccia per le proprietà del modello Transito
 export interface TransitoAttributes {
     id_transito: number;
-    veicolo: string;
-    tratta: number;
+    veicolo: string; // Riferimento alla targa del veicolo
+    tratta: number; // Riferimento all'ID della tratta
     data_in: Date;
     data_out: Date;
-    velocita_media: number;
+    // Da calcolare in  fase di logica
+    velocita_media: number; 
     delta_velocita: number;
 }
 
+// Interfaccia per le proprietà di creazione del modello Transito
+export interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito'> {}
+
 // Implementazione del modello Transito
-class Transito extends Model<TransitoAttributes> implements TransitoAttributes {
+class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {
     public id_transito!: number;
     public veicolo!: string;
     public tratta!: number;

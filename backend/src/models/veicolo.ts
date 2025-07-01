@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import Database from '../utils/database';
 import TipoVeicolo from './tipoVeicolo';
 import Utente from './utente';
@@ -13,8 +13,11 @@ export interface VeicoloAttributes {
   utente: number;
 }
 
+// Interfaccia per le proprietà di creazione del modello Veicolo
+export interface VeicoloCreationAttributes extends Optional<VeicoloAttributes, 'targa'> {}
+
 // Implementazione del modello Veicolo
-class Veicolo extends Model<VeicoloAttributes> implements VeicoloAttributes {
+class Veicolo extends Model<VeicoloAttributes, VeicoloCreationAttributes> implements VeicoloAttributes {
   public targa!: string;
   public tipo_veicolo!: number;
   public utente!: number;
