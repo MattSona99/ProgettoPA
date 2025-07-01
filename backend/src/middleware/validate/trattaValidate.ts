@@ -13,7 +13,6 @@ export const validateGetTrattaById = [
 export const validateCreateTratta = [
     body('varco_in').isInt({ min: 1 }).withMessage('Varco di ingresso ID deve essere un numero intero.'),
     body('varco_out').isInt({ min: 1 }).withMessage('Varco di uscita ID deve essere un numero intero.'),
-    body('distanza').isFloat({ min: 1 }).withMessage('Distanza deve essere un numero positivo.'),
     validateRequest
 ];
 

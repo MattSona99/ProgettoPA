@@ -1,4 +1,4 @@
-import Transito, { TransitoAttributes } from '../models/transito';
+import Transito, { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -6,6 +6,9 @@ import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 import Tesseract from 'tesseract.js';
+import trattaDao from '../dao/trattaDao';
+import veicoloDao from '../dao/veicoloDao';
+import tipoVeicoloDao from '../dao/tipoVeicoloDao';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -49,33 +52,59 @@ class TransitoRepository {
      * @param ruolo - Il ruolo dell'utente.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async createTransito(transito: TransitoAttributes, ruolo: Varco | null = null): Promise<Transito> {
+    public async createTransito(transito: TransitoCreationAttributes, ruolo: Varco | null = null): Promise<Transito> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            // Controllo se il veicolo esiste
+            const existingVeicolo = await veicoloDao.getById(transito.targa);
+            if (!existingVeicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${transito.targa} non trovato.`);
+            }
+
+            // Controllo se il tipo di veicolo esiste e ne ricavo il limite di velocità
+            const tipoVeicolo = await tipoVeicoloDao.getById(existingVeicolo.tipo_veicolo);
+            if (!tipoVeicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con ID ${existingVeicolo.tipo_veicolo} non trovato.`);
+            }
+
+            // Controllo se la tratta esiste
+            const existingTratta = await trattaDao.getById(transito.tratta);
+            if (!existingTratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
+            }
+
+            // Calcolo della velocità media e del delta
+            const transitoCompleto = this.calcoloVelocita(transito, tipoVeicolo.limite_velocita, existingTratta.distanza);
+
             // Se il ruolo è 'operatore', si forza l'inserimento del transito
             if (ruolo === null) {
-                const newTransito = await transitoDao.create(transito, { transaction });
+                const newTransito = await transitoDao.create(transitoCompleto, { transaction });
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                     const multa: MultaCreationAttributes = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
                 }
+
                 await transaction.commit();
                 return newTransito;
+
             } else if (ruolo.smart) { // Se un varco è smart, si crea il transito
-                const newTransito = await transitoDao.create(transito, { transaction });
+                const newTransito = await transitoDao.create(transitoCompleto, { transaction });
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                     const multa = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
                 }
+
                 await transaction.commit();
                 return newTransito;
             } else { // Se il ruolo è di un varco non smart, non si può creare un transito
@@ -155,6 +184,13 @@ class TransitoRepository {
             transito: transito.id_transito,
             importo: importo
         };
+    }
+
+    private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media e della velocita media con la velocita limitevelocita: number, velocitaLimite: number): number {
+        const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getTime()) / 60;
+        const velocitaMedia = distanza / (tempoPercorrenza);
+        const deltaVelocita = velocitaMedia - limiteVelocita;
+        return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
     }
 }
 

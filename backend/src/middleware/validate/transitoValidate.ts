@@ -18,9 +18,6 @@ export const validateCreateTransito = [
     body('tratta').isInt({ min: 1 }).withMessage('ID della tratta deve essere un numero intero'),
     body('data_in').isISO8601().toDate().withMessage('Data di ingresso deve essere una data valida'),
     body('data_out').isISO8601().toDate().withMessage('Data di uscita deve essere una data valida'),
-    // valori da calcolare
-    // body('velocita_media').isFloat({ min: 1 }).withMessage('Velocità media deve essere un numero positivo'),
-    // body('delta_velocita').isFloat({ min: 1 }).withMessage('Delta velocità deve essere un numero positivo'),
     validateRequest
 ]
 

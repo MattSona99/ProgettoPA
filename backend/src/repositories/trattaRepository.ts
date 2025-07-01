@@ -1,7 +1,8 @@
 import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
 import Tratta from "../models/tratta";
-import { TrattaAttributes } from "../models/tratta";
+import { TrattaAttributes, TrattaCreationAttributes } from "../models/tratta";
+import Varco from "../models/varco";
 import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
@@ -44,19 +45,28 @@ class TrattaRepository {
     /**
      * Funzione per creare una nuova tratta.
      * 
-     * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
+     * @param {TrattaCreationAttributes} tratta - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async createTratta(item: TrattaAttributes): Promise<Tratta> {
+    public async createTratta(tratta: TrattaCreationAttributes): Promise<Tratta> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const nuovaTratta = await trattaDao.create(item, { transaction });
+            const varcoIn = await varcoDao.getById(tratta.varco_in);
+            const varcoOut = await varcoDao.getById(tratta.varco_out);
+            if (!varcoIn || !varcoOut) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco in o varco out non trovati.");
+            }
+            if (!(varcoIn.nome_autostrada === varcoOut.nome_autostrada)) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "I varchi si devono trovare sulla stessa autostrada.");
+            }
+            const trattaCompleta = this.completeTratta(tratta, varcoIn, varcoOut);
+            const nuovaTratta = await trattaDao.create(trattaCompleta, { transaction });
             await transaction.commit();
             return nuovaTratta;
         } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta.`);
         }
     }
 
@@ -111,6 +121,11 @@ class TrattaRepository {
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
+    };
+
+    private completeTratta(tratta: TrattaCreationAttributes, varcoIn: Varco, varcoOut: Varco): TrattaCreationAttributes {
+        const distanza = Math.abs(varcoIn.km - varcoOut.km);
+        return {...tratta, distanza: distanza};
     }
 }
 

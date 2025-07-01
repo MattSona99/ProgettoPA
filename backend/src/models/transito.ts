@@ -18,7 +18,7 @@ export interface TransitoAttributes {
 }
 
 // Interfaccia per le proprietà di creazione del modello Transito
-export interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito'> {}
+export interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito' | 'velocita_media' | 'delta_velocita'> {}
 
 // Implementazione del modello Transito
 class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {

@@ -12,7 +12,7 @@ export interface TrattaAttributes {
   distanza: number;
 }
 // Interfaccia per le proprietà di creazione del modello Tratta
-export interface TrattaCreationAttributes extends Optional<TrattaAttributes, 'id_tratta'> {}
+export interface TrattaCreationAttributes extends Optional<TrattaAttributes, 'id_tratta' | 'distanza'> {}
 
 // Implementazione del modello Tratta
 class Tratta extends Model<TrattaAttributes, TrattaCreationAttributes> implements TrattaAttributes {
