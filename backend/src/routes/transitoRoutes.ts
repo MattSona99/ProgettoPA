@@ -14,7 +14,7 @@ import {
     deleteTransito,
     getAllTransiti
 } from '../controllers/transitoController';
-import { uploadImage } from '../middleware/upload';
+import { uploadImage } from '../utils/upload';
 
 const router = Router();
 
