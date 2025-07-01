@@ -69,12 +69,12 @@ class VarcoDao implements VarcoDAO {
             if (!existingVarco) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
-            const [indexedCount] = await Varco.update(item, {
+            const [rows] = await Varco.update(item, {
                 where: { id_varco: id },
                 returning: true
             });
-            const updatedItem = await Varco.findAll({ where: { id_varco: id } });
-            return [indexedCount, updatedItem];
+            const updated = await Varco.findAll({ where: { id_varco: id } });
+            return [rows, updated];
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del varco con ID ${id}.`);
         }
@@ -89,14 +89,11 @@ class VarcoDao implements VarcoDAO {
      */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
-            const deletedCount = await Varco.destroy({
-                where: { id_varco: id },
-                ...options
-            });
-            if (deletedCount === 0) {
+            const varco = await Varco.findByPk(id);
+            if (!varco) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
-            return deletedCount;
+            return await Varco.destroy({ where: { id_varco: id }, ...options });
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del varco con ID ${id}.`);
         }

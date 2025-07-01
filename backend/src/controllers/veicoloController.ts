@@ -97,7 +97,7 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
     try {
         const deleted = await veicoloRepository.deleteVeicolo(targa);
         if (deleted) {
-            res.status(StatusCodes.OK).json({ message: "Veicolo eliminato con successo" });
+            res.status(StatusCodes.OK).json({ message: "Veicolo eliminato con successo." });
         } else {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
         }

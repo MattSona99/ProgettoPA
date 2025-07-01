@@ -68,10 +68,11 @@ export const deleteVarco = async (req: Request, res: Response, next: NextFunctio
     const { id } = req.params;
     try {
         const deleted = await varcoRepository.deleteVarco(parseInt(id));
-        if (!deleted) {
+        if (deleted) {
+            res.status(StatusCodes.OK).json({ message: "Varco eliminato con successo." });
+        } else {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
         }
-        res.status(StatusCodes.NO_CONTENT).json({ message: "Varco eliminato con successo" });
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del varco."));
     }

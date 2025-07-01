@@ -30,9 +30,13 @@ IsVarco.belongsTo(Varco, { foreignKey: 'id_varco' });
 TipoVeicolo.hasMany(Veicolo, { foreignKey: 'tipo_veicolo' });
 Veicolo.belongsTo(TipoVeicolo, { foreignKey: 'tipo_veicolo' });
 
-// Un Varco può essere presente in molte Tratte
-Varco.hasMany(Tratta, { foreignKey: 'varco' });
-Tratta.belongsTo(Varco, { foreignKey: 'varco' });
+// Un Varco può avere due Tratte (varco_in e varco_out)
+Tratta.belongsTo(Varco, { foreignKey: 'varco_in', as: 'varcoIn' });
+Varco.hasMany(Tratta, { foreignKey: 'varco_in', as: 'tratte_in' });
+
+Tratta.belongsTo(Varco, { foreignKey: 'varco_out', as: 'varcoOut' });
+Varco.hasMany(Tratta, { foreignKey: 'varco_out', as: 'tratte_out' });
+
 
 // Una Tratta può avere molti Transiti
 Tratta.hasMany(Transito, { foreignKey: 'tratta' });
