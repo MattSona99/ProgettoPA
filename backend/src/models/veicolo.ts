@@ -13,11 +13,8 @@ export interface VeicoloAttributes {
   utente: number;
 }
 
-// Interfaccia per le proprietà di creazione del modello Veicolo
-export interface VeicoloCreationAttributes extends Optional<VeicoloAttributes, 'targa'> {}
-
 // Implementazione del modello Veicolo
-class Veicolo extends Model<VeicoloAttributes, VeicoloCreationAttributes> implements VeicoloAttributes {
+class Veicolo extends Model<VeicoloAttributes> implements VeicoloAttributes {
   public targa!: string;
   public tipo_veicolo!: number;
   public utente!: number;

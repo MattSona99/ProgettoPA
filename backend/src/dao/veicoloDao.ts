@@ -1,6 +1,5 @@
-import Veicolo, { VeicoloCreationAttributes } from '../models/veicolo';
+import Veicolo, { VeicoloAttributes } from '../models/veicolo';
 import { DAO } from './daoInterface';
-import { VeicoloAttributes } from '../models/veicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
@@ -49,7 +48,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async create(item: VeicoloCreationAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
+    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
         try {
             return await Veicolo.create(item, options);
         } catch (error) {
