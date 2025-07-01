@@ -2,11 +2,10 @@
 // Utilizza il file .env per le credenziali
 
 import { Sequelize } from "sequelize";
-import dotenv from 'dotenv'
-import path from 'path'
+import dotenv from "dotenv";
 
-// Caricamento delle credenziali dal file .env dal directory superiore
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
+// Caricamento delle variabili d'ambiente dal file .env
+dotenv.config();
 
 class Database {
 	private static instance: Sequelize;
@@ -20,10 +19,13 @@ class Database {
 			const dbName: string = process.env.DB_NAME || '';
 			const dbUser: string = process.env.DB_USER || '';
 			const dbPassword: string = process.env.DB_PASSWORD || '';
-			const dbHost: string = process.env.DB_HOST || '';
-			const dbPort: number = Number(process.env.DB_PORT || '5432');
+			const dbHost: string = process.env.DB_HOST_SVILUPPO || '';
+			const dbPort: number = Number(process.env.DB_PORT || '');
 
-			Database.instance = new Sequelize(dbName, dbUser, dbPassword, {
+			Database.instance = new Sequelize({
+				database: dbName,
+				username: dbUser,
+				password: dbPassword,
 				host: dbHost,
 				port: dbPort,
 				dialect: 'postgres',

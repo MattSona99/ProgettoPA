@@ -1,9 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
 
-dotenv.config();
 // Caricamento della variabile d'ambiente JWT_SECRET
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 if (!JWT_SECRET) {
     throw new Error("La variabile d'ambiente JWT_SECRET non è definita");
 }

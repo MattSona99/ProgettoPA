@@ -1,5 +1,5 @@
 services:
-  postgres_db:
+  postgres:
     image: postgres:latest
     container_name: postgres_db
     environment:
@@ -14,19 +14,19 @@ services:
     networks:
       - backend_network
 
-  backend_service:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend_service
-    env_file:
-      - .env
-    ports:
-      - "${BACKEND_PORT}:3000"
-    depends_on:
-      - postgres_db
-    networks:
-      - backend_network
+  # backend_service:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: backend_service
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "${BACKEND_PORT}:3000"
+  #   depends_on:
+  #     - postgres_db
+  #   networks:
+  #     - backend_network
 
 volumes:
   postgres_data:

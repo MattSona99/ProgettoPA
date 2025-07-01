@@ -9,6 +9,7 @@ import veicoloRoutes from './routes/veicoloRoutes';
 import trattaRoutes from './routes/trattaRoutes';
 import transitoRoutes from './routes/transitoRoutes';
 import authRoutes from './routes/authRoutes';
+
 // Caricamento delle variabili d'ambiente (.env)
 dotenv.config();
 
