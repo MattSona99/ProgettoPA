@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS tratta (
 CREATE TABLE IF NOT EXISTS transito (
     id_transito SERIAL PRIMARY KEY,
     tratta INTEGER REFERENCES tratta(id_tratta),
-    veicolo VARCHAR(8) REFERENCES veicolo(targa),
+    targa VARCHAR(8) REFERENCES veicolo(targa),
     data_in TIMESTAMP NOT NULL,
     data_out TIMESTAMP NOT NULL,
     velocita_media DOUBLE PRECISION NOT NULL,
@@ -142,7 +142,7 @@ INSERT INTO tratta (varco_in, varco_out, distanza) VALUES
     (7, 8, 49.6);
 
 -- Inserimento dati tabella TRANSITO --
-INSERT INTO transito (tratta, veicolo, data_in, data_out, velocita_media, delta_velocita) VALUES
+INSERT INTO transito (tratta, targa, data_in, data_out, velocita_media, delta_velocita) VALUES
 -- Veicolo 1, tratta 1, limite 130
 (1, 'AB123CD', '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
 -- Veicolo 2, tratta 1, limite 130

@@ -8,7 +8,7 @@ const sequelize = Database.getInstance();
 // Interfaccia per le proprietà del modello Transito
 export interface TransitoAttributes {
     id_transito: number;
-    veicolo: string; // Riferimento alla targa del veicolo
+    targa: string; // Riferimento alla targa del veicolo
     tratta: number; // Riferimento all'ID della tratta
     data_in: Date;
     data_out: Date;
@@ -23,7 +23,7 @@ export interface TransitoCreationAttributes extends Optional<TransitoAttributes,
 // Implementazione del modello Transito
 class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {
     public id_transito!: number;
-    public veicolo!: string;
+    public targa!: string;
     public tratta!: number;
     public data_in!: Date;
     public data_out!: Date;
@@ -39,7 +39,7 @@ Transito.init(
       primaryKey: true,
       autoIncrement: true
     },
-    veicolo: {
+    targa: {
       type: DataTypes.STRING,
       allowNull: false,
       references: {
