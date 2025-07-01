@@ -11,6 +11,7 @@ export const validateGetVarcoById = [
 ];
 
 export const validateCreateVarco = [
+    body('id_varco').notEmpty().withMessage('ID varco non deve essere fornito.'),
     body('nome').isString().withMessage('Nome deve essere una stringa.'),
     body('km').isInt({min: 1}).withMessage('Chilometraggio (KM) deve essere un numero intero.'),
     body('smart').isString().withMessage('Smart deve essere una stringa.'),

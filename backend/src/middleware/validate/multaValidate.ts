@@ -9,8 +9,9 @@ import validateRequest from './validateRequestMiddleware';
 const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
 
 export const validateCreateMulta = [
-    body('id_multa').isInt({ min: 1 }).withMessage('ID deve essere un numero intero positivo.'),
-    body('utente').isInt({ min: 1 }).withMessage('Utente ID deve essere un numero intero positivo.'),
+    body('id_multa').notEmpty().withMessage('ID multa non deve essere fornito.'),
+    body('uuid_pagamento').notEmpty().withMessage('UUID pagamento non deve essere fornito.'),
+    body('importo').isInt({ min: 1 }).withMessage('Importo deve essere un numero intero positivo.'),
     body('transito').isInt({ min: 1 }).withMessage('Transito ID deve essere un numero intero positivo.'),
     validateRequest
 ];
