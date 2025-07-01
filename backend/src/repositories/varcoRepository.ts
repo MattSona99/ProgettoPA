@@ -2,6 +2,8 @@ import Varco from '../models/varco';
 import varcoDao from '../dao/varcoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import utenteDao from '../dao/utenteDao';
+import IsVarco from '../models/isVarco';
 
 /**
  * Classe VarcoRepository che gestisce le operazioni relative ai varchi.
@@ -27,13 +29,13 @@ class VarcoRepository {
      * @param id - L'ID del varco da recuperare.
      * @returns - Una promessa che risolve con il varco trovato.
      */
-    public async findVarco(id: number): Promise<Varco | null> {
+    public async getVarcoById(id: number): Promise<Varco | null> {
         try {
             const varco = await varcoDao.getById(id);
             if (!varco) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
-            return varco;
+            return await this.enrichVarco(varco);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${id}.`);
         }
@@ -96,6 +98,28 @@ class VarcoRepository {
         } catch (error) {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del varco con ID ${id}.`);
+        }
+    }
+
+    // HELPER PRIVATI
+
+    /**
+     * Funzione di stampa per le informazioni aggiuntive sui veicoli
+     */
+    private async enrichVarco(varco: Varco): Promise<any> {
+        try {
+            const isVarco = await IsVarco.findOne({ where: { id_varco : varco.id_varco } });
+            if(isVarco) {
+                const utente = await utenteDao.getById(isVarco.id_utente);
+                return {
+                    ...varco.dataValues,
+                    utente: utente ? utente.dataValues : null
+                }
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${varco.id_varco} non trovato.`);
+            }
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
         }
     }
 }

@@ -43,8 +43,8 @@ Tratta.hasMany(Transito, { foreignKey: 'tratta' });
 Transito.belongsTo(Tratta, { foreignKey: 'tratta' });
 
 // Un Veicolo può avere molti Transiti
-Veicolo.hasMany(Transito, { foreignKey: 'veicolo' });
-Transito.belongsTo(Veicolo, { foreignKey: 'veicolo' });
+Veicolo.hasMany(Transito, { foreignKey: 'targa' });
+Transito.belongsTo(Veicolo, { foreignKey: 'targa' });
 
 // Un Transito può avere una sola Multa
 Transito.hasOne(Multa, { foreignKey: 'transito' });

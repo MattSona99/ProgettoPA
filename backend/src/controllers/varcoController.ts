@@ -21,7 +21,7 @@ export const getAllVarco = async (req: Request, res: Response, next: NextFunctio
 export const getVarcoById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-        const varco = await varcoRepository.findVarco(parseInt(id));
+        const varco = await varcoRepository.getVarcoById(parseInt(id));
         if (!varco) {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
         }

@@ -55,7 +55,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
                 return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente."));
             }
             // Recupera il varco associato all'utente
-            const varco = await varcoRepository.findVarco(isVarcoAssociato.id_varco);
+            const varco = await varcoRepository.getVarcoById(isVarcoAssociato.id_varco);
             if (!varco) {
                 return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
             }

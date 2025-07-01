@@ -14,7 +14,7 @@ import {
     deleteTransito,
     getAllTransiti
 } from '../controllers/transitoController';
-import { uploadImage } from '../middleware/upload';
+import { uploadImage } from '../utils/upload';
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.use(authMiddleware);
 // Rotte per la gestione del transito
 router.get('/transito', authorize(['operatore']), getAllTransiti);
 router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
-router.post('/transito', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
+router.post('/transito1', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
 router.post('/transito', authorize(['varco']), uploadImage.single('image'), createTransitoByVarco);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
