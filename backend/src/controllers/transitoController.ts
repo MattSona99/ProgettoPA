@@ -5,6 +5,7 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
 import varcoDao from '../dao/varcoDao';
 import varcoRepository from '../repositories/varcoRepository';
+import Multa from '../models/multa';
 
 /**
  * Funzione per ottenere tutti i transiti.
@@ -127,6 +128,10 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
 export const deleteTransito = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
+        const existingMulta = await Multa.findOne({ where: { transito: id } });
+        if (existingMulta) {
+            next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata."));
+        }
         const deleted = await transitoRepository.deleteTransito(parseInt(id));
         if (deleted) {
             res.status(StatusCodes.OK).json({ message: "Transito eliminato con successo." });

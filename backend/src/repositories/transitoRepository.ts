@@ -231,10 +231,6 @@ class TransitoRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const existingMulta = await Multa.findOne({ where: { transito: id } });
-            if (existingMulta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare un transito con una multa associata.");
-            }
             const deleted = await transitoDao.delete(id, { transaction });
             if (!deleted) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
