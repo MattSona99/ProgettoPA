@@ -63,7 +63,7 @@ class TransitoDao implements TransitoDAO {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
-    public async update(id: number, transito: Transito, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
+    public async update(id: number, transito: TransitoAttributes, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
         try {
             const existingTransito = await Transito.findByPk(id);
             if (!existingTransito) {
