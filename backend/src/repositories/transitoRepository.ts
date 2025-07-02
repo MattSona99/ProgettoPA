@@ -13,6 +13,7 @@ import varcoDao from '../dao/varcoDao';
 import Veicolo from '../models/veicolo';
 import Tratta from '../models/tratta';
 import TipoVeicolo from '../models/tipoVeicolo';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -56,7 +57,11 @@ class TransitoRepository {
      * @param ruolo - Il ruolo dell'utente.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async createTransito(transito: TransitoCreationAttributes, ruolo: Varco | null = null): Promise<Transito> {
+    public async createTransito(transito: TransitoCreationAttributes, ruolo: Varco | null = null): Promise<{ transito: Transito | null, multa: Multa | null }> {
+        const response = {
+            transito: null as Transito | null,
+            multa: null as Multa | null
+        };
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
@@ -103,30 +108,35 @@ class TransitoRepository {
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+                response['transito'] = newTransito;
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                     const multa: MultaCreationAttributes = this.createMulta(newTransito);
-                    await multaDao.create(multa, { transaction });
+                    const newMulta = await multaDao.create(multa, { transaction });
+                    response['multa'] = newMulta;
                 }
 
                 await transaction.commit();
-                return newTransito;
+                return response;
 
             } else if (ruolo.smart) { // Se un varco è smart, si crea il transito
                 const newTransito = await transitoDao.create(transitoCompleto, { transaction });
                 if (!newTransito) {
                     throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
                 }
+                response['transito'] = newTransito;
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) {
                     const multa = this.createMulta(newTransito);
-                    await multaDao.create(multa, { transaction });
+                    const newMulta = await multaDao.create(multa, { transaction });
+                    response['multa'] = newMulta;
                 }
+                
 
                 await transaction.commit();
-                return newTransito;
+                return response;
             } else { // Se il ruolo è di un varco non smart, non si può creare un transito
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco non è di tipo smart, quindi non può creare transiti.`);
             }
@@ -247,12 +257,27 @@ class TransitoRepository {
      */
     private createMulta(transito: Transito): MultaCreationAttributes {
         // Calcolo dell'importo della multa (esempio)
-        const importo = transito.delta_velocita * 10;
+        let importo = 0;
+        const delta = transito.delta_velocita;
+        if (delta < 10) {
+            importo = 100;
+        }
+        else if (delta < 20) {
+            importo = 200;
+        }
+        else if (delta < 60) {
+            importo = 600;
+        }
+        else {
+            importo = 1000;
+        }
+
 
         // Restituisci solo i campi richiesti da MultaCreationAttributes (senza id_multa e uuid_pagamento)
         return {
             transito: transito.id_transito,
-            importo: importo
+            importo: importo,
+            uuid_pagamento: uuidv4()
         };
     }
 

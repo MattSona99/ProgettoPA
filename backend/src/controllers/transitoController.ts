@@ -44,11 +44,15 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
 
     try {
         if (ruolo === 'operatore') { // Operatore forza manualmente l'inserimento del transito
-            const createdTransito = await transitoRepository.createTransito(newTransito);
+            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
             if (!createdTransito) {
                 next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
             }
-            res.status(StatusCodes.CREATED).json(createdTransito);
+            if (createdMulta) {
+                res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
+            } else {
+                res.status(StatusCodes.CREATED).json(createdTransito);
+            }
         } else if (ruolo === 'varco') { // Il varco può essere di 2 tipologie: smart o non smart
             // Verifica se l'utente è associato a un varco
             const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
@@ -61,11 +65,16 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
                 return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
             }
             // Creazione del transito a seconda del tipo di varco
-            const createdTransito = await transitoRepository.createTransito(newTransito, varco);
+            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, varco);
             if (!createdTransito) {
                 next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
             }
-            res.status(StatusCodes.CREATED).json(createdTransito);
+            if (createdMulta) {
+                res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
+            }
+            else {
+                res.status(StatusCodes.CREATED).json(createdTransito);
+            }
         } else {
             return next(HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti."));
         }

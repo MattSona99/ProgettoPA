@@ -9,6 +9,7 @@ import veicoloRoutes from './routes/veicoloRoutes';
 import trattaRoutes from './routes/trattaRoutes';
 import transitoRoutes from './routes/transitoRoutes';
 import authRoutes from './routes/authRoutes';
+import multaRoutes from './routes/multaRoutes';
 
 // Caricamento delle variabili d'ambiente (.env)
 dotenv.config();
@@ -24,6 +25,7 @@ app.use('/', tipoVeicoloRoutes);
 app.use('/', veicoloRoutes)
 app.use('/', trattaRoutes);
 app.use('/', transitoRoutes );
+app.use('/', multaRoutes);
 // Middleware per la gestione di rotte non esistenti
 app.use((req, res) => {
     // DA CAMBIARE

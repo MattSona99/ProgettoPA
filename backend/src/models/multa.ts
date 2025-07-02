@@ -33,6 +33,7 @@ Multa.init(
     },
     uuid_pagamento: {
       type: DataTypes.UUID,
+      allowNull: false
     },
     transito: {
       type: DataTypes.INTEGER,

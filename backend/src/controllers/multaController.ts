@@ -3,6 +3,7 @@ import multaRepository from '../repositories/multaRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Utente from '../models/utente';
+import multaDao from '../dao/multaDao';
 
 /**
  * Funzione per creare una multa
@@ -13,6 +14,18 @@ export const createMulta = async (req: Request, res: Response, next: NextFunctio
         res.status(StatusCodes.CREATED).json(createdMulta);
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della multa."));
+    }
+}
+
+/**
+ * Funzione per ottenere tutte le multe
+ */
+export const getAllMulte = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const multe = await multaDao.getAll();
+        res.status(StatusCodes.OK).json(multe);
+    } catch (error) {
+        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe."));
     }
 }
 

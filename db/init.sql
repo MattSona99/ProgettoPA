@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS transito (
 -- Creazione tabella MULTA --
 CREATE TABLE IF NOT EXISTS multa (
     id_multa SERIAL PRIMARY KEY,
-    uuid_pagamento UUID DEFAULT gen_random_uuid(),
+    uuid_pagamento UUID NOT NULL DEFAULT gen_random_uuid(),
     transito INTEGER REFERENCES transito(id_transito),
     importo DOUBLE PRECISION NOT NULL
 );

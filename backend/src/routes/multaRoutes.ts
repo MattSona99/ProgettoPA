@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { 
+    getAllMulte,
     getMulteByTargheEPeriodo,
     createMulta,
     //downloadBollettinoPDF
@@ -17,6 +18,7 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle multe
+router.get('/multe', authorize(['operatore']), getAllMulte);
 router.get('/multe/dettagli', authorize(['operatore', 'automobilista']), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
 router.post('/multe', authorize(['operatore']), validateCreateMulta, createMulta);
 //router.get('/multe/download/:id', authorize(['operatore', 'automobilista']), validateDownloadBollettinoPDF, downloadBollettinoPDF);
