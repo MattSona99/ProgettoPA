@@ -41,7 +41,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     const newTransito = req.body;
     const ruolo = (req as any).user.ruolo;  // Ruolo dell'utente passato nell'header
     const id_utente = (req as any).user.id; // ID dell'utente passato nell'header
-    
+
     try {
         if (ruolo === 'operatore') { // Operatore forza manualmente l'inserimento del transito
             const createdTransito = await transitoRepository.createTransito(newTransito);
@@ -119,10 +119,11 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
     const { id } = req.params;
     try {
         const deleted = await transitoRepository.deleteTransito(parseInt(id));
-        if (!deleted) {
+        if (deleted) {
+            res.status(StatusCodes.OK).json({ message: "Transito eliminato con successo." });
+        } else {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
         }
-        res.status(StatusCodes.NO_CONTENT).json({ message: "Transito eliminato con successo." });
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del transito."));
     }

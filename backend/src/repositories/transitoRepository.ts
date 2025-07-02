@@ -4,7 +4,7 @@ import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
-import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
+import Multa, { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 import Tesseract from 'tesseract.js';
 import trattaDao from '../dao/trattaDao';
 import veicoloDao from '../dao/veicoloDao';
@@ -221,6 +221,10 @@ class TransitoRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingMulta = await Multa.findOne({ where: { transito: id } });
+            if (existingMulta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare un transito con una multa associata.");
+            }
             const deleted = await transitoDao.delete(id, { transaction });
             if (!deleted) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
