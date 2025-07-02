@@ -9,6 +9,7 @@ import Tesseract from 'tesseract.js';
 import trattaDao from '../dao/trattaDao';
 import veicoloDao from '../dao/veicoloDao';
 import tipoVeicoloDao from '../dao/tipoVeicoloDao';
+import varcoDao from '../dao/varcoDao';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -74,8 +75,22 @@ class TransitoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
             }
 
+            const varcoIn = await varcoDao.getById(existingTratta.varco_in);
+            const varcoOut = await varcoDao.getById(existingTratta.varco_out);
+
+            if (!varcoIn || !varcoOut) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Uno dei varchi della tratta con ID ${transito.tratta} non è stato trovato.`);
+            }
+            console.log(varcoIn.smart, varcoOut.smart)
+
+            let limiteVelocita = tipoVeicolo.limite_velocita;
+            if (varcoIn.smart && varcoOut.smart) {
+                limiteVelocita -= 20;
+            }
+            console.log(limiteVelocita);
+
             // Calcolo della velocità media e del delta
-            const transitoCompleto = this.calcoloVelocita(transito, tipoVeicolo.limite_velocita, existingTratta.distanza);
+            const transitoCompleto = this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
 
             // Se il ruolo è 'operatore', si forza l'inserimento del transito
             if (ruolo === null) {
@@ -203,8 +218,8 @@ class TransitoRepository {
      */
     private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media e della velocita media con la velocita limitevelocita: number, velocitaLimite: number): number {
         const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getMinutes()) / 60;
-        const velocitaMedia = distanza / (tempoPercorrenza);
-        const deltaVelocita = velocitaMedia - limiteVelocita;
+        const velocitaMedia = parseFloat((distanza / tempoPercorrenza).toFixed(5));
+        const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
     }
 }
