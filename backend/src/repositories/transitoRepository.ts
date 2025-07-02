@@ -181,7 +181,7 @@ class TransitoRepository {
 
             // Controllo se la data di ingresso non sia vuota
             if (!transito.data_in) {
-                transito.data_in= existingTransito.data_in;
+                transito.data_in = existingTransito.data_in;
             }
 
             // Controllo se la data di uscita non sia vuota
@@ -278,7 +278,7 @@ class TransitoRepository {
      * @returns - L'oggetto transito con la velocita media e la delta velocita.
      */
     private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media 
-        const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getMinutes()) / 60;
+        const tempoPercorrenza = ((transito.data_out.getTime() - transito.data_in.getTime()) / 1000) / 3600;
         const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
         const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
