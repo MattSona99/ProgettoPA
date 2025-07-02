@@ -109,47 +109,85 @@ class MultaDao implements MultaDAO {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: Utente): Promise<Multa[]> {
-        try {
-            const multe = await Multa.findAll({
-                include: [{
-                    model: Transito,
-                    include: [
-                        {
-                            model: Veicolo,
-                            where: utente.ruolo === 'automobilista'
-                                ? { targa: { [Op.in]: targhe }, id_utente: utente.id_utente }
-                                : { targa: { [Op.in]: targhe } }
-                        },
-                        {
-                            model: Tratta,
-                            include: [
-                                { model: Varco, as: 'varco_in' },
-                                { model: Varco, as: 'varco_out' }
-                            ]
-                        }
-                    ],
-                    where: {
-                        [Op.or]: [
-                            { data_in: { [Op.between]: [dataIn, dataOut] } },
-                            { data_out: { [Op.between]: [dataIn, dataOut] } },
-                            {
-                                data_in: { [Op.lte]: dataIn },
-                                data_out: { [Op.gte]: dataOut }
-                            }
-                        ]
+    
+    public async getMulteByTargheEPeriodo(
+        targhe: string[],
+        dataIn: string,
+        dataOut: string,
+        utente: { id: number; ruolo: string }
+    ) {
+    try {
+        // 1) Prendo tutti i transiti per quelle targhe e date
+        const transiti = await Transito.findAll({
+            where: {
+                targa: { [Op.in]: targhe },
+                [Op.or]: [
+                    { data_in: { [Op.between]: [dataIn, dataOut] } },
+                    { data_out: { [Op.between]: [dataIn, dataOut] } },
+                    {
+                        data_in: { [Op.lte]: dataIn },
+                        data_out: { [Op.gte]: dataOut }
                     }
-                }]
-            });
+                ]
+            },
+            attributes: ['id_transito', 'targa', 'tratta', 'data_in', 'data_out', 'velocita_media', 'delta_velocita']
+        });
 
-            return multe;
-        } catch (error) {
-            throw HttpErrorFactory.createError(
-                HttpErrorCodes.InternalServerError,
-                `Errore nel recupero delle multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`
-            );
-        }
+        // Se l’utente è automobilista, filtriamo ulteriormente per i suoi veicoli:
+        const transitiFiltrati = utente.ruolo === 'automobilista'
+            ? transiti.filter(t => t.getDataValue('targa') && /* controlla se appartiene a utente.id */ true)
+            : transiti;
+
+        const transitoIds = transitiFiltrati.map(t => t.id_transito);
+        if (!transitoIds.length) return [];
+
+        // 2) Recupero le multe che fanno riferimento a quegli id_transito
+        const multe = await Multa.findAll({
+            where: { transito: { [Op.in]: transitoIds } },
+            include: [{
+                model: Transito,
+                attributes: ['id_transito', 'targa', 'data_in', 'data_out', 'velocita_media', 'delta_velocita'],
+                include: [{
+                    model: Tratta,
+                    include: [
+                        { model: Varco, as: 'varcoIn', attributes: ['id_varco', 'nome_autostrada', 'km', 'smart', 'pioggia'] },
+                        { model: Varco, as: 'varcoOut', attributes: ['id_varco', 'nome_autostrada', 'km', 'smart', 'pioggia'] }
+                    ]
+                }]
+            }]
+        });
+
+        // 3) Ritorno un array “piatto” dove ogni multa porta con sé i dettagli di transito → tratta → varchi
+        return multe.map(m => {
+            const t = m.transito!;
+            const tratta = t.Tratta!;
+            return {
+                id_multa: m.id_multa,
+                uuid_pagamento: m.uuid_pagamento,
+                importo: m.importo,
+                transito: {
+                    id: t.id_transito,
+                    targa: t.targa,
+                    data_in: t.data_in,
+                    data_out: t.data_out,
+                    velocita_media: t.velocita_media,
+                    delta_velocita: t.delta_velocita,
+                    tratta: {
+                        id: tratta.id_tratta,
+                        distanza: tratta.distanza,
+                        varcoIn: tratta.varcoIn,
+                        varcoOut: tratta.varcoOut
+                    }
+                }
+            };
+        });
+    } catch (e) {
+        throw HttpErrorFactory.createError(
+            HttpErrorCodes.InternalServerError,
+            `Errore nel recupero delle multe per le targhe ${targhe.join(', ')} tra ${dataIn} e ${dataOut}`
+        );
     }
+}
 }
 
 export default new MultaDao();

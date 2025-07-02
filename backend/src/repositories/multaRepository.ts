@@ -41,6 +41,7 @@ class multaRepository {
      */
     public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: Utente): Promise<any[]> {
         try {
+            console.log(`Recuperando le multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
             return await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
         } catch (error) {
             throw HttpErrorFactory.createError(

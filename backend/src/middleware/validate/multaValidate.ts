@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
@@ -15,9 +15,18 @@ export const validateCreateMulta = [
 ];
 
 export const validateGetMulteByTargheEPeriodo = [
-    param('targa').isArray({ min: 1 }).withMessage('Targhe deve essere un array con almeno un elemento.'),
-    param('targa.*').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
-    param('dataIn').isDate().withMessage('Data di inizio deve essere una data valida.'),
-    param('dataOut').isDate().withMessage('Data di fine deve essere una data valida.'),
+    query('targa')
+    .exists().withMessage('Serve almeno una targa.')
+    .bail()
+    .customSanitizer((val) => {
+      // Se arriva come stringa, lo avvolgo in un array
+      if (typeof val === 'string') return [val];
+      return val;
+    })
+    // 2) Solo ora lo tratto come array
+    .isArray({ min: 1 }).withMessage('Targhe deve essere un array con almeno un elemento.'),
+    query('targa.*').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
+    query('dataIn').isISO8601().withMessage('Data di inizio deve essere una data valida (YYYY-MM-DD).'),
+    query('dataOut').isISO8601().withMessage('Data di fine deve essere una data valida (YYYY-MM-DD).'),
     validateRequest
 ];

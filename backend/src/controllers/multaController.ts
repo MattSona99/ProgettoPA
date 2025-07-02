@@ -33,11 +33,13 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
  * Funzione per ottenere le multe per le targhe e il periodo specificato.
  */
 export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targhe, dataIn, dataOut } = req.query;
+    const { targa, dataIn, dataOut } = req.query;
     const utente = (req as any).user;
+    const arrayTarga = Array.isArray(targa) ? targa : [targa];
+    console.log(arrayTarga, dataIn, dataOut, utente);
     try {
         const multe = await multaRepository.getMulteByTargheEPeriodo(
-            targhe as string[],
+            arrayTarga as string[],
             dataIn as string,
             dataOut as string,
             utente as Utente
