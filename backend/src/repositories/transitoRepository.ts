@@ -9,6 +9,7 @@ import Tesseract from 'tesseract.js';
 import trattaDao from '../dao/trattaDao';
 import veicoloDao from '../dao/veicoloDao';
 import tipoVeicoloDao from '../dao/tipoVeicoloDao';
+import varcoDao from '../dao/varcoDao';
 import Veicolo from '../models/veicolo';
 import Tratta from '../models/tratta';
 import TipoVeicolo from '../models/tipoVeicolo';
@@ -77,8 +78,24 @@ class TransitoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
             }
 
+            // Controllo se i varchi esistono
+            const varcoIn = await varcoDao.getById(existingTratta.varco_in);
+            const varcoOut = await varcoDao.getById(existingTratta.varco_out);
+
+            if (!varcoIn || !varcoOut) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Uno dei varchi della tratta con ID ${transito.tratta} non è stato trovato.`);
+            }
+            console.log(varcoIn.pioggia, varcoOut.pioggia)
+
+            // Se entrambi i varchi hanno pioggia, la velocità consentita viene ridotta di 20km/h
+            let limiteVelocita = tipoVeicolo.limite_velocita;
+            if (varcoIn.pioggia && varcoOut.pioggia) {
+                limiteVelocita -= 20;
+            }
+            console.log(limiteVelocita);
+
             // Calcolo della velocità media e del delta
-            const transitoCompleto = this.calcoloVelocita(transito, tipoVeicolo.limite_velocita, existingTratta.distanza);
+            const transitoCompleto = this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
 
             // Se il ruolo è 'operatore', si forza l'inserimento del transito
             if (ruolo === null) {
@@ -260,12 +277,10 @@ class TransitoRepository {
      * @param distanza - La distanza della tratta.
      * @returns - L'oggetto transito con la velocita media e la delta velocita.
      */
-    private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media e della velocita media con la velocita limitevelocita: number, velocitaLimite: number): number {
-        console.log("-------------------------------CALCOLO VELOCITA----------------------------");
+    private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media 
         const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getMinutes()) / 60;
-        const velocitaMedia = distanza / (tempoPercorrenza);
-        const deltaVelocita = velocitaMedia - limiteVelocita;
-        console.log("-------------------------------VELOCITA CALCOLATA CON SUCCESSO----------------------------");
+        const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
+        const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
     }
 }
