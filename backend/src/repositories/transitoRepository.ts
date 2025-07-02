@@ -75,16 +75,18 @@ class TransitoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
             }
 
+            // Controllo se i varchi esistono
             const varcoIn = await varcoDao.getById(existingTratta.varco_in);
             const varcoOut = await varcoDao.getById(existingTratta.varco_out);
 
             if (!varcoIn || !varcoOut) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Uno dei varchi della tratta con ID ${transito.tratta} non è stato trovato.`);
             }
-            console.log(varcoIn.smart, varcoOut.smart)
+            console.log(varcoIn.pioggia, varcoOut.pioggia)
 
+            // Se entrambi i varchi hanno pioggia, la velocità consentita viene ridotta di 20km/h
             let limiteVelocita = tipoVeicolo.limite_velocita;
-            if (varcoIn.smart && varcoOut.smart) {
+            if (varcoIn.pioggia && varcoOut.pioggia) {
                 limiteVelocita -= 20;
             }
             console.log(limiteVelocita);
