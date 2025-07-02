@@ -11,7 +11,7 @@ import varcoRepository from '../repositories/varcoRepository';
  */
 export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const transiti = await transitoRepository.findAllTransiti();
+        const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti."));
@@ -24,7 +24,7 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
 export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-        const transito = await transitoRepository.findTransito(parseInt(id));
+        const transito = await transitoRepository.getTransitoById(parseInt(id));
         if (!transito) {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."))
         }
@@ -121,7 +121,7 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         if (!deleted) {
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
         }
-        res.status(StatusCodes.NO_CONTENT).json({ message: "Transito eliminato con successo" });
+        res.status(StatusCodes.NO_CONTENT).json({ message: "Transito eliminato con successo." });
     } catch (error) {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del transito."));
     }

@@ -20,7 +20,7 @@ class TransitoRepository {
      * 
      * @returns - Una promessa che risolve con un array di transiti.
      */
-    public async findAllTransiti(): Promise<Transito[]> {
+    public async getAllTransiti(): Promise<Transito[]> {
         try {
             return await transitoDao.getAll();
         } catch (error) {
@@ -33,7 +33,7 @@ class TransitoRepository {
      * @param id - L'ID del transito da recuperare.
      * @returns - Una promessa che risolve con il transito trovato.
      */
-    public async findTransito(id: number): Promise<Transito | null> {
+    public async getTransitoById(id: number): Promise<Transito | null> {
         try {
             const transito = await transitoDao.getById(id);
             if (!transito) {
@@ -100,7 +100,7 @@ class TransitoRepository {
                 }
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+                if (newTransito.delta_velocita > 0) {
                     const multa = this.createMulta(newTransito);
                     await multaDao.create(multa, { transaction });
                 }
@@ -157,16 +157,6 @@ class TransitoRepository {
         }
     }
 
-    public async processImage(file: any): Promise<string | null> {
-        try {
-            const { data: { text } } = await Tesseract.recognize(file, 'ita')
-            const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
-            const match = text.match(regex);
-            return match ? match[0] : null;
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel processamento dell'immagine della targa.");
-        }
-    }
     // HELPER PRIVATI
 
     /**
@@ -186,6 +176,31 @@ class TransitoRepository {
         };
     }
 
+    /**
+     * Funzione per processare l'immagine della targa.
+     * 
+     * @param file - Il file dell'immagine da processare
+     * @returns - Una promessa che risolve con la targa o null.
+     */
+    public async processImage(file: any): Promise<string | null> {
+        try {
+            const { data: { text } } = await Tesseract.recognize(file, 'ita')
+            const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
+            const match = text.match(regex);
+            return match ? match[0] : null;
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel processamento dell'immagine della targa.");
+        }
+    }
+
+    /**
+     * Funzione per calcolare la velocita media e la velocita media con la velocita limite.
+     * 
+     * @param transito - Il transito da cui calcolare la velocita media.
+     * @param limiteVelocita - La velocita limite.
+     * @param distanza - La distanza della tratta.
+     * @returns - L'oggetto transito con la velocita media e la delta velocita.
+     */
     private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media e della velocita media con la velocita limitevelocita: number, velocitaLimite: number): number {
         const tempoPercorrenza = (transito.data_out.getMinutes() - transito.data_in.getMinutes()) / 60;
         const velocitaMedia = distanza / (tempoPercorrenza);
