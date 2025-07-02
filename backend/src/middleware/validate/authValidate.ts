@@ -7,7 +7,7 @@ import validateRequest from "./validateRequestMiddleware";
 
 export const validateLogin = [
     body('email')
-        .notEmpty().withMessage('Email obbligatoria')
-        .isEmail().withMessage('Email non valida'),
+        .notEmpty().withMessage('Email è obbligatoria.')
+        .isEmail().withMessage('Email non è valida.'),
     validateRequest
 ]
