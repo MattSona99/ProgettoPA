@@ -193,9 +193,48 @@ L’uso combinato di questi pattern ha permesso di realizzare un’architettura 
 
 ### [📈 Diagrammi delle sequenze](#diagramma-delle-sequenze)
 
+I diagrammi di sequenza illustrano lo scambio di messaggi tra oggetti che interagiscono tra loro, fornendo una rappresentazione chiara e dettagliata del flusso di comunicazione. Sono particolarmente efficaci per comprendere il funzionamento delle interazioni in sistemi basati su API, dove evidenziano le richieste e risposte tra le diverse entità coinvolte.
+
+Dato che la maggior parte dei diagrammi risultavano con la stessa struttura, mostreremo di seguito soltanto alcuni di essi, quelli di maggior interesse e particolarità.
+
+- **POST /login**
+La rotta descritta costituisce il punto centrale del meccanismo di autenticazione dell'intero sistema. In fase di login, l'utente invia una richiesta con le proprie credenziali al middleware di autenticazione (`authMiddleware`), che accede all'ambiente di esecuzione (`.env`) per recuperare la chiave segreta utilizzata nella firma dei token JWT.
+Una volta ottenuta la chiave, il middleware genera un token JWT firmato, contenente le informazioni di autenticazione dell’utente, e lo restituisce come risposta alla richiesta iniziale.
+Successivamente, per accedere alle rotte protette, l’utente include il token nelle richieste. Il middleware intercetta la richiesta e utilizza nuovamente la chiave segreta per verificare l’autenticità del token. Se il token è valido, la libreria JWT restituisce il payload decodificato, consentendo l’accesso alla risorsa richiesta. In caso contrario, il token viene considerato non valido e il middleware genera un errore, restituendo un messaggio di accesso negato.
+
+Il token JWT, una volta ottenuto, sarà dunque utilizzato dall’utente per autenticarsi nelle richieste successive verso le API che richiedono autorizzazione.
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as Validate
+  participant CN as Controller
+  participant D as DAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /login
+  A ->> V: validateLogin
+  V -->> A: 
+  A ->> CN: LOGIN
+  CN ->> D: utenteDao.getEmail
+  D ->> S: Utente.findOne
+  S -->> D: 
+  D -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A --) C:
+```
+
 ## [🌐 Rotte API](#rotte-api)
 
 Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'utente.
+All'interno del sistema sono presenti delle rotte aggiuntive per permettere di visualizzare, aggiungere, aggiornare o cancellare ulteriori informazioni, che riguardano `tipoVeicolo`, per scopi di completezza.
 
 ### Utente
 - `POST /login` – Login utente
