@@ -410,7 +410,7 @@ sequenceDiagram
   participant R as TrattaRepository
   participant TD as TrattaDAO
   participant S as Sequelize
-  participant F as Factoryy
+  participant F as Factory
 
   C ->> A: DELETE /tratta/:id
   A ->> M: Token e ruolo verificati
@@ -437,10 +437,105 @@ sequenceDiagram
 
 - **GET /transito**
 ```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant TD as TransitoDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicolODAO
+  participant TTD as TrattaDAO
+  participant VRD as VarcoDAO
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
 
+  C ->> A: GET /transito
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: validateGetTransitoById
+  TV -->> A: 
+  A ->> CN: getTransitoById
+  CN ->> R: transitoRepository.getTransitoById
+  R ->> TD: transitoDao.getById
+  TD ->> S: Transito.findByPk
+  S -->> TD: 
+  TD -->> R: 
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD: 
+  TTD -->> R: 
+  R ->> S: Veicolo.findOne
+  S ->> R: 
+  R ->> S: TipoVeicolo.findOne
+  S -->> R: 
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
 ```
 
-- **POST /transito**
+- **POST /transito/manuale**
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant TD as TransitoDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicolODAO
+  participant TTD as TrattaDAO
+  participant VRD as VarcoDAO
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /transito/manuale
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: validateCreateTransito
+  TV -->> A: 
+  A ->> CN: createTransito
+  CN ->> R: transitoRepository.getTransitoById
+  R ->> TD: veicoloDao.createTransito
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD:
+  VD -->> R:
+  R ->> TVD: tipoVeicoloDao.getById
+  TVD ->> S: tipoVeicolo.findByPk
+  S -->> TVD:
+  TVD -->> R:
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD:
+  TTD -->> R:
+  R ->> TD: transitoDao.create
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
+```
+
+- **POST /transito/smart**
 ```mermaid
 
 ```
