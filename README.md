@@ -1,9 +1,9 @@
-#📌 Progetto Programmazione Avanzata 2024-2025
+# 📌 Progetto Programmazione Avanzata 2024-2025
 <div align="center">
   <img src="https://github.com/MattSona99/ProgettoPA/blob/main/images/logo.png" />
 </div>
 
-#📚 Indice
+# 📚 Indice
 - [📌 Progetto Programmazione Avanzata A.A. 2024-2025](#progetto-programmazione-avanzata-aa-2425)
 - [📚 Indice](#indice)
   - [🎯 Obiettivo](#obiettivo)
@@ -20,15 +20,15 @@
 
 ---
 
-##🎯 Obiettivo
+## 🎯 Obiettivo
 
 Il progetto consiste nella realizzazione di un sistema backend per la gestione dei transiti di veicoli tra varchi autostradali, con calcolo automatico di eventuali **multe** in base alla **velocità media** rilevata. Il sistema supporta **OCR (Tesseract.js)** per l'identificazione automatica delle targhe, gestione utenti con **JWT**, **CRUD completo per varchi, tratte, veicoli e transiti**, generazione di **bollettini PDF** e ruoli differenziati (Operatore, Varco, Automobilista).
 
 ---
 
-##🛠️ Progettazione
+## 🛠️ Progettazione
 
-###🏗️ Architettura
+### 🏗️ Architettura
 
 - **Node.js** con **Express** per la gestione delle API REST
 - **Sequelize** come ORM per l'interazione con un database **PostgreSQL**
@@ -85,7 +85,7 @@ ProgettoPA
 ```
 
 
-###🧑‍💼 Diagramma dei casi d'uso
+### 🧑‍💼 Diagramma dei casi d'uso
 Nel sistema sviluppato, ci sono 3 tipologie di utenti: Automobilista, Operatore e Varco.
 Ognuno può interagire con il sistema per svolgere determinate operazioni:
 - **Automobilista**: può autenticarsi, vedere le proprie multe (anche in un determinato periodo) e scaricare un bollettino di pagamento.
@@ -94,13 +94,13 @@ Ognuno può interagire con il sistema per svolgere determinate operazioni:
 
 ![Diagramma dei casi d'uso](https://i.imgur.com/IrMuGUF.png)
 
-###🗂️ Diagramma E-R
+### 🗂️ Diagramma E-R
 
 Il sistema utilizza **PostgreSQL** come RDBMS, il quale è particolarmente indicato per applicazioni back-end come quella sviluppata in questo progetto, dove l'autenticazione sicura dei dati e l'efficienza nelle operazioni di lettura e scrittura sono fondamentali. Grazie alle sue prestazioni ottimizzate, PostgreSQL rappresenta una soluzione ideale per garantire la robustezza e la velocità del sistema.
 
-###📈 Diagrammi delle sequenze
+### 📈 Diagrammi delle sequenze
 
-##🌐 Rotte API
+## 🌐 Rotte API
 
 Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'utente.
 
@@ -150,13 +150,13 @@ Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'
 
 ---
 
-##⚙️ Setup e Installazione
+## ⚙️ Setup e Installazione
 
-##🧰 Strumenti utilizzati
+## 🧰 Strumenti utilizzati
 
-##💡 Scelte implementative
+## 💡 Scelte implementative
 
-##👥 Autori
+## 👥 Autori
 |Nome | GitHub |
 |-----------|--------|
 |`Sonaglioni Matteo` | [Clicca qui!](https://github.com/MattSona99) |
