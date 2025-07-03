@@ -12,7 +12,7 @@
     - [🧑‍💼 Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
     - [🗂️ Diagramma E-R](#diagramma-e-r)
     - [🧩 Pattern Utilizzati](#pattern-utilizzati)
-    - [📈 Diagramma delle sequenze](#diagramma-delle-sequenze)
+    - [📈 Diagrammi delle sequenze](#diagramma-delle-sequenze)
   - [🌐 Rotte API](#rotte-api)
   - [⚙️ Setup & Installazione](#setup-e-installazione)
   - [🧰 Strumenti utilizzati](#strumenti-utilizzati)
@@ -21,15 +21,15 @@
 
 ---
 
-## 🎯 Obiettivo
+## [🎯 Obiettivo](#obiettivo)
 
 Il progetto consiste nella realizzazione di un sistema backend per la gestione dei transiti di veicoli tra varchi autostradali, con calcolo automatico di eventuali **multe** in base alla **velocità media** rilevata. Il sistema supporta **OCR (Tesseract.js)** per l'identificazione automatica delle targhe, gestione utenti con **JWT**, **CRUD completo per varchi, tratte, veicoli e transiti**, generazione di **bollettini PDF** e ruoli differenziati (Operatore, Varco, Automobilista).
 
 ---
 
-## 🛠️ Progettazione
+## [🛠️ Progettazione](#progettazione)
 
-### 🏗️ Architettura
+### [🏗️ Architettura](#architettura)
 
 - **Node.js** con **Express** per la gestione delle API REST
 - **Sequelize** come ORM per l'interazione con un database **PostgreSQL**
@@ -86,7 +86,7 @@ ProgettoPA
 ```
 
 
-### 🧑‍💼 Diagramma dei casi d'uso
+### [🧑‍💼 Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
 Nel sistema sviluppato, ci sono 3 tipologie di utenti: Automobilista, Operatore e Varco.
 Ognuno può interagire con il sistema per svolgere determinate operazioni:
 - **Automobilista**: può autenticarsi, vedere le proprie multe (anche in un determinato periodo) e scaricare un bollettino di pagamento.
@@ -95,7 +95,7 @@ Ognuno può interagire con il sistema per svolgere determinate operazioni:
 
 ![Diagramma dei casi d'uso](https://i.imgur.com/IrMuGUF.png)
 
-### 🗂️ Diagramma E-R
+### [🗂️ Diagramma E-R](#diagramma-e-r)
 Il sistema utilizza **PostgreSQL** come RDBMS, il quale è particolarmente indicato per applicazioni back-end come quella sviluppata in questo progetto, dove l'autenticazione sicura dei dati e l'efficienza nelle operazioni di lettura e scrittura sono fondamentali. Grazie alle sue prestazioni ottimizzate, PostgreSQL rappresenta una soluzione ideale per garantire la robustezza e la velocità del sistema.
 ```mermaid
 classDiagram
@@ -160,7 +160,7 @@ classDiagram
     VARCO --> IS_VARCO : è gestito
 ```
 
-### 🧩 Pattern Utilizzati
+### [🧩 Pattern Utilizzati](#pattern-utilizzati)
 Nel progetto sono stati adottati diversi design pattern per garantire modularità, manutenibilità e scalabilità del codice. Di seguito una descrizione dei principali pattern e dei vantaggi che hanno apportato all’architettura.
 
 - **MVC (Model-View-Controller)**
@@ -193,9 +193,9 @@ Infine, il pattern Singleton è stato usato dove è necessario garantire una sol
 
 L’uso combinato di questi pattern ha permesso di realizzare un’architettura robusta, estendibile e pronta per evolversi in progetti futuri più complessi.
 
-### 📈 Diagrammi delle sequenze
+### [📈 Diagrammi delle sequenze](#diagramma-delle-sequenze)
 
-## 🌐 Rotte API
+## [🌐 Rotte API](#rotte-api)
 
 Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'utente.
 
@@ -245,7 +245,7 @@ Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'
 
 ---
 
-## ⚙️ Setup e Installazione
+## [⚙️ Setup & Installazione](#setup-e-installazione)
 Per l'installazione e la configurazione del progetto è necessario innanzitutto installare [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/). Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, è sufficiente eseguire i seguenti comandi sul proprio terminale:
 ```
 # Clona il repository
@@ -272,7 +272,7 @@ JWT_SECRET=your_secret_key
 ```
 Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
-## 🧰 Strumenti utilizzati
+## [🧰 Strumenti utilizzati](#strumenti-utilizzati)
 Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti strumenti di lavoro:
 
 * [Typescript](https://www.typescriptlang.org/) come linguaggio di programmazione principale;
@@ -297,9 +297,9 @@ Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti st
 
 * [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
 
-## 💡 Scelte implementative
+## [💡 Scelte implementative](#scelte-implementative)
 
-## 👥 Autori
+## [👥 Autori](#autori)
 |Nome | GitHub |
 |-----------|--------|
 |`Sonaglioni Matteo` | [Clicca qui!](https://github.com/MattSona99) |
