@@ -410,7 +410,7 @@ sequenceDiagram
   participant R as TrattaRepository
   participant TD as TrattaDAO
   participant S as Sequelize
-  participant F as Factoryy
+  participant F as Factory
 
   C ->> A: DELETE /tratta/:id
   A ->> M: Token e ruolo verificati
@@ -436,13 +436,171 @@ sequenceDiagram
 ```
 
 - **GET /transito**
+Questa rotta permette di ottenere i dettagli completi di un transito a partire dal suo identificativo. Come sempre, il flusso inizia con il client che invia la richiesta e l'applicazione che la intercetta, passando prima attraverso il middleware per la verifica del token JWT e dei privilegi di ruolo. Superato il controllo di sicurezza, l’app si affida al modulo di validazione per controllare la correttezza del parametro `id`.
+Una volta validata la richiesta, il controller TransitoController invoca il metodo del repository, che a sua volta interroga il TransitoDAO per ottenere il transito richiesto dal database tramite `findByPk`.
+Ottenuto il transito, il repository recupera anche le entità correlate per costruire una risposta completa e arricchita:
+- la tratta associata, attraverso `trattaDao.getById`;
+- il veicolo che ha effettuato il transito (`Veicolo.findOne`);
+- il relativo tipo di veicolo (`TipoVeicolo.findOne`).
+Tutte queste informazioni vengono aggregate e inviate dal controller al client. Se in qualunque punto si verifica un errore (transito inesistente, riferimenti nulli, ecc.), il controller si affida alla factory per creare l’errore corrispondente, che viene poi gestito dal middleware centralizzato per la gestione degli errori e inviato al client come risposta appropriata.
 ```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant TD as TransitoDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicolODAO
+  participant TTD as TrattaDAO
+  participant VRD as VarcoDAO
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
 
+  C ->> A: GET /transito
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: validateGetTransitoById
+  TV -->> A: 
+  A ->> CN: getTransitoById
+  CN ->> R: transitoRepository.getTransitoById
+  R ->> TD: transitoDao.getById
+  TD ->> S: Transito.findByPk
+  S -->> TD: 
+  TD -->> R: 
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD: 
+  TTD -->> R: 
+  R ->> S: Veicolo.findOne
+  S ->> R: 
+  R ->> S: TipoVeicolo.findOne
+  S -->> R: 
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
 ```
 
-- **POST /transito**
+- **POST /transito/manuale**
+Questa rotta consente la creazione manuale di un transito da parte di un operatore (ad esempio in caso di mancata rilevazione automatica o inserimento retroattivo). Anche in questo caso, tutto parte con l’invio della richiesta da parte del client, l’autenticazione dell’utente e la verifica dei privilegi tramite middleware.
+Il payload viene quindi validato (`validateCreateTransito`) per assicurarsi che contenga dati coerenti (veicolo, tratta, varco, ecc.). A questo punto entra in gioco il controller, che chiama il repository. Il repository passa il compito di creare il transito al DAO (`transitoDao.create`), che usa `Sequelize.Transito.create` per l’inserimento nel database.
+Dopo la creazione, il repository esegue una serie di interrogazioni per arricchire il dato:
+- recupera il veicolo tramite `VeicoloDAO.getById`;
+- da questo ottiene il tipo di veicolo con `TipoVeicoloDAO.getById`;
+- infine ottiene i dati della tratta associata tramite `TrattaDAO.getById`.
+Queste informazioni sono utilizzate per effettuare controlli aggiuntivi (ad esempio sul rispetto dei limiti di velocità) o per generare multe. Una volta completata la logica di business, il controller restituisce la risposta al client. Anche in questo caso, se si verificano errori (veicolo o tratta inesistenti, problemi di creazione nel DB, ecc.), si genera un errore tramite la factory, che viene poi gestito e restituito in forma strutturata.
 ```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant TD as TransitoDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicolODAO
+  participant TTD as TrattaDAO
+  participant VRD as VarcoDAO
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
 
+  C ->> A: POST /transito/manuale
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: validateCreateTransito
+  TV -->> A: 
+  A ->> CN: createTransito
+  CN ->> R: transitoRepository.getTransitoById
+  R ->> TD: veicoloDao.createTransito
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD:
+  VD -->> R:
+  R ->> TVD: tipoVeicoloDao.getById
+  TVD ->> S: tipoVeicolo.findByPk
+  S -->> TVD:
+  TVD -->> R:
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD:
+  TTD -->> R:
+  R ->> TD: transitoDao.create
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
+```
+
+- **POST /transito/smart**
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant TD as TransitoDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicolODAO
+  participant TTD as TrattaDAO
+  participant VRD as VarcoDAO
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /transito/smart
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: uploadImage
+  TV -->> A: 
+  A ->> CN: createTransitoByVarco
+  CN ->> R: transitoRepository.processImage
+  R ->> TD: veicoloDao.createTransito
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD:
+  VD -->> R:
+  R ->> TVD: tipoVeicoloDao.getById
+  TVD ->> S: tipoVeicolo.findByPk
+  S -->> TVD:
+  TVD -->> R:
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD:
+  TTD -->> R:
+  R ->> TD: transitoDao.create
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
 ```
   
 - **DELETE /transito**
