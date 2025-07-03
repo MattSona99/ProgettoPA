@@ -3,13 +3,12 @@ import {
     getAllMulte,
     getMulteByTargheEPeriodo,
     createMulta,
-    //downloadBollettinoPDF
+    downloadBollettinoPDF
  } from '../controllers/multaController';
 import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import { 
     validateGetMulteByTargheEPeriodo,
     validateCreateMulta,
-    //validateDownloadBollettinoPDF
  } from '../middleware/validate/multaValidate';
 
 const router = Router();
@@ -21,6 +20,6 @@ router.use(authMiddleware);
 router.get('/multe', authorize(['operatore']), getAllMulte);
 router.get('/multe/dettagli', authorize(['operatore', 'automobilista']), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
 router.post('/multe', authorize(['operatore']), validateCreateMulta, createMulta);
-//router.get('/multe/download/:id', authorize(['operatore', 'automobilista']), validateDownloadBollettinoPDF, downloadBollettinoPDF);
+router.get('/multe/download/:id', authorize(['automobilista']), downloadBollettinoPDF);
 
 export default router;

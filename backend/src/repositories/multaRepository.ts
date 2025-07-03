@@ -44,11 +44,8 @@ class multaRepository {
      */
     public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }): Promise<any[]> {
         try {
-            console.log(`Recuperando le multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
             const multe = await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
-            console.log(multe)
             const multeComplete = await this.enrichMulte(multe);
-            console.log(multeComplete)
             return multeComplete;
         } catch (error) {
             throw HttpErrorFactory.createError(
@@ -58,48 +55,53 @@ class multaRepository {
     }
 
     private async enrichMulte(multe: Multa[]) {
-        const multaCompleta = await Promise.all(multe.map(async m => {
-            const transito = await Transito.findByPk(m.transito);
-            if (!transito) return null;
-            const tratta = await Tratta.findByPk(transito.tratta);
-            if (!tratta) return null;
-            const varcoIn = await Varco.findByPk(tratta.varco_in);
-            if (!varcoIn) return null;
-            const varcoOut = await Varco.findByPk(tratta.varco_out);
-            if (!varcoOut) return null;
-            return {
-                id_multa: m.id_multa,
-                uuid_pagamento: m.uuid_pagamento,
-                importo: m.importo,
-                transito: {
-                    id: transito.id_transito,
-                    targa: transito.targa,
-                    data_in: transito.data_in,
-                    data_out: transito.data_out,
-                    velocita_media: transito.velocita_media,
-                    delta_velocita: transito.delta_velocita,
-                    tratta: tratta
-                        ? {
-                            id: tratta.id_tratta,
-                            distanza: tratta.distanza,
-                            varcoIn: varcoIn
-                                ? {
-                                    nome_autostrada: varcoIn.nome_autostrada,
-                                    km: varcoIn.km
-                                } : null,
-                            varcoOut: varcoOut
-                                ? {
-                                    nome_autostrada: varcoOut.nome_autostrada,
-                                    km: varcoOut.km
-                                } : null
-                        }
-                        : null
-                },
-                condizioni_ambientali:
-                    varcoIn.pioggia && varcoOut.pioggia ? "pioggia" : "nessuna pioggia"
-            }
-        }));
-        return multaCompleta.filter(m => m !== null);
+        try {
+            const multaCompleta = await Promise.all(multe.map(async m => {
+                const transito = await Transito.findByPk(m.transito);
+                if (!transito) return null;
+                const tratta = await Tratta.findByPk(transito.tratta);
+                if (!tratta) return null;
+                const varcoIn = await Varco.findByPk(tratta.varco_in);
+                if (!varcoIn) return null;
+                const varcoOut = await Varco.findByPk(tratta.varco_out);
+                if (!varcoOut) return null;
+                return {
+                    id_multa: m.id_multa,
+                    uuid_pagamento: m.uuid_pagamento,
+                    importo: m.importo,
+                    transito: {
+                        id: transito.id_transito,
+                        targa: transito.targa,
+                        data_in: transito.data_in,
+                        data_out: transito.data_out,
+                        velocita_media: transito.velocita_media,
+                        delta_velocita: transito.delta_velocita,
+                        tratta: tratta
+                            ? {
+                                id: tratta.id_tratta,
+                                distanza: tratta.distanza,
+                                varcoIn: varcoIn
+                                    ? {
+                                        nome_autostrada: varcoIn.nome_autostrada,
+                                        km: varcoIn.km
+                                    } : null,
+                                varcoOut: varcoOut
+                                    ? {
+                                        nome_autostrada: varcoOut.nome_autostrada,
+                                        km: varcoOut.km
+                                    } : null
+                            }
+                            : null
+                    },
+                    condizioni_ambientali:
+                        varcoIn.pioggia && varcoOut.pioggia ? "pioggia" : "nessuna pioggia"
+                }
+            }));
+            return multaCompleta.filter(m => m !== null);
+        }
+        catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel Completamento delle Multe.");
+        }
     }
 }
 

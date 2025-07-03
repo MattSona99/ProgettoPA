@@ -24,8 +24,8 @@ router.use(authMiddleware);
 // Rotte per la gestione del transito
 router.get('/transito', authorize(['operatore']), getAllTransiti);
 router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
-router.post('/transito/manuale', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
-router.post('/transito/smart', authorize(['varco']), uploadImage.single('image'), createTransitoByVarco);
+router.post('/transito/smart', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
+router.post('/transito/manuale', authorize(['varco']), uploadImage.single('image'), createTransitoByVarco);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
 
