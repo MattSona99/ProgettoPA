@@ -246,6 +246,31 @@ Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'
 ---
 
 ## ⚙️ Setup e Installazione
+Per l'installazione e la configurazione del progetto è necessario innanzitutto installare [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/). Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, è sufficiente eseguire i seguenti comandi sul proprio terminale:
+```
+# Clona il repository
+git clone https://github.com/MattSona99/ProgettoPA.git
+
+# Entra nella cartella del progetto
+cd PROGETTOPA
+
+# Importa il file '.env' all'interno della directory principale
+
+# Avvia il progetto
+docker-compose up --build
+```
+Esempio di file .env
+```
+DB_NAME=progettoPA_DB
+DB_USER=myuser
+DB_PASSWORD=mypassword
+DB_PORT=5432
+DB_HOST=postgres
+
+BACKEND_PORT=3000
+JWT_SECRET=your_secret_key
+```
+Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
 ## 🧰 Strumenti utilizzati
 
