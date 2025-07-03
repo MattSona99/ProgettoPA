@@ -97,6 +97,68 @@ Ognuno può interagire con il sistema per svolgere determinate operazioni:
 ### 🗂️ Diagramma E-R
 
 Il sistema utilizza **PostgreSQL** come RDBMS, il quale è particolarmente indicato per applicazioni back-end come quella sviluppata in questo progetto, dove l'autenticazione sicura dei dati e l'efficienza nelle operazioni di lettura e scrittura sono fondamentali. Grazie alle sue prestazioni ottimizzate, PostgreSQL rappresenta una soluzione ideale per garantire la robustezza e la velocità del sistema.
+```mermaid
+classDiagram
+    class UTENTE {
+        int id_utente
+        string nome
+        string cognome
+        string email
+        string ruolo
+        int tokens
+    }
+    class VARCO {
+        int id_varco
+        string nome_autostrada
+        float km
+        bool smart
+        bool pioggia
+    }
+    class IS_VARCO {
+        int id_utente
+        int id_varco
+    }
+    class TIPO_VEICOLO {
+        int id_tipo_veicolo
+        string tipo
+        int limite_velocita
+    }
+    class VEICOLO {
+        string targa
+        int tipo_veicolo
+        int utente
+    }
+    class TRATTA {
+        int id_tratta
+        int varco_in
+        int varco_out
+        float distanza
+    }
+    class TRANSITO {
+        int id_transito
+        int tratta
+        string targa
+        timestamp data_in
+        timestamp data_out
+        float velocita_media
+        float delta_velocita
+    }
+    class MULTA {
+        int id_multa
+        uuid uuid_pagamento
+        int transito
+        float importo
+    }
+
+    UTENTE --> VEICOLO : possiede
+    TIPO_VEICOLO --> VEICOLO : è
+    VEICOLO --> TRANSITO : effettua
+    TRANSITO --> MULTA : genera
+    VARCO --> TRATTA : in/out
+    TRATTA --> TRANSITO : percorre
+    UTENTE --> IS_VARCO : gestisce
+    VARCO --> IS_VARCO : è gestito
+```
 
 ### 📈 Diagrammi delle sequenze
 
