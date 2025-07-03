@@ -291,6 +291,8 @@ Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti st
 
 * [Postman](https://www.postman.com/) per il testing delle rotte API;
 
+* [JWT](https://jwt.io/) per la trasmissione sicura di informazioni tra le parti
+
 * [GitHub](https://github.com/) come piattaforma di condivisione e versioning del codice;
 
 * [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
