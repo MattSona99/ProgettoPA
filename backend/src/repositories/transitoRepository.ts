@@ -44,7 +44,7 @@ class TransitoRepository {
             if (!transito) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
             }
-            return transito;
+            return await this.enrichTransito(transito);
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
         }
@@ -244,6 +244,25 @@ class TransitoRepository {
     }
 
     // HELPER PRIVATI
+
+    /**
+     * Funzione di stampa per le informazioni aggiuntive sui transiti.
+     */
+    private async enrichTransito(transito: Transito): Promise<any> {
+        try {
+            const tratta = await trattaDao.getById(transito.tratta);
+            const veicolo = await Veicolo.findOne({ where: { targa: transito.targa } });
+            const tipoVeicolo = await TipoVeicolo.findOne({ where: { id_tipo_veicolo: veicolo!.tipo_veicolo } });
+            return {
+                ...transito.dataValues,
+                tratta: tratta ? tratta.dataValues : null,
+                veicolo: veicolo ? veicolo.dataValues : null,
+                tipoVeicolo: tipoVeicolo ? tipoVeicolo.dataValues : null
+            };
+        } catch (error) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul transito con ID ${transito.id_transito}.`);
+        }
+    }
 
     /**
      * Funzione di creazione di una multa associata al transito.

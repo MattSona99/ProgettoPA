@@ -114,7 +114,7 @@ class VeicoloRepository {
                 utente: utente ? utente.dataValues : null
             };
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul veicolo con targa ${veicolo.targa}.`);
         }
     }
 }
