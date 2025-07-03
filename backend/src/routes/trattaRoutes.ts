@@ -21,10 +21,10 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle tratte
-router.get('/tratte', authorize(['operatore']), getAllTratte);
-router.get('/tratte/:id', authorize(['operatore']), validateGetTrattaById, getTrattaById);
-router.post('/tratte', authorize(['operatore']), validateCreateTratta, createTratta);
-router.put('/tratte/:id', authorize(['operatore']), validateUpdateTratta, updateTratta);
-router.delete('/tratte/:id', authorize(['operatore']), validateDeleteTratta, deleteTratta);
+router.get('/tratta', authorize(['operatore']), getAllTratte);
+router.get('/tratta/:id', authorize(['operatore']), validateGetTrattaById, getTrattaById);
+router.post('/tratta', authorize(['operatore']), validateCreateTratta, createTratta);
+router.put('/tratta/:id', authorize(['operatore']), validateUpdateTratta, updateTratta);
+router.delete('/tratta/:id', authorize(['operatore']), validateDeleteTratta, deleteTratta);
 
 export default router;

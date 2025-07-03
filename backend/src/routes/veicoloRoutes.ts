@@ -20,10 +20,10 @@ const router = Router();
 router.use(authMiddleware)
 
 // Rotte per la gestione dei veicoli
-router.get('/veicoli', authorize(['operatore']), getAllVeicoli);
-router.get('/veicoli/:targa', authorize(['operatore']), validateGetVeicoloById, getVeicoloById);
-router.post('/veicoli', authorize(['operatore']), validateCreateVeicolo, createVeicolo);
-router.put('/veicoli/:targa', authorize(['operatore']), validateUpdateVeicolo, updateVeicolo);
-router.delete('/veicoli/:targa', authorize(['operatore']), validateDeleteVeicolo, deleteVeicolo);
+router.get('/veicolo', authorize(['operatore']), getAllVeicoli);
+router.get('/veicolo/:targa', authorize(['operatore']), validateGetVeicoloById, getVeicoloById);
+router.post('/veicolo', authorize(['operatore']), validateCreateVeicolo, createVeicolo);
+router.put('/veicolo/:targa', authorize(['operatore']), validateUpdateVeicolo, updateVeicolo);
+router.delete('/veicolo/:targa', authorize(['operatore']), validateDeleteVeicolo, deleteVeicolo);
 
 export default router;
