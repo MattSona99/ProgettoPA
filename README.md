@@ -231,6 +231,118 @@ sequenceDiagram
   A --) C:
 ```
 
+- **GET /veicolo/:id**
+La chiamata `GET /veicolo/:id` consente al client di recuperare le informazioni di un veicolo specifico, identificato tramite il suo ID. Quando la richiesta viene inviata, il sistema verifica innanzitutto il token JWT e il ruolo dell’utente tramite il middleware di autenticazione. Se l’autenticazione ha esito positivo, viene avviata la validazione dei parametri della richiesta, in particolare dell'ID del veicolo.
+Successivamente, il controller richiama il repository per ottenere i dati del veicolo. Quest'ultimo si appoggia al DAO, che interroga il database tramite Sequelize, utilizzando il metodo `findByPk` per cercare il veicolo tramite chiave primaria. Se il veicolo non viene trovato, viene generato un errore tramite una factory di errori, che viene poi gestito dal middleware degli errori. Infine, la risposta viene inviata al client, contenente o i dati del veicolo richiesto oppure un messaggio d’errore se il veicolo non esiste o la richiesta è invalida.
+```
+  sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as VeicoloValidate
+  participant CN as VeicoloController
+  participant R as VeicoloRepository
+  participant D as VeicoloDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: GET /veicolo:id
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateGetVeicoloById
+  V -->> A: 
+  A ->> CN: getVeicoloById
+  CN ->> R: veicoloRepository.getVeicoloById
+  R ->> D: veicoloDao.getById
+  D ->> S: Veicolo.findByPk
+  S -->> D: 
+  D -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A --) C: 
+```
+- **POST /veicolo**
+La chiamata `POST /veicolo` permette al client di creare un nuovo veicolo all'interno del sistema. Una volta ricevuta la richiesta, l'applicazione verifica l’autenticità del token JWT e i privilegi dell’utente tramite il middleware di autenticazione.
+
+Se l’accesso è autorizzato, i dati forniti vengono validati per assicurarsi che rispettino i requisiti previsti per la creazione di un veicolo (targa, tipo, utente). Dopo la validazione, il controller attiva il processo di creazione chiamando il repository, che a sua volta si appoggia al DAO per interagire con il database.
+
+Il DAO utilizza Sequelize per inserire il nuovo record nella tabella dei veicoli. Una volta completata l’operazione, i dati del nuovo veicolo vengono restituiti risalendo la catena. Se si verifica un errore (ad esempio un duplicato o un problema di integrità), viene generato tramite la factory degli errori e gestito dal middleware di error handling, che infine invia una risposta di errore o successo al client, a seconda dell’esito.
+```
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as VeicoloValidate
+  participant CN as VeicoloController
+  participant R as VeicoloRepository
+  participant D as VeicoloDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /veicolo
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateCreateVeicolo
+  V -->> A: 
+  A ->> CN: createVeicolo
+  CN ->> R: veicoloRepository.createVeicolo
+  R ->> D: veicoloDao.create
+  D ->> S: Veicolo.create
+  S -->> D: 
+  D -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
+```
+
+- **DELETE /veicolo**
+La chiamata `DELETE /veicolo/:id` consente al client di eliminare un veicolo specifico identificato tramite il suo ID. Una volta inviata la richiesta, il sistema verifica il token JWT e il ruolo dell’utente per accertarsi che l’operazione sia autorizzata.
+
+Dopo l’autenticazione, viene effettuata la validazione dell’ID del veicolo da eliminare. Superata la validazione, il controller invoca il repository, che a sua volta chiama il DAO per gestire l’eliminazione. Il DAO interroga il database tramite Sequelize, inizialmente cercando il veicolo con `findByPk` per verificarne l’esistenza. Se il veicolo è presente, viene eseguita l’operazione di cancellazione con `destroy`.
+
+Il risultato dell’operazione viene quindi risalito fino al controller. Se si verifica un errore, viene creato tramite la factory degli errori e gestito dal middleware di errore. Infine, viene inviata al client una risposta che conferma l’avvenuta eliminazione o comunica l’errore rilevato.
+```
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as VeicoloValidate
+  participant CN as VeicoloController
+  participant R as VeicoloRepository
+  participant D as VeicoloDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: DELETE /veicolo/:id
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateDeleteVeicolo
+  V -->> A: 
+  A ->> CN: deleteVeicolo
+  CN ->> R: veicoloRepository.deleteVeicolo
+  R ->> D: veicoloDao.delete
+  D ->> S: Veicolo.findByPk
+  S -->> D: 
+  D ->> S: Veicolo.destroy
+  S -->> D: 
+  D -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:  
+```
+
+
+
+
 ## [🌐 Rotte API](#rotte-api)
 
 Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'utente.
