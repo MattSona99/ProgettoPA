@@ -115,24 +115,20 @@ class MultaDao implements MultaDAO {
         dataIn: string,
         dataOut: string,
         utente: { id: number, ruolo: string }
-    ) {
+    ): Promise<Multa[]> {
         try {
             let veicoliUtente: Veicolo[] = [];
-            console.log("############UTENTE: ", utente);
-            console.log("############MULTADAO:Recuperando i veicoli per le targhe", targhe, "nel periodo", dataIn, "-", dataOut);
             // 1) Prendo tutti i veicoli dell'utente
             if (utente.ruolo === "automobilista") {
-                console.log("Automobilista");
                 veicoliUtente = await Veicolo.findAll({
                     where: {
                         targa: { [Op.in]: targhe },
-                        utente: {[Op.eq]: utente.id}
+                        utente: { [Op.eq]: utente.id }
                     },
                     attributes: ['targa']
                 });
             }
             else if (utente.ruolo === "operatore") {
-                console.log("Operatore");
                 veicoliUtente = await Veicolo.findAll({
                     where: {
                         targa: { [Op.in]: targhe }
@@ -141,18 +137,13 @@ class MultaDao implements MultaDAO {
                 });
             }
             else {
-                console.log("Utente non autorizzato");
-               throw HttpErrorCodes.Unauthorized, "Utente non autorizzato";
+                throw HttpErrorCodes.Unauthorized, "Utente non autorizzato";
             }
 
             if (veicoliUtente.length === 0) {
-                console.log("Veicoli associati a quelle targhe non trovati o non associati all'utente");
                 throw HttpErrorCodes.NotFound, "Veicoli associati a quelle targhe non trovati o non associati all'utente";
             }
 
-            console.log(veicoliUtente)
-
-            console.log("############MULTADAO:Recuperando i transiti per le targhe", targhe, "nel periodo", dataIn, "-", dataOut);
             // 1) Prendo i transiti per le targhe dell'utente filtrati per periodo
             const transiti = await Transito.findAll({
                 where: {
@@ -169,51 +160,23 @@ class MultaDao implements MultaDAO {
                 attributes: ['id_transito', 'targa', 'tratta', 'data_in', 'data_out', 'velocita_media', 'delta_velocita']
             });
 
-            if(transiti.length === 0) {
-                console.log("Transiti associati a quelle targhe non trovato o non associati all'utente");
+            if (transiti.length === 0) {
                 throw HttpErrorCodes.NotFound, "Transiti associati a quelle targhe non trovato o non associati all'utente";
             }
 
-            console.log(transiti)
-
-            console.log("############MULTADAO:Recuperando le multe per le targhe", targhe, "nel periodo", dataIn, "-", dataOut);
             // 2) Recupero le multe che fanno riferimento a quegli id_transito
             const multe = await Multa.findAll({
                 where: { transito: { [Op.in]: transiti.map(t => t.id_transito) } },
+                attributes: ['id_multa', 'uuid_pagamento', 'importo', 'transito'],
             });
 
             if (multe.length === 0) {
                 console.log("Nessuna multa trovata");
                 throw HttpErrorCodes.NotFound, "Nessuna multa trovata";
             }
-            console.log(multe);
 
             return multe;
 
-            // 3) Ritorno un array “piatto” dove ogni multa porta con sé i dettagli di transito → tratta → varchi
-            /* return multe.map(m => {
-                const transito = m.dataValues.transito;
-                const tratta = transito.getDataValue('tratta');
-                return {
-                    id_multa: m.id_multa,
-                    uuid_pagamento: m.uuid_pagamento,
-                    importo: m.importo,
-                    transito: {
-                        id: transito.id_transito,
-                        targa: transito.targa,
-                        data_in: transito.data_in,
-                        data_out: transito.data_out,
-                        velocita_media: transito.velocita_media,
-                        delta_velocita: transito.delta_velocita,
-                        tratta: {
-                            id: tratta.id_tratta,
-                            distanza: tratta.distanza,
-                            varcoIn: tratta.varcoIn,
-                            varcoOut: tratta.varcoOut
-                        }
-                    }
-                };
-            }); */
         } catch (e) {
             throw HttpErrorFactory.createError(
                 HttpErrorCodes.InternalServerError,
