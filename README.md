@@ -288,7 +288,7 @@ sequenceDiagram
   S -->> VD: 
   VD -->> R: 
   R ->> TD: trattaDao.create
-  D ->> S: Tratta.create
+  TD ->> S: Tratta.create
   S -->> TD: 
   TD -->> CN: 
   CN ->> F: createError
