@@ -1,34 +1,34 @@
-# Progetto Programmazione Avanzata 2024-2025
+#📌 Progetto Programmazione Avanzata 2024-2025
 <div align="center">
   <img src="https://github.com/MattSona99/ProgettoPA/blob/main/images/logo.png" />
 </div>
 
-# Indice
-- [Progetto Programmazione Avanzata A.A. 2024-2025](#progetto-programmazione-avanzata-aa-2425)
-- [Indice](#indice)
-  - [Obiettivo](#obiettivo)
-  - [Progettazione](#progettazione)
-    - [Architettura](#architettura)
-    - [Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
-    - [Diagramma E-R](#diagramma-e-r)
-    - [Diagramma delle sequenze](#diagramma-delle-sequenze)
-  - [Rotte API](#rotte-api)
-  - [Setup & Installazione](#setup-e-installazione)
-  - [Strumenti utilizzati](#strumenti-utilizzati)
-  - [Scelte implementative](#scelte-implementative)
-  - [Autori](#autori)
+#📚 Indice
+- [📌 Progetto Programmazione Avanzata A.A. 2024-2025](#progetto-programmazione-avanzata-aa-2425)
+- [📚 Indice](#indice)
+  - [🎯 Obiettivo](#obiettivo)
+  - [🛠️ Progettazione](#progettazione)
+    - [🏗️ Architettura](#architettura)
+    - [🧑‍💼 Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
+    - [🗂️ Diagramma E-R](#diagramma-e-r)
+    - [📈 Diagramma delle sequenze](#diagramma-delle-sequenze)
+  - [🌐 Rotte API](#rotte-api)
+  - [⚙️ Setup & Installazione](#setup-e-installazione)
+  - [🧰 Strumenti utilizzati](#strumenti-utilizzati)
+  - [💡 Scelte implementative](#scelte-implementative)
+  - [👥 Autori](#autori)
 
 ---
 
-## Obiettivo
+##🎯 Obiettivo
 
 Il progetto consiste nella realizzazione di un sistema backend per la gestione dei transiti di veicoli tra varchi autostradali, con calcolo automatico di eventuali **multe** in base alla **velocità media** rilevata. Il sistema supporta **OCR (Tesseract.js)** per l'identificazione automatica delle targhe, gestione utenti con **JWT**, **CRUD completo per varchi, tratte, veicoli e transiti**, generazione di **bollettini PDF** e ruoli differenziati (Operatore, Varco, Automobilista).
 
 ---
 
-## Progettazione
+##🛠️ Progettazione
 
-### Architettura
+###🏗️ Architettura
 
 - **Node.js** con **Express** per la gestione delle API REST
 - **Sequelize** come ORM per l'interazione con un database **PostgreSQL**
@@ -37,11 +37,72 @@ Il progetto consiste nella realizzazione di un sistema backend per la gestione d
 - **Docker Compose** per orchestrazione dei servizi
 - **Test con Jest** + **Postman Collection**
 
-### Diagramma dei casi d'uso
+```
+  Utente      API Server        Backend Server         PostgreSQL
+  |               |                  |                    |
+  |  ---> Richiesta HTTP  -------->  |                    |
+  |               |  --> Elabora logica (Node.js)        |
+  |               |                  |  ---> Query ------>|
+  |               |                  |  <--- Risposta ----|
+  |               |  <-- Risultato --|                    |
+  |  <--- Risposta HTTP -------------|                    |
+```
+Il sistema adotta un'architettura **client-server** strutturata su più livelli:
+- L'utente (es. operatore, varco o automobilista) effettua una richiesta HTTP (es. `GET`, `POST`) verso il **server Express.js**, autenticandosi tramite **token JWT**.
+- Il **backend** gestisce la logica applicativa (validazioni, controlli sui ruoli, calcoli di velocità o multe, OCR targa, etc.).
+- Quando necessario, il backend comunica con il **database PostgreSQL** attraverso **Sequelize**, per leggere o aggiornare i dati persistenti (veicoli, transiti, multe, tratte, etc.).
+- Infine, una **risposta JSON** viene restituita all'utente.
 
-## Rotte API
+Questo flusso garantisce una separazione chiara tra livelli e sicurezza tramite autenticazione. Inoltre, l'architettura si riflette sulla struttura stessa del progetto, poiché le **directory** sono organizzate come di seguito:
+```
+ProgettoPA
+├── backend
+│   ├── src
+│   │   ├── controllers
+│   │   ├── dao
+│   │   ├── middleware
+│   │   ├── models
+│   │   ├── repositories
+│   │   ├── routes
+│   │   ├── utils
+│   │   └── app.ts
+│   │   └── server.ts
+│   ├── Dockerfile
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
+├── db
+|   └── init.sql
+├── images
+|   ├── logo.png
+|   ├── targa1.png
+|   ├── targa2.png
+│   └── targa3.png
+├── test_postman
+├──docker-compose.yml
+├──LICENSE
+└──README.md
+```
 
-Le rotte sono tutte autenticate con JWT (`[U]`) e prevedono il controllo del ruolo dell'utente.
+
+###🧑‍💼 Diagramma dei casi d'uso
+Nel sistema sviluppato, ci sono 3 tipologie di utenti: Automobilista, Operatore e Varco.
+Ognuno può interagire con il sistema per svolgere determinate operazioni:
+- **Automobilista**: può autenticarsi, vedere le proprie multe (anche in un determinato periodo) e scaricare un bollettino di pagamento.
+- **Operatore**: può autenticarsi, gestire i varchi, le tratte, i veicoli e i transiti, può vedere le multe di tutti gli utenti (anche in un determinato periodo) e scaricare un bollettino di pagamento.
+- **Varco**: può autenticarsi e inserire un transito (manualmente o in automatico).
+
+![Diagramma dei casi d'uso](https://i.imgur.com/IrMuGUF.png)
+
+###🗂️ Diagramma E-R
+
+Il sistema utilizza **PostgreSQL** come RDBMS, il quale è particolarmente indicato per applicazioni back-end come quella sviluppata in questo progetto, dove l'autenticazione sicura dei dati e l'efficienza nelle operazioni di lettura e scrittura sono fondamentali. Grazie alle sue prestazioni ottimizzate, PostgreSQL rappresenta una soluzione ideale per garantire la robustezza e la velocità del sistema.
+
+###📈 Diagrammi delle sequenze
+
+##🌐 Rotte API
+
+Le rotte sono tutte autenticate con JWT e prevedono il controllo del ruolo dell'utente.
 
 ### Utente
 - `POST /login` – Login utente
@@ -89,15 +150,15 @@ Le rotte sono tutte autenticate con JWT (`[U]`) e prevedono il controllo del ruo
 
 ---
 
-## Setup e Installazione
+##⚙️ Setup e Installazione
 
-## Strumenti utilizzati
+##🧰 Strumenti utilizzati
 
-## Scelte implementative
+##💡 Scelte implementative
 
-## Autori
+##👥 Autori
 |Nome | GitHub |
 |-----------|--------|
-| 👩 `Sonaglioni Matteo` | [Clicca qui!](https://github.com/MattSona99) |
-| 👨 `Cingoli Enzo` | [Clicca qui!](https://github.com/enzoc2000) |
+|`Sonaglioni Matteo` | [Clicca qui!](https://github.com/MattSona99) |
+|`Cingoli Enzo` | [Clicca qui!](https://github.com/enzoc2000) |
 
