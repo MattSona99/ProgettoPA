@@ -488,8 +488,8 @@ sequenceDiagram
   A -->> C:  
 ```
 
-- **POST /transito/manuale**
-Questa rotta consente la creazione manuale di un transito da parte di un operatore (ad esempio in caso di mancata rilevazione automatica o inserimento retroattivo). Anche in questo caso, tutto parte con l’invio della richiesta da parte del client, l’autenticazione dell’utente e la verifica dei privilegi tramite middleware.
+- **POST /transito/smart**
+Questa rotta consente la creazione manuale di un transito da parte di un operatore o un varco smart (ad esempio in caso di mancata rilevazione automatica o inserimento retroattivo). Anche in questo caso, tutto parte con l’invio della richiesta da parte del client, l’autenticazione dell’utente e la verifica dei privilegi tramite middleware.
 Il payload viene quindi validato (`validateCreateTransito`) per assicurarsi che contenga dati coerenti (veicolo, tratta, varco, ecc.). A questo punto entra in gioco il controller, che chiama il repository. Il repository passa il compito di creare il transito al DAO (`transitoDao.create`), che usa `Sequelize.Transito.create` per l’inserimento nel database.
 Dopo la creazione, il repository esegue una serie di interrogazioni per arricchire il dato:
 - recupera il veicolo tramite `VeicoloDAO.getById`;
@@ -513,7 +513,7 @@ sequenceDiagram
   participant S as Sequelize
   participant F as Factory
 
-  C ->> A: POST /transito/manuale
+  C ->> A: POST /transito/smart
   A ->> M: Token e ruolo verificati
   M -->> A: 
   A ->> TV: validateCreateTransito
@@ -549,7 +549,37 @@ sequenceDiagram
   A -->> C:  
 ```
 
-- **POST /transito/smart**
+- **POST /transito/manuale**
+Questa rotta consente l'invio di un'immagine contenente una targa, che viene elaborata tramite Tesseract.js per l'estrazione automatica del numero di targa. Il sistema utilizza l'OCR per leggere la targa e predispone i dati necessari per la successiva registrazione manuale del transito.
+È previsto il controllo del token di autenticazione e del ruolo dell’utente (che deve essere un operatore di varco).
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant TV as TransitoValidate
+  participant CN as TransitoController
+  participant R as TransitoRepository
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /transito/manuale
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> TV: uploadImage
+  TV -->> A:
+  A ->> CN: createTransitoByVarco
+  CN ->> R: transitoRepository.processImage
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
+```
+  
+- **DELETE /transito**
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -567,31 +597,17 @@ sequenceDiagram
   participant S as Sequelize
   participant F as Factory
 
-  C ->> A: POST /transito/smart
+  C ->> A: DELETE /transito/:id
   A ->> M: Token e ruolo verificati
   M -->> A: 
-  A ->> TV: uploadImage
+  A ->> TV: validateDeleteTransito
   TV -->> A: 
-  A ->> CN: createTransitoByVarco
-  CN ->> R: transitoRepository.processImage
-  R ->> TD: veicoloDao.createTransito
-  TD ->> S: Transito.create
-  S -->> TD:
-  TD -->> R:
-  R ->> VD: veicoloDao.getById
-  VD ->> S: Veicolo.findByPk
-  S -->> VD:
-  VD -->> R:
-  R ->> TVD: tipoVeicoloDao.getById
-  TVD ->> S: tipoVeicolo.findByPk
-  S -->> TVD:
-  TVD -->> R:
-  R ->> TTD: trattaDao.getById
-  TTD ->> S: Tratta.findByPk
-  S -->> TTD:
-  TTD -->> R:
-  R ->> TD: transitoDao.create
-  TD ->> S: Transito.create
+  A ->> CN: deleteTransito
+  CN ->> S: Multa.findOne
+  S -->> CN: Se la Multa non esiste, si può eliminare il Transito
+  CN ->> R: transitoRepository.deleteTransito
+  R ->> TD: transitoDao.delete
+  TD ->> S: Transito.destroy
   S -->> TD:
   TD -->> R:
   R -->> CN: 
@@ -600,12 +616,7 @@ sequenceDiagram
   CN -->> A: 
   A ->> M: errorHandler
   M -->> A: 
-  A -->> C: 
-```
-  
-- **DELETE /transito**
-```mermaid
-
+  A -->> C:  
 ```
 
 
