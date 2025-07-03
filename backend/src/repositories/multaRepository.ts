@@ -39,7 +39,7 @@ class multaRepository {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: Utente): Promise<any[]> {
+    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: {id: number, ruolo: string}): Promise<Multa[]> {
         try {
             console.log(`Recuperando le multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
             return await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);

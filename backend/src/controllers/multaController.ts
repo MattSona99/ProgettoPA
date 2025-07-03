@@ -42,7 +42,7 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
             arrayTarga as string[],
             dataIn as string,
             dataOut as string,
-            utente as Utente
+            utente as { id: number, ruolo: string }
         );
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
