@@ -252,7 +252,7 @@ Per l'installazione e la configurazione del progetto è necessario innanzitutto 
 git clone https://github.com/MattSona99/ProgettoPA.git
 
 # Entra nella cartella del progetto
-cd PROGETTOPA
+cd ProgettoPA
 
 # Importa il file '.env' all'interno della directory principale
 
@@ -273,6 +273,27 @@ JWT_SECRET=your_secret_key
 Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
 ## 🧰 Strumenti utilizzati
+Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti strumenti di lavoro:
+
+* [Typescript](https://www.typescriptlang.org/) come linguaggio di programmazione principale;
+
+* [Express.js](https://expressjs.com/) come framework per applicazioni Web per Node.js;
+
+* [Node.js](https://nodejs.org/en) come sistema per la gestione di moduli e pacchetti;
+
+* [Tesseract.js](https://github.com/tesseract-ocr/tesseract) per la lettura di file di testo nelle immagini;
+
+* [Sequelize](https://sequelize.org/) per l'Object Relational Mapping (ORM);
+
+* [Docker](https://www.docker.com/) come sistema di containerizzazione per il deployment dell'applicazione;
+
+* [PostgreSQL](https://www.postgresql.org/) come database;
+
+* [Postman](https://www.postman.com/) per il testing delle rotte API;
+
+* [GitHub](https://github.com/) come piattaforma di condivisione e versioning del codice;
+
+* [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
 
 ## 💡 Scelte implementative
 
