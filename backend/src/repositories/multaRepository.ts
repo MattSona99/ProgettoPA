@@ -54,6 +54,13 @@ class multaRepository {
         }
     }
 
+    /**
+     * Funzione di stampa sulle informazioni aggiuntive delle Multe.
+     * 
+     * @param multe - Un array di multe.
+     * @returns - Una promessa che risolve con un array di multe con informazioni aggiuntive.
+     */
+
     private async enrichMulte(multe: Multa[]) {
         try {
             const multaCompleta = await Promise.all(multe.map(async m => {
