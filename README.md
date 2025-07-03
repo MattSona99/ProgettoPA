@@ -231,6 +231,78 @@ sequenceDiagram
   A --) C:
 ```
 
+- **GET /tratta/:id**
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as VarcoValidate
+  participant CN as VarcoController
+  participant R as VarcoRepository
+  participant D as VarcoDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: GET /varco:id
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateGetVarcoById
+  V -->> A: 
+  A ->> CN: getVarcoById
+  CN ->> R: varcoRepository.getVarcoById
+  R ->> D: varcoDao.getById
+  D ->> S: Varco.findByPk
+  S -->> D: 
+  D -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A --) C:   
+```
+- **POST /tratta**
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as TrattaValidate
+  participant CN as TrattaController
+  participant R as TrattaRepository
+  participant TD as TrattaDAO
+  participant VD as VarcoDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /tratta
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateCreateTratta
+  V -->> A: 
+  A ->> CN: createTratta
+  CN ->> R: trattaRepository.createTratta
+  R ->> VD: varcoDao.getById (x2)
+  VD ->> S: Varco.findByPk (x2)
+  S -->> VD: 
+  VD -->> R: 
+  R ->> TD: trattaDao.create
+  D ->> S: Tratta.create
+  S -->> TD: 
+  TD -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
+```
+- **DELETE /tratta/:id**
+```mermaid
+
+```
+
 - **GET /veicolo/:id**
 La chiamata `GET /veicolo/:id` consente al client di recuperare le informazioni di un veicolo specifico, identificato tramite il suo ID. Quando la richiesta viene inviata, il sistema verifica innanzitutto il token JWT e il ruolo dell’utente tramite il middleware di autenticazione. Se l’autenticazione ha esito positivo, viene avviata la validazione dei parametri della richiesta, in particolare dell'ID del veicolo.
 Successivamente, il controller richiama il repository per ottenere i dati del veicolo. Quest'ultimo si appoggia al DAO, che interroga il database tramite Sequelize, utilizzando il metodo `findByPk` per cercare il veicolo tramite chiave primaria. Se il veicolo non viene trovato, viene generato un errore tramite una factory di errori, che viene poi gestito dal middleware degli errori. Infine, la risposta viene inviata al client, contenente o i dati del veicolo richiesto oppure un messaggio d’errore se il veicolo non esiste o la richiesta è invalida.
@@ -242,7 +314,9 @@ Successivamente, il controller richiama il repository per ottenere i dati del ve
   participant V as VeicoloValidate
   participant CN as VeicoloController
   participant R as VeicoloRepository
-  participant D as VeicoloDAO
+  participant VD as VeicoloDAO
+  participant TD as TipoVeicoloDAO
+  participant UD as UtenteDAO
   participant S as Sequelize
   participant F as Factory
 
@@ -253,16 +327,25 @@ Successivamente, il controller richiama il repository per ottenere i dati del ve
   V -->> A: 
   A ->> CN: getVeicoloById
   CN ->> R: veicoloRepository.getVeicoloById
-  R ->> D: veicoloDao.getById
-  D ->> S: Veicolo.findByPk
-  S -->> D: 
-  D -->> CN: 
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD: 
+  VD -->> R: 
+  R ->> TD: tipoVeicoloDao.getById
+  TD ->> S: TipoVeicolo.findByPk
+  S -->> TD: 
+  TD -->> R: 
+  R ->> UD: utenteDao.getById
+  UD ->> S: Utente.findByPk
+  S -->> TD: 
+  TD -->> R: 
+  R -->> CN: 
   CN ->> F: createError
   F -->> CN: 
   CN -->> A: 
   A ->> M: errorHandler
   M -->> A: 
-  A --) C: 
+  A --) C:  
 ```
 - **POST /veicolo**
 La chiamata `POST /veicolo` permette al client di creare un nuovo veicolo all'interno del sistema. Una volta ricevuta la richiesta, l'applicazione verifica l’autenticità del token JWT e i privilegi dell’utente tramite il middleware di autenticazione.
