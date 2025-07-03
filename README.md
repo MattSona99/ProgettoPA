@@ -580,6 +580,12 @@ sequenceDiagram
 ```
   
 - **DELETE /transito**
+Questa rotta consente l'eliminazione di un transito esistente, identificato dal suo `id`. Prima di procedere, il sistema verifica l'autenticazione e il ruolo dell’utente. L’eliminazione è permessa solo se non esiste alcuna multa associata al transito in questione.
+Il flusso prevede:
+- Validazione del `transitoId` ricevuto.
+- Verifica della presenza di una multa collegata al transito.
+- Se non è presente alcuna multa, il transito viene eliminato dal database.
+In caso esista già una multa legata al transito, viene generato un errore e il transito non può essere cancellato.
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -589,11 +595,6 @@ sequenceDiagram
   participant CN as TransitoController
   participant R as TransitoRepository
   participant TD as TransitoDAO
-  participant VD as VeicoloDAO
-  participant TVD as TipoVeicolODAO
-  participant TTD as TrattaDAO
-  participant VRD as VarcoDAO
-  participant MD as MultaDAO
   participant S as Sequelize
   participant F as Factory
 
@@ -617,6 +618,129 @@ sequenceDiagram
   A ->> M: errorHandler
   M -->> A: 
   A -->> C:  
+```
+
+- **GET /multe/dettagli**
+Questa rotta consente a un automobilista o un operatore di consultare tutte le multe ricevute in un determinato intervallo temporale, filtrate in base alle targhe dei veicoli di sua proprietà (mentre operatore può vederle tutte). Dopo la verifica del token e del ruolo da parte del middleware, il sistema procede con la validazione dei parametri forniti, come il periodo e l’elenco delle targhe. Il controller coordina il recupero dei dati attraverso il repository, che interroga in sequenza le tabelle di Veicoli, Transiti, Multe, Tratte e Varchi per ottenere tutte le informazioni necessarie. Il risultato è una risposta JSON ricca di dettagli, utile per l'utente che desidera conoscere non solo l'importo della sanzione, ma anche la dinamica del transito che ha generato la multa, inclusi limiti di velocità, condizioni ambientali e caratteristiche del tratto percorso.
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant MV as MultaValidate
+  participant CN as MultaController
+  participant R as MultaRepository
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: GET /multe/dettagli
+  A ->> M: Token e ruolo verificati
+  M -->> A:
+  A ->> MV: validateGetMulteByTargheEPeriodo
+  MV -->> A: 
+  A ->> CN: getMulteByTargheEPeriodo
+  CN ->> R: multaRepository.getMulteByTargheEPeriodo
+  R ->> MD: multaDao.getMulteByTargheEPeriodo
+  MD ->> S: Veicolo.findAll
+  S -->> MD:
+  MD ->> S: Transito.findAll
+  S -->> MD:
+  MD ->> S: Multa.findAll
+  S -->> MD:
+  MD -->> R:
+  R ->> S: Transito.findAll
+  S -->> R:
+  R ->> S: Tratta.findAll
+  S -->> R:
+  R ->> S: Varco.findAll (x2)
+  S -->> R: (x2)
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:
+```
+
+- **POST /multe**
+Questa rotta si occupa invece della creazione manuale di una nuova multa. È una funzionalità destinata agli operatori autorizzati, ad esempio nei casi in cui sia necessario generare una sanzione in seguito a una verifica o segnalazione. Una volta autenticato l’utente e validati i dati forniti nella richiesta (come il transito associato, l’importo, la motivazione o la data), il controller passa il comando al repository, che si occupa dell’effettivo inserimento nel database attraverso il DAO. La multa viene registrata nella tabella `Multa` tramite Sequelize e, se tutto va a buon fine, viene restituito un esito positivo. In caso contrario, l’errore viene gestito attraverso il factory centralizzato per la generazione degli errori HTTP.
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant MV as MultaValidate
+  participant CN as MultaController
+  participant R as MultaRepository
+  participant MD as MultaDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: GET /multe/dettagli
+  A ->> M: Token e ruolo verificati
+  M -->> A:
+  A ->> MV: validateCreateMulta
+  MV -->> A:
+  A ->> CN: createMulta
+  CN ->> R: multaRepository.create
+  R ->> MD: multaDao.create
+  MD ->> S: Multa.create
+  S -->> MD:
+  MD -->> R:
+  R -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:
+```
+
+- **GET /multe/download/:id**
+Questa rotta fornisce all’utente la possibilità di scaricare un bollettino PDF relativo a una multa specifica, identificata tramite `id`. Dopo l’autenticazione, il controller avvia una complessa catena di richieste che ricostruisce tutte le informazioni necessarie per compilare correttamente il bollettino. Si parte dalla multa, poi si recuperano i dati dell’utente, del transito associato, del veicolo e infine del tratto percorso. L’interazione tra i DAO e i repository garantisce che tutte le entità correlate vengano caricate, così da includere nel PDF dati come targa, data, ora, varco di rilevamento e importo. Il bollettino generato può essere usato per il pagamento o per la consultazione offline da parte dell’utente, rendendo l’esperienza completa e accessibile.
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant MV as MultaValidate
+  participant CN as MultaController
+  participant R as MultaRepository
+  participant TR as TransitoRepository
+  participant MD as MultaDAO
+  participant TD as TransitoDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: GET /multe/dettagli
+  A ->> M: Token e ruolo verificati
+  M -->> A:
+  A ->> CN: downlaodBollettinoPDF
+  CN ->> MD: multaDao.getMultaByUtente
+  MD ->> S: Multa.findByPk
+  S -->> MD:
+  MD ->> S: Utente.findByPk
+  S -->> MD:
+  MD ->> S: Transito.findByPk
+  S -->> MD:
+  MD ->> S: Veicolo.findByPk
+  S -->> MD:
+  MD -->> CN:
+  CN ->> TR: transitoRepository.getTransitoById
+  TR ->> TD: transitoDao.getById
+  TD ->> S: Transito.findByPk
+  S -->> TD:
+  TD -->> TR:
+  TR -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C:
 ```
 
 
@@ -667,7 +791,8 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 ### Multe (`/api/multe`)
 - `GET /` – Elenco multe [operatore]
 - `GET /dettagli` – Lista multe per targa e periodo [operatore/automobilista]
-- `GET /:id/pdf` – Scarica PDF con QR code del bollettino di pagamento [operatore/automobilista]
+- `POST /multe` - Inserimento da operatore [operatore]
+- `GET /download/:id` – Scarica PDF con QR code del bollettino di pagamento [operatore/automobilista]
 
 ---
 
