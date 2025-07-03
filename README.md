@@ -231,109 +231,6 @@ sequenceDiagram
   A --) C:
 ```
 
-- **GET /tratta/:id**
-```mermaid
-sequenceDiagram
-  participant C as Client
-  participant A as App
-  participant M as Middleware
-  participant V as VarcoValidate
-  participant CN as VarcoController
-  participant R as VarcoRepository
-  participant D as VarcoDAO
-  participant S as Sequelize
-  participant F as Factory
-
-  C ->> A: GET /varco:id
-  A ->> M: Token e ruolo verificati
-  M -->> A: 
-  A ->> V: validateGetVarcoById
-  V -->> A: 
-  A ->> CN: getVarcoById
-  CN ->> R: varcoRepository.getVarcoById
-  R ->> D: varcoDao.getById
-  D ->> S: Varco.findByPk
-  S -->> D: 
-  D -->> CN: 
-  CN ->> F: createError
-  F -->> CN: 
-  CN -->> A: 
-  A ->> M: errorHandler
-  M -->> A: 
-  A --) C:   
-```
-- **POST /tratta**
-```mermaid
-sequenceDiagram
-  participant C as Client
-  participant A as App
-  participant M as Middleware
-  participant V as TrattaValidate
-  participant CN as TrattaController
-  participant R as TrattaRepository
-  participant TD as TrattaDAO
-  participant VD as VarcoDAO
-  participant S as Sequelize
-  participant F as Factory
-
-  C ->> A: POST /tratta
-  A ->> M: Token e ruolo verificati
-  M -->> A: 
-  A ->> V: validateCreateTratta
-  V -->> A: 
-  A ->> CN: createTratta
-  CN ->> R: trattaRepository.createTratta
-  R ->> VD: varcoDao.getById (x2)
-  VD ->> S: Varco.findByPk (x2)
-  S -->> VD: (x2)
-  VD -->> R: (x2)
-  R ->> TD: trattaDao.create
-  TD ->> S: Tratta.create
-  S -->> TD: 
-  TD -->> CN: 
-  CN ->> F: createError
-  F -->> CN: 
-  CN -->> A: 
-  A ->> M: errorHandler
-  M -->> A: 
-  A -->> C: 
-```
-- **DELETE /tratta/:id**
-```mermaid
-sequenceDiagram
-  participant C as Client
-  participant A as App
-  participant M as Middleware
-  participant V as TrattaValidate
-  participant CN as TrattaController
-  participant R as TrattaRepository
-  participant TD as TrattaDAO
-  participant S as Sequelize
-  participant F as Factoryy
-
-  C ->> A: DELETE /tratta/:id
-  A ->> M: Token e ruolo verificati
-  M -->> A: 
-  A ->> V: validateDeleteTratta
-  V -->> A: 
-  A ->> CN: deleteTratta
-  CN ->> S: Transito.findOne
-  S -->> CN: Se non c'è nessun transito associato
-  CN ->> R: trattaRepository.deleteTratta
-  R ->> TD: trattaDao.delete
-  TD ->> S: Tratta.findByPk
-  S -->> TD: 
-  TD ->> S: Tratta.destroy
-  S -->> TD: 
-  TD -->> CN: 
-  CN ->> F: createError
-  F -->> CN: 
-  CN -->> A: 
-  A ->> M: errorHandler
-  M -->> A: 
-  A -->> C: 
-```
-
 - **GET /veicolo/:id**
 La chiamata `GET /veicolo/:id` consente al client di recuperare le informazioni di un veicolo specifico, identificato tramite il suo ID. Quando la richiesta viene inviata, il sistema verifica innanzitutto il token JWT e il ruolo dell’utente tramite il middleware di autenticazione. Se l’autenticazione ha esito positivo, viene avviata la validazione dei parametri della richiesta, in particolare dell'ID del veicolo.
 Successivamente, il controller richiama il repository per ottenere i dati del veicolo. Quest'ultimo si appoggia al DAO, che interroga il database tramite Sequelize, utilizzando il metodo `findByPk` per cercare il veicolo tramite chiave primaria. Se il veicolo non viene trovato, viene generato un errore tramite una factory di errori, che viene poi gestito dal middleware degli errori. Infine, la risposta viene inviata al client, contenente o i dati del veicolo richiesto oppure un messaggio d’errore se il veicolo non esiste o la richiesta è invalida.
@@ -378,6 +275,7 @@ Successivamente, il controller richiama il repository per ottenere i dati del ve
   M -->> A: 
   A --) C:  
 ```
+
 - **POST /veicolo**
 La chiamata `POST /veicolo` permette al client di creare un nuovo veicolo all'interno del sistema. Una volta ricevuta la richiesta, l'applicazione verifica l’autenticità del token JWT e i privilegi dell’utente tramite il middleware di autenticazione.
 
@@ -454,7 +352,103 @@ sequenceDiagram
   A -->> C:  
 ```
 
+- **POST /tratta**
+Questa rotta gestisce la creazione di una nuova tratta, cioè un collegamento tra due varchi. Dopo l’invio della richiesta da parte del client, il middleware autentica l’utente e ne controlla i privilegi.
 
+Il corpo della richiesta viene validato per verificare la correttezza delle informazioni, in particolare degli ID dei due varchi estremi. Il controller, tramite il repository, effettua due interrogazioni al DAO dei varchi (`varcoDao.getById`) per verificare che entrambi esistano nel sistema.
+
+Se i varchi sono validi, si procede con la creazione della tratta nel database tramite il DAO (`trattaDao.create`), che sfrutta `Sequelize.Tratta.create.` Infine, il risultato viene risalito fino al client. In caso di problemi (varchi inesistenti, errore di creazione, ecc.), viene generato e gestito un errore.
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as TrattaValidate
+  participant CN as TrattaController
+  participant R as TrattaRepository
+  participant TD as TrattaDAO
+  participant VD as VarcoDAO
+  participant S as Sequelize
+  participant F as Factory
+
+  C ->> A: POST /tratta
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateCreateTratta
+  V -->> A: 
+  A ->> CN: createTratta
+  CN ->> R: trattaRepository.createTratta
+  R ->> VD: varcoDao.getById (x2)
+  VD ->> S: Varco.findByPk (x2)
+  S -->> VD: (x2)
+  VD -->> R: (x2)
+  R ->> TD: trattaDao.create
+  TD ->> S: Tratta.create
+  S -->> TD: 
+  TD -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
+```
+
+- **DELETE /tratta/:id**
+Questa rotta permette di eliminare una tratta specificata tramite il suo ID. Dopo l’autenticazione e la verifica del ruolo da parte del middleware, l’ID fornito viene validato.
+
+Il controller controlla che non ci siano transiti associati alla tratta tramite una query (`Transito.findOne`). Se la tratta non è collegata ad alcun transito (quindi può essere eliminata senza violare integrità referenziale), il controller procede all’eliminazione passando per il repository e il DAO.
+
+Il DAO interroga il database per verificare l’esistenza della tratta (`findByPk`) e, se presente, la elimina con `destroy`. Eventuali errori vengono gestiti attraverso la factory e propagati al middleware, che fornisce la risposta al client.
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as TrattaValidate
+  participant CN as TrattaController
+  participant R as TrattaRepository
+  participant TD as TrattaDAO
+  participant S as Sequelize
+  participant F as Factoryy
+
+  C ->> A: DELETE /tratta/:id
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateDeleteTratta
+  V -->> A: 
+  A ->> CN: deleteTratta
+  CN ->> S: Transito.findOne
+  S -->> CN: Se non c'è nessun transito associato
+  CN ->> R: trattaRepository.deleteTratta
+  R ->> TD: trattaDao.delete
+  TD ->> S: Tratta.findByPk
+  S -->> TD: 
+  TD ->> S: Tratta.destroy
+  S -->> TD: 
+  TD -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
+```
+
+- **GET /transito**
+```mermaid
+
+```
+
+- **POST /transito**
+```mermaid
+
+```
+  
+- **DELETE /transito**
+```mermaid
+
+```
 
 
 ## [🌐 Rotte API](#rotte-api)
