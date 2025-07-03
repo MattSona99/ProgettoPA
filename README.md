@@ -285,8 +285,8 @@ sequenceDiagram
   CN ->> R: trattaRepository.createTratta
   R ->> VD: varcoDao.getById (x2)
   VD ->> S: Varco.findByPk (x2)
-  S -->> VD: 
-  VD -->> R: 
+  S -->> VD: (x2)
+  VD -->> R: (x2)
   R ->> TD: trattaDao.create
   TD ->> S: Tratta.create
   S -->> TD: 
@@ -300,7 +300,38 @@ sequenceDiagram
 ```
 - **DELETE /tratta/:id**
 ```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as App
+  participant M as Middleware
+  participant V as TrattaValidate
+  participant CN as TrattaController
+  participant R as TrattaRepository
+  participant TD as TrattaDAO
+  participant S as Sequelize
+  participant F as Factoryy
 
+  C ->> A: DELETE /tratta/:id
+  A ->> M: Token e ruolo verificati
+  M -->> A: 
+  A ->> V: validateDeleteTratta
+  V -->> A: 
+  A ->> CN: deleteTratta
+  CN ->> S: Transito.findOne
+  S -->> CN: Se non c'è nessun transito associato
+  CN ->> R: trattaRepository.deleteTratta
+  R ->> TD: trattaDao.delete
+  TD ->> S: Tratta.findByPk
+  S -->> TD: 
+  TD ->> S: Tratta.destroy
+  S -->> TD: 
+  TD -->> CN: 
+  CN ->> F: createError
+  F -->> CN: 
+  CN -->> A: 
+  A ->> M: errorHandler
+  M -->> A: 
+  A -->> C: 
 ```
 
 - **GET /veicolo/:id**
