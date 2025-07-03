@@ -1,6 +1,6 @@
 # Progetto Programmazione Avanzata 2024-2025
 <div align="center">
-  <img src="https://github.com/MattSona99/ProgettoPA/blob/main/images/logo.png"
+  <img src="https://github.com/MattSona99/ProgettoPA/blob/main/images/logo.png" />
 </div>
 
 # Indice
@@ -60,7 +60,7 @@ Le rotte sono tutte autenticate con JWT (`[U]`) e prevedono il controllo del ruo
 - `PUT /:id` – Modifica tratta [operatore]
 - `DELETE /:id` – Elimina tratta [operatore]
 
-### Veicoli (`/veicoli`)
+### Veicoli (`/veicolo`)
 - `GET /` – Elenco veicoli [operatore]
 - `GET /:targa` – Cerca veicolo [operatore]
 - `POST /` – Crea veicolo [operatore]
@@ -96,6 +96,8 @@ Le rotte sono tutte autenticate con JWT (`[U]`) e prevedono il controllo del ruo
 ## Scelte implementative
 
 ## Autori
-
-
+|Nome | GitHub |
+|-----------|--------|
+| 👩 `Sonaglioni Matteo` | [Clicca qui!](https://github.com/MattSona99) |
+| 👨 `Cingoli Enzo` | [Clicca qui!](https://github.com/enzoc2000) |
 
