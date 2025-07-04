@@ -7,7 +7,7 @@ const storage = multer.memoryStorage();
 // Funzione per la gestione delle immagini
 export const uploadImage = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },        // max 5 MB
+  limits: { fileSize: 5 * 1024 * 1024 },        // max 5MB
   fileFilter: (_, file, cb) => {
     if (!file.mimetype.match(/^image\/(png|jpe?g)$/)) {
       return cb(new Error('Tipo di file non consentito') as any, false);

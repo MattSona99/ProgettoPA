@@ -6,8 +6,6 @@ import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
 import Veicolo from "../models/veicolo";
 import Utente from "../models/utente";
-import Tratta from "../models/tratta";
-import Varco from "../models/varco";
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface MultaDAO extends DAO<MultaAttributes, number> {
@@ -25,7 +23,7 @@ class MultaDao implements MultaDAO {
     public async getAll(): Promise<MultaAttributes[]> {
         try {
             return await Multa.findAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
         }
     }
@@ -43,7 +41,7 @@ class MultaDao implements MultaDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
             }
             return multa;
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della multa con ID ${id}.`);
         }
     }
@@ -57,7 +55,7 @@ class MultaDao implements MultaDAO {
     public async create(item: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
             return await Multa.create(item, options);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della multa con ID ${item.id_multa}.`);
         }
     }
@@ -69,7 +67,7 @@ class MultaDao implements MultaDAO {
      * @param item - L'oggetto parziale della multa da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: MultaAttributes, options?: { transaction?: Transaction }): Promise<[number, MultaAttributes[]]> {
+    public async update(id: number, item: MultaAttributes): Promise<[number, MultaAttributes[]]> {
         try {
             const multa = await Multa.update(item, { where: { id_multa: id } });
             if (!multa) {
@@ -78,8 +76,8 @@ class MultaDao implements MultaDAO {
             const [rows] = await Multa.update(item, { where: { id_multa: id }, returning: true });
             const updated = await Multa.findAll({ where: { id_multa: id } });
             return [rows, updated];
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della multa con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della multa con ID ${id}.`);
         }
     }
 
@@ -89,15 +87,15 @@ class MultaDao implements MultaDAO {
      * @param id - L'ID della multa da eliminare.
      * @returns - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
+    public async delete(id: number): Promise<number> {
         try {
             const multa = await Multa.findByPk(id);
             if (!multa) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
             }
             return await Multa.destroy({ where: { id_multa: id } });
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della multa con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della multa con ID ${id}.`);
         }
     }
 
@@ -177,7 +175,7 @@ class MultaDao implements MultaDAO {
 
             return multe;
 
-        } catch (e) {
+        } catch {
             throw HttpErrorFactory.createError(
                 HttpErrorCodes.InternalServerError,
                 `Errore nel recupero delle multe per le targhe ${targhe.join(', ')} tra ${dataIn} e ${dataOut}`
@@ -213,7 +211,7 @@ class MultaDao implements MultaDAO {
             }
 
             return multa;
-        } catch (e) {
+        } catch {
             throw HttpErrorFactory.createError(
                 HttpErrorCodes.InternalServerError,
                 `Errore nel recupero delle multe per l'utente con ID ${idUtente}`

@@ -11,7 +11,7 @@ export const getAllTratte = async (req: Request, res: Response, next: NextFuncti
         const tratte = await trattaRepository.getAllTratte();
         res.status(StatusCodes.OK).json(tratte);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte."));
+        next(error);
     }
 };
 
@@ -28,7 +28,7 @@ export const getTrattaById = async (req: Request, res: Response, next: NextFunct
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della tratta."));
+        next(error);
     }
 };
 
@@ -40,7 +40,7 @@ export const createTratta = async (req: Request, res: Response, next: NextFuncti
         const nuovaTratta = await trattaRepository.createTratta(req.body);
         res.status(StatusCodes.CREATED).json(nuovaTratta);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della tratta."));
+        next(error);
     }
 };
 
@@ -58,7 +58,7 @@ export const updateTratta = async (req: Request, res: Response, next: NextFuncti
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento della tratta."));
+        next(error);
     }
 };
 
@@ -75,6 +75,6 @@ export const deleteTratta = async (req: Request, res: Response, next: NextFuncti
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione della tratta."));
+        next(error);
     }
 };

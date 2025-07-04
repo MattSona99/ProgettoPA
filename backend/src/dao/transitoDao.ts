@@ -19,7 +19,7 @@ class TransitoDao implements TransitoDAO {
     public async getAll(): Promise<Transito[]> {
         try {
             return await Transito.findAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti.");
         }
     }
@@ -38,8 +38,8 @@ class TransitoDao implements TransitoDAO {
             } else {
                 return transito;
             }
-        } catch (error: any) {
-            throw Error(error.message);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
         }
     }
 
@@ -52,7 +52,7 @@ class TransitoDao implements TransitoDAO {
     public async create(transito: TransitoCreationAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(transito, options);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
         }
     }
@@ -64,7 +64,7 @@ class TransitoDao implements TransitoDAO {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
-    public async update(id: number, transito: TransitoAttributes, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
+    public async update(id: number, transito: TransitoAttributes): Promise<[number, Transito[]]> {
         try {
             const existingTransito = await Transito.findByPk(id);
             if (!existingTransito) {
@@ -76,8 +76,8 @@ class TransitoDao implements TransitoDAO {
             }
 
             return [row, updatedTransito];
-        } catch (error) {
-            throw error;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
         }
     }
 
@@ -95,8 +95,8 @@ class TransitoDao implements TransitoDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
             }
             return deleted;
-        } catch (error: any) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del transito con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
         }
     }
 }

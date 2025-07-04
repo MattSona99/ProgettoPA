@@ -22,6 +22,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const token = generateToken({ id: user.id_utente, ruolo: user.ruolo });
         res.status(StatusCodes.OK).json({ token });
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dell'utente."))
+        next(error);
     }
 }

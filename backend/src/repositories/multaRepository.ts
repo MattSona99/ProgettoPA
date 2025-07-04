@@ -1,11 +1,7 @@
 import multaDao from "../dao/multaDao";
-import transitoDao from "../dao/transitoDao";
-import trattaDao from "../dao/trattaDao";
 import Multa, { MultaCreationAttributes } from "../models/multa";
-import { MultaAttributes } from "../models/multa";
 import Transito from "../models/transito";
 import Tratta from "../models/tratta";
-import Utente from "../models/utente";
 import Varco from "../models/varco";
 import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
@@ -28,7 +24,7 @@ class multaRepository {
             const nuovaMulta = await multaDao.create(item, { transaction });
             await transaction.commit();
             return nuovaMulta;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della multa con ID ${item.id_multa}.`);
         }
@@ -47,7 +43,7 @@ class multaRepository {
             const multe = await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
             const multeComplete = await this.enrichMulte(multe);
             return multeComplete;
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(
                 HttpErrorCodes.InternalServerError,
                 `Errore nel recupero delle multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
@@ -106,7 +102,7 @@ class multaRepository {
             }));
             return multaCompleta.filter(m => m !== null);
         }
-        catch (error) {
+        catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel Completamento delle Multe.");
         }
     }

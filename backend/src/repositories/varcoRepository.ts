@@ -18,7 +18,7 @@ class VarcoRepository {
     public async getAllVarco(): Promise<Varco[]> {
         try {
             return await varcoDao.getAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
         }
     }
@@ -36,7 +36,7 @@ class VarcoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
             return await this.enrichVarco(varco);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${id}.`);
         }
     }
@@ -54,7 +54,7 @@ class VarcoRepository {
             const newVarco = await varcoDao.create(varcoData, { transaction });
             await transaction.commit();
             return newVarco;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del varco con ID ${varcoData.id_varco}.`);
         }
@@ -74,8 +74,8 @@ class VarcoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
             return updatedVarco;
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del varco con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
         }
     }
 
@@ -95,9 +95,9 @@ class VarcoRepository {
             }
             await transaction.commit();
             return true;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del varco con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
         }
     }
 
@@ -118,7 +118,7 @@ class VarcoRepository {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${varco.id_varco} non trovato.`);
             }
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
         }
     }

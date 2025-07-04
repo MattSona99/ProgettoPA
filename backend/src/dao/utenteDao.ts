@@ -20,7 +20,7 @@ class UtenteDao implements UtenteDAO {
     public async getAll(): Promise<Utente[]> {
         try {
             return await Utente.findAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero degli utenti.");
         }
     }
@@ -38,7 +38,7 @@ class UtenteDao implements UtenteDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
             }
             return utente;
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con ID ${id}.`);
         }
     }
@@ -56,7 +56,7 @@ class UtenteDao implements UtenteDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con email ${email} non trovato.`);
             }
             return utente;
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con email ${email}.`);
         }
     }
@@ -70,7 +70,7 @@ class UtenteDao implements UtenteDAO {
     public async create(utente: UtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
             return await Utente.create(utente, options);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione dell'utente con ID ${utente.id_utente}.`);
         }
     }
@@ -82,7 +82,7 @@ class UtenteDao implements UtenteDAO {
      * @param utente - L'oggetto parziale dell'utente da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di utenti aggiornati.
      */
-    public async update(id: number, utente: UtenteAttributes, options?: { transaction?: Transaction }): Promise<[number, Utente[]]> {
+    public async update(id: number, utente: UtenteAttributes): Promise<[number, Utente[]]> {
         try {
             const existingUtente = await Utente.findByPk(id);
             if (!existingUtente) {
@@ -94,8 +94,8 @@ class UtenteDao implements UtenteDAO {
             });
             const updatedItem = await Utente.findAll({ where: { id_utente: id } });
             return [indexedCount, updatedItem];
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento dell'utente con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento dell'utente con ID ${id}.`);
         }
     }
 
@@ -115,8 +115,8 @@ class UtenteDao implements UtenteDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
             }
             return deletedCount;
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione dell'utente con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione dell'utente con ID ${id}.`);
         }
     }
 }

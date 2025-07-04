@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import multaRepository from '../repositories/multaRepository';
 import { StatusCodes } from 'http-status-codes';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import multaDao from '../dao/multaDao';
 import transitoRepository from '../repositories/transitoRepository';
 import { generateBollettinoPDFBuffer } from '../utils/bollettino';
-import utenteDao from '../dao/utenteDao';
 
 /**
  * Funzione per creare una multa
@@ -15,7 +13,7 @@ export const createMulta = async (req: Request, res: Response, next: NextFunctio
         const createdMulta = await multaRepository.create(req.body);
         res.status(StatusCodes.CREATED).json(createdMulta);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione della multa."));
+        next(error);
     }
 }
 
@@ -27,7 +25,7 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
         const multe = await multaDao.getAll();
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe."));
+        next(error);
     }
 }
 
@@ -48,7 +46,7 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
         );
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe."));
+        next(error);
     }
 }
 
@@ -72,6 +70,6 @@ export const downloadBollettinoPDF = async (req: Request, res: Response, next: N
             .send(pdfBuffer);
     }
     catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel download del bollettino."));
+        next(error);
     }
 }

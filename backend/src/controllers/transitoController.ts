@@ -1,4 +1,4 @@
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -13,7 +13,7 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
     try {
         const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
-    } catch (error) {
+    } catch {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti."));
     }
 };
@@ -29,7 +29,7 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."))
         }
         res.status(StatusCodes.OK).json(transito);
-    } catch (error) {
+    } catch {
         next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del transito."));
     }
 }
@@ -79,7 +79,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             return next(HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito."));
+        next(error);
     }
 }
 
@@ -101,7 +101,7 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
         }
         res.status(StatusCodes.OK).json({ targa });
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del transito tramite varco."));
+        next(error);
     }
 }
 /**
@@ -113,10 +113,8 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
     try {
         const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
-    } catch (error: any) {
-        const status = error.statusCode || 500;
-        const message = error.message || "Errore interno del server.";
-        res.status(status).json({ error: message });
+    } catch (error) {
+        next(error);
     }
 }
 
@@ -137,6 +135,6 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del transito."));
+        next(error);
     }
 }

@@ -11,7 +11,7 @@ export const getAllVarco = async (req: Request, res: Response, next: NextFunctio
         const varchi = await varcoRepository.getAllVarco();
         res.status(StatusCodes.OK).json(varchi);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi."));
+        next(error);
     }
 }
 
@@ -27,7 +27,7 @@ export const getVarcoById = async (req: Request, res: Response, next: NextFuncti
         }
         res.status(StatusCodes.OK).json(varco);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del varco."));
+        next(error);
     }
 }
 
@@ -40,7 +40,7 @@ export const createVarco = async (req: Request, res: Response, next: NextFunctio
         const createdVarco = await varcoRepository.createVarco(newVarco);
         res.status(StatusCodes.CREATED).json(createdVarco);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del varco."));
+        next(error);
     }
 }
 
@@ -57,7 +57,7 @@ export const updateVarco = async (req: Request, res: Response, next: NextFunctio
         }
         res.status(StatusCodes.OK).json(updatedVarco);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del varco."));
+        next(error);
     }
 }
 
@@ -74,6 +74,6 @@ export const deleteVarco = async (req: Request, res: Response, next: NextFunctio
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del varco."));
+        next(error);
     }
 }

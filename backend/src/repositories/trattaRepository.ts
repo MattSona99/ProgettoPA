@@ -1,4 +1,3 @@
-import transitoDao from "../dao/transitoDao";
 import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
 import Transito from "../models/transito";
@@ -21,7 +20,7 @@ class TrattaRepository {
         try {
             const tratte = await trattaDao.getAll();
             return await Promise.all(tratte.map(tratta => this.enrichTratta(tratta)));
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     }
@@ -39,7 +38,7 @@ class TrattaRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
             }
             return await this.enrichTratta(tratta);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
         }
     }
@@ -66,7 +65,7 @@ class TrattaRepository {
             const nuovaTratta = await trattaDao.create(trattaCompleta, { transaction });
             await transaction.commit();
             return nuovaTratta;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta.`);
         }
@@ -93,7 +92,6 @@ class TrattaRepository {
             }
 
             if (tratta.varco_in && !tratta.varco_out) {
-                console.log("------------- HO SOLO IL VARCO IN ---------------");
                 // Controllo se il varco in esiste
                 const varcoIn = await varcoDao.getById(tratta.varco_in);
                 if (!varcoIn) {
@@ -121,7 +119,6 @@ class TrattaRepository {
                 return await trattaDao.update(id, trattaCompleta);
             }
             else if (tratta.varco_out && !tratta.varco_in) {
-                console.log("------------- HO SOLO IL VARCO OUT ---------------");
                 // Controllo se il varco out esiste
                 const varcoOut = await varcoDao.getById(tratta.varco_out);
                 if (!varcoOut) {
@@ -148,8 +145,6 @@ class TrattaRepository {
                 };
                 return await trattaDao.update(id, trattaCompleta);
             }
-            console.log("------------- HO I DUE VARCHI ---------------");
-
             // Controllo se entrambi i varchi esistono
             const varcoOut = await varcoDao.getById(tratta.varco_out);
             const varcoIn = await varcoDao.getById(tratta.varco_in);
@@ -186,8 +181,8 @@ class TrattaRepository {
             };
             return await trattaDao.update(id, trattaCompleta);
 
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della tratta con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -205,12 +200,12 @@ class TrattaRepository {
             if (transito) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare una tratta perchè associata ad un transito.");
             }
-            const deleted = await trattaDao.delete(id, { transaction });
+            const deleted = await trattaDao.delete(id);
             await transaction.commit();
             return deleted;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della tratta con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
         }
     }
 
@@ -228,7 +223,7 @@ class TrattaRepository {
                 varco_in: varco_in ? varco_in.dataValues : null,
                 varco_out: varco_out ? varco_out.dataValues : null
             }
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     };

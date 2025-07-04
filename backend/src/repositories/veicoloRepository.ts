@@ -20,7 +20,7 @@ class VeicoloRepository {
         try {
             const veicoli = await veicoloDao.getAll();
             return await Promise.all(veicoli.map(veicolo => this.enrichVeicolo(veicolo)));
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
     }
@@ -38,7 +38,7 @@ class VeicoloRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
             return await this.enrichVeicolo(veicolo);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
         }
     }
@@ -56,7 +56,7 @@ class VeicoloRepository {
             const nuovoVeicolo = await veicoloDao.create(item, { transaction });
             await transaction.commit()
             return nuovoVeicolo;
-        } catch (error) {
+        } catch {
             await transaction.rollback()
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);;
         }
@@ -72,8 +72,8 @@ class VeicoloRepository {
     public async updateVeicolo(targa: string, item: VeicoloAttributes): Promise<[number, Veicolo[]]> {
         try {
             return await veicoloDao.update(targa, item);
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del veicolo con targa ${targa}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
         }
     }
 
@@ -87,15 +87,15 @@ class VeicoloRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const deleted = await veicoloDao.delete(targa, { transaction });
+            const deleted = await veicoloDao.delete(targa);
             if (!deleted) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
             await transaction.commit();
             return true;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del veicolo con targa ${targa}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
         }
     }
 
@@ -113,7 +113,7 @@ class VeicoloRepository {
                 tipo_veicolo: tipo_veicolo ? tipo_veicolo.dataValues : null,
                 utente: utente ? utente.dataValues : null
             };
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul veicolo con targa ${veicolo.targa}.`);
         }
     }

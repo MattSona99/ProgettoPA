@@ -4,7 +4,7 @@ import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
-import Multa, { MultaAttributes, MultaCreationAttributes } from '../models/multa';
+import Multa, { MultaCreationAttributes } from '../models/multa';
 import Tesseract from 'tesseract.js';
 import trattaDao from '../dao/trattaDao';
 import veicoloDao from '../dao/veicoloDao';
@@ -28,7 +28,7 @@ class TransitoRepository {
     public async getAllTransiti(): Promise<Transito[]> {
         try {
             return await transitoDao.getAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti.");
         }
     }
@@ -45,7 +45,7 @@ class TransitoRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
             }
             return await this.enrichTransito(transito);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
         }
     }
@@ -140,7 +140,7 @@ class TransitoRepository {
             } else { // Se il ruolo è di un varco non smart, non si può creare un transito
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco non è di tipo smart, quindi non può creare transiti.`);
             }
-        } catch (error) {
+        } catch  {
             await transaction.rollback();
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
         }
@@ -206,8 +206,8 @@ class TransitoRepository {
                 delta_velocita: transitoCompleto.delta_velocita ?? 0
             }
             return await transitoDao.update(id, transitoAggiornato);
-        } catch (error) {
-            throw error;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
         }
     }
 
@@ -227,9 +227,9 @@ class TransitoRepository {
             }
             await transaction.commit();
             return true;
-        } catch (error) {
+        } catch {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione del transito con ID ${id}.`);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
         }
     }
 
@@ -249,7 +249,7 @@ class TransitoRepository {
                 veicolo: veicolo ? veicolo.dataValues : null,
                 tipoVeicolo: tipoVeicolo ? tipoVeicolo.dataValues : null
             };
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul transito con ID ${transito.id_transito}.`);
         }
     }
@@ -298,7 +298,7 @@ class TransitoRepository {
             const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
             const match = text.match(regex);
             return match ? match[0] : null;
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel processamento dell'immagine della targa.");
         }
     }

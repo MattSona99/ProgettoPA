@@ -1,12 +1,8 @@
-import e, { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import { StatusCodes } from 'http-status-codes';
 import { verifyToken } from '../utils/jwt';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 dotenv.config(); // Caricamento delle variabili d'ambiente dal file .env
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
 
 /**
  * Middleware per la verifica e decodifica del token JWT
@@ -26,7 +22,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         (req as any).user = payload; // Aggiunta del payload alla richiesta
         next();
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, 'Errore nella verifica del token.'));
+        next(error);
     }
 }
 

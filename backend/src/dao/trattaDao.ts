@@ -20,7 +20,7 @@ class TrattaDao implements TrattaDAO {
     public async getAll(): Promise<Tratta[]> {
         try {
             return await Tratta.findAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle tratte.");
         }
     }
@@ -39,8 +39,8 @@ class TrattaDao implements TrattaDAO {
             } else {
                 return tratta;
             }
-        } catch (error) {
-            throw error;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
         }
     }
 
@@ -53,7 +53,7 @@ class TrattaDao implements TrattaDAO {
     public async create(item: TrattaCreationAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
         try {
             return await Tratta.create(item, options);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta con ID ${item.id_tratta}.`);
         }
     }
@@ -74,8 +74,8 @@ class TrattaDao implements TrattaDAO {
             const [rows] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
             const updated = await Tratta.findAll({ where: { id_tratta: id } });
             return [rows, updated];
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento della tratta con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
         }
     }
 
@@ -85,11 +85,11 @@ class TrattaDao implements TrattaDAO {
      * @param {number} id - L'ID della tratta da eliminare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number, options?: { transaction?: Transaction}): Promise<number> {
+    public async delete(id: number): Promise<number> {
         try {
             return await Tratta.destroy({ where: { id_tratta: id } });
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'eliminazione della tratta con ID ${id}.`);
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
         }
     }
 }

@@ -28,7 +28,7 @@ export async function generateBollettinoPDFBuffer(multa: MultaAttributes, targa:
         const arrayBuf = pdf.output('arraybuffer');
         return Buffer.from(arrayBuf);
     }
-    catch (error) {
+    catch {
         throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del bollettino.");
     }
 }

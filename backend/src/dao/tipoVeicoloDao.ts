@@ -20,7 +20,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
     public async getAll(): Promise<TipoVeicolo[]> {
         try {
             return await TipoVeicolo.findAll();
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei tipi di veicolo.");
         }
     }
@@ -39,8 +39,8 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
             } else {
                 return tipoVeicolo;
             }
-        } catch (error) {
-            throw error;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del tipo di veicolo con id ${id}.`);
         }
     }
 
@@ -53,7 +53,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
     public async create(item: TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
         try {
             return await TipoVeicolo.create(item, options);
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del tipo di veicolo con id ${item.id_tipo_veicolo}.`);
         }
     }
@@ -66,7 +66,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @returns {Promise<[number, TipoVeicolo[]]>} - Una promessa che risolve con un array di tipi di veicolo.
      */
 
-    public async update(id: number, item: TipoVeicolo, options?: { transaction?: Transaction }): Promise<[number, TipoVeicolo[]]> {
+    public async update(id: number, item: TipoVeicolo): Promise<[number, TipoVeicolo[]]> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
@@ -75,7 +75,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
             const [rows] = await TipoVeicolo.update(item, { where: { id_tipo_veicolo: id }, returning: true });
             const updated = await TipoVeicolo.findAll({ where: { id_tipo_veicolo: id } });
             return [rows, updated];
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del tipo di veicolo con id ${id}.`);
         }
     }
@@ -86,14 +86,14 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @param {number} id - L'ID del tipo di veicolo da eliminare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
+    public async delete(id: number): Promise<number> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
             }
             return await TipoVeicolo.destroy({ where: { id_tipo_veicolo: id } });
-        } catch (error) {
+        } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del tipo di veicolo con id ${id}.`);
         }
     }

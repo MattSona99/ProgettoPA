@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import Database from '../utils/database';
 import TipoVeicolo from './tipoVeicolo';
 import Utente from './utente';

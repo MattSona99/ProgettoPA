@@ -17,7 +17,7 @@ export const getAllVeicoli = async (req: Request, res: Response, next: NextFunct
         const veicoli = await veicoloRepository.getAllVeicoli();
         res.status(StatusCodes.OK).json(veicoli);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli."));
+        next(error);
     }
 }
 
@@ -35,7 +35,7 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."))
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del veicolo."));
+        next(error);
     }
 }
 
@@ -54,7 +54,7 @@ export const createVeicolo = async (req: Request, res: Response, next: NextFunct
         const nuovoVeicolo = await veicoloRepository.createVeicolo(req.body);
         res.status(StatusCodes.CREATED).json(nuovoVeicolo);
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella creazione del veicolo."));
+        next(error);
     }
 
 }
@@ -79,7 +79,7 @@ export const updateVeicolo = async (req: Request, res: Response, next: NextFunct
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del veicolo."));
+        next(error);
     }
 }
 
@@ -102,6 +102,6 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
         }
     } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'eliminazione del veicolo."));
+        next(error);
     }
 }
