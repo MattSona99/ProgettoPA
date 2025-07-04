@@ -17,9 +17,9 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle multe
-router.get('/multe', authorize(['operatore']), getAllMulte);
-router.get('/multe/dettagli', authorize(['operatore', 'automobilista']), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
-router.post('/multe', authorize(['operatore']), validateCreateMulta, createMulta);
-router.get('/multe/download/:id', authorize(['automobilista']), downloadBollettinoPDF);
+router.get('/multa', authorize(['operatore']), getAllMulte);
+router.get('/multa/dettagli', authorize(['operatore', 'automobilista']), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
+router.post('/multa', authorize(['operatore']), validateCreateMulta, createMulta);
+router.get('/multa/download/:id', authorize(['automobilista']), downloadBollettinoPDF);
 
 export default router;
