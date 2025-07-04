@@ -92,7 +92,21 @@ Ognuno può interagire con il sistema per svolgere determinate operazioni:
 - **Operatore**: può autenticarsi, gestire i varchi, le tratte, i veicoli e i transiti, può vedere le multe di tutti gli utenti (anche in un determinato periodo) e scaricare un bollettino di pagamento.
 - **Varco**: può autenticarsi e inserire un transito (manualmente o in automatico).
 
-![Diagramma dei casi d'uso](https://i.imgur.com/IrMuGUF.png)
+```mermaid
+graph TD
+Automobilista(fa:fa-user-lock Automobilista) ---|Controllo| Multe([fa:fa-folder-open Multe])
+
+Multe ---|Include| VisualizzazioneMulte([fa:fa-folder-open Visualizzazione_multe])
+Multe ---|Include| DownloadBollettino([fa:fa-folder-open Download_bollettino])
+
+Operatore(fa:fa-user Operatore) ---|Gestione| Varchi([fa:fa-folder-open Varchi])
+Operatore ---|Gestione| Tratte([fa:fa-folder-open Tratte])
+Operatore ---|Gestione| Veicoli([fa:fa-folder-open Veicoli])
+Operatore ---|Gestione| Transiti([fa:fa-folder-open Transiti])
+Operatore ---|Controllo| Multe([fa:fa-folder-open Multe])
+
+Varco(fa:fa-user-lock Varco) ---|Creazione| Transiti([fa:fa-folder-open Transiti])
+```
 
 ### Diagramma E‑R
 
