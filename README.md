@@ -681,40 +681,6 @@ sequenceDiagram
   A -->> C:
 ```
 
-- **POST /multe**
-Questa rotta si occupa invece della creazione manuale di una nuova multa. È una funzionalità destinata agli operatori autorizzati, ad esempio nei casi in cui sia necessario generare una sanzione in seguito a una verifica o segnalazione. Una volta autenticato l’utente e validati i dati forniti nella richiesta (come il transito associato, l’importo, la motivazione o la data), il controller passa il comando al repository, che si occupa dell’effettivo inserimento nel database attraverso il DAO. La multa viene registrata nella tabella `Multa` tramite Sequelize e, se tutto va a buon fine, viene restituito un esito positivo. In caso contrario, l’errore viene gestito attraverso il factory centralizzato per la generazione degli errori HTTP.
-```mermaid
-sequenceDiagram
-  participant C as Client
-  participant A as App
-  participant M as Middleware
-  participant MV as MultaValidate
-  participant CN as MultaController
-  participant R as MultaRepository
-  participant MD as MultaDAO
-  participant S as Sequelize
-  participant F as Factory
-
-  C ->> A: GET /multe/dettagli
-  A ->> M: Token e ruolo verificati
-  M -->> A:
-  A ->> MV: validateCreateMulta
-  MV -->> A:
-  A ->> CN: createMulta
-  CN ->> R: multaRepository.create
-  R ->> MD: multaDao.create
-  MD ->> S: Multa.create
-  S -->> MD:
-  MD -->> R:
-  R -->> CN: 
-  CN ->> F: createError
-  F -->> CN: 
-  CN -->> A: 
-  A ->> M: errorHandler
-  M -->> A: 
-  A -->> C:
-```
-
 - **GET /multe/download/:id**
 Questa rotta fornisce all’utente la possibilità di scaricare un bollettino PDF relativo a una multa specifica, identificata tramite `id`. Dopo l’autenticazione, il controller avvia una complessa catena di richieste che ricostruisce tutte le informazioni necessarie per compilare correttamente il bollettino. Si parte dalla multa, poi si recuperano i dati dell’utente, del transito associato, del veicolo e infine del tratto percorso. L’interazione tra i DAO e i repository garantisce che tutte le entità correlate vengano caricate, così da includere nel PDF dati come targa, data, ora, varco di rilevamento e importo. Il bollettino generato può essere usato per il pagamento o per la consultazione offline da parte dell’utente, rendendo l’esperienza completa e accessibile.
 
@@ -1849,25 +1815,6 @@ dataOut: 2025-12-28
         "condizioni_ambientali": "nessuna pioggia"
     }
 ]
-```
-
-- `POST /multe` - Inserimento da operatore [operatore]
-
-*Richiesta Body/Query*
-```bash
-Authorization: Bearer {authToken}
-```
-```json
-{
-  "": 
-}
-```
-
-*Risposta:*
-```json
-{
-  "": 
-}
 ```
 
 - `GET /download/:id` – Scarica PDF con QR code del bollettino di pagamento [operatore/automobilista]
