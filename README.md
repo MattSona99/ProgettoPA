@@ -13,8 +13,8 @@
   - [📈 Diagrammi delle sequenze](#diagrammi-delle-sequenze)
 - [🌐 Rotte API](#rotte-api)
 - [⚙️ Setup & Installazione](#setup--installazione)
-- [🧰 Strumenti utilizzati](#strumenti-utilizzati)
 - [💡 Scelte implementative](#scelte-implementative)
+- [🧰 Strumenti utilizzati](#strumenti-utilizzati)
 - [👥 Autori](#autori)
 
 ---
@@ -752,47 +752,527 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 ### Utente
 - `POST /login` – Login utente
 
+*Richiesta Body/Query*
+```json
+{
+  "email": "mrossi@example.com"
+}
+```
+*Risposta:*
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwicnVvbG8iOiJvcGVyYXRvcmUiLCJpYXQiOjE3NTEzNzY0NDAsImV4cCI6MTc1MTM4MDA0MH0.Y24kyqu3lP3TcmhdIqC9h3blGbDkYXGuhODDUnZorgI"
+}
+```
+
 ### Varchi (`/varco`)
 - `GET /` – Elenco varchi [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /:id` – Cerca varco [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /` – Crea varco [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "nome_autostrada": "A16",
+    "km": 40,
+    "smart": "false",
+    "pioggia": "true",
+    "utente": 10
+}
+```
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `PUT /:id` – Modifica varco [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "nome_autostrada": "A55",
+    "km": 33
+}
+```
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `DELETE /:id` – Elimina varco [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ### Tratte (`/tratta`)
 - `GET /` – Elenco tratte [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /` – Cerca tratta [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /` – Crea tratta (v_in, v_out, distanza) [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "varco_in": 3,
+    "varco_out": 4,
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `PUT /:id` – Modifica tratta [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "varco_in": 5,
+    "varco_out": 6,
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `DELETE /:id` – Elimina tratta [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ### Veicoli (`/veicolo`)
 - `GET /` – Elenco veicoli [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /:targa` – Cerca veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /` – Crea veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "targa": "MN321OZ",
+    "tipo_veicolo": 3,
+    "utente": 2
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `PUT /:targa` – Modifica veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "tipo_veicolo": 4,
+    "utente": 1
+}
+```
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `DELETE /:targa` – Elimina veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ### Veicoli (`/tipoVeicolo`)
 - `GET /` – Elenco tipo veicoli [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /:id` – Cerca tipo veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /` – Crea tipo veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "tipo": "Prova",
+    "limite_velocita": 130
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `PUT /:id` – Modifica tipo veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "tipo": "prova_3"
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `DELETE /:id` – Elimina tipo veicolo [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ### Transiti (`/transito`)
 - `GET /` – Elenco transiti [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /:id` – Cerca transito [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /manuale` – Inserimento da operatore o varco non smart [operatore/varco]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "targa": "UV987WX",
+    "tratta": 2,
+    "data_in": "2025-06-28 08:00:00",
+    "data_out": "2025-06-28 08:40:00"
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /smart` – Inserimento da varco smart [varco]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `PUT /:id` – Modifica transito [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+    "targa": "UV987WX",
+    "tratta": 2,
+    "data_in": "2025-06-28 08:00:00",
+    "data_out": "2025-06-28 18:40:00"
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `DELETE /:id` – Elimina transito [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ### Multe (`/api/multe`)
 - `GET /` – Elenco multe [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+  "": 
+}
+```
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /dettagli` – Lista multe per targa e periodo [operatore/automobilista]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+  "": 
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `POST /multe` - Inserimento da operatore [operatore]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+  "": 
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
+
 - `GET /download/:id` – Scarica PDF con QR code del bollettino di pagamento [operatore/automobilista]
+
+*Richiesta Body/Query*
+```bash
+Authorization: Bearer {authToken}
+```
+```json
+{
+  "": 
+}
+```
+
+*Risposta:*
+```json
+{
+  "": 
+}
+```
 
 ---
 
@@ -823,6 +1303,15 @@ JWT_SECRET=your_secret_key
 ```
 Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
+## [💡 Scelte implementative](#scelte-implementative)
+
+Per facilitare lo sviluppo didattico del progetto, sono state adottate alcune scelte implementative mirate.
+Come già evidenziato, l'intero sistema è stato progettato secondo un approccio modulare, realizzato attraverso lo sviluppo di un backend utilizzato il pattern MVC, per facilitare possibili implementazioni e modifiche future.
+
+Considerata la natura del progetto, che non include lo sviluppo di un frontend, le rotte sono state testate tramite Postman. Ogni rotta prevede meccanismi di autenticazione ed autorizzazione, modulati in base al ruolo dell'utente.
+
+Per quanto riguarda l'implementazione della logica legata alle multe, si è scelto di considerare la presenza di condizioni ambientali avverse (pioggia) solo nei casi in cui nel Transito entrambi i varchi, di ingresso (`varco_in`) e di uscita (`varco_out`), riportino il campo `pioggia=true`. Questa scelta è stata adottata per garantire maggiore coerenza ed affidabilità nella rilevazione delle condizioni meteo, riducendo il rischio di penalizzazioni ingiustificate dovute a segnalazioni parziali o localizzate.
+
 ## [🧰 Strumenti utilizzati](#strumenti-utilizzati)
 Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti strumenti di lavoro:
 
@@ -847,8 +1336,6 @@ Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti st
 * [GitHub](https://github.com/) come piattaforma di condivisione e versioning del codice;
 
 * [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
-
-## [💡 Scelte implementative](#scelte-implementative)
 
 ## [👥 Autori](#autori)
 |Nome | GitHub |
