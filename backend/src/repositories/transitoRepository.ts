@@ -140,9 +140,9 @@ class TransitoRepository {
             } else { // Se il ruolo è di un varco non smart, non si può creare un transito
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco non è di tipo smart, quindi non può creare transiti.`);
             }
-        } catch  {
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
+            throw error
         }
     }
 

@@ -13,8 +13,8 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
     try {
         const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
-    } catch {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti."));
+    } catch (error) {
+        next(error);
     }
 };
 
@@ -29,8 +29,8 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
             next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."))
         }
         res.status(StatusCodes.OK).json(transito);
-    } catch {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero del transito."));
+    } catch (error) {
+        next(error);
     }
 }
 

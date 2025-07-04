@@ -24,9 +24,9 @@ class multaRepository {
             const nuovaMulta = await multaDao.create(item, { transaction });
             await transaction.commit();
             return nuovaMulta;
-        } catch {
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della multa con ID ${item.id_multa}.`);
+            throw error;
         }
     }
 

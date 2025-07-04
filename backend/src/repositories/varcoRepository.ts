@@ -54,9 +54,9 @@ class VarcoRepository {
             const newVarco = await varcoDao.create(varcoData, { transaction });
             await transaction.commit();
             return newVarco;
-        } catch {
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del varco con ID ${varcoData.id_varco}.`);
+            throw error;
         }
     }
 

@@ -16,7 +16,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     try {
         const user = await utenteDao.getByEmail(email);
         if (!user) {
-            throw new Error("Utente non trovato");
+            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con email ${email} non trovato.`);
         }
         // genera un token JWT
         const token = generateToken({ id: user.id_utente, ruolo: user.ruolo });

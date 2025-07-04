@@ -65,9 +65,9 @@ class TrattaRepository {
             const nuovaTratta = await trattaDao.create(trattaCompleta, { transaction });
             await transaction.commit();
             return nuovaTratta;
-        } catch {
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione della tratta.`);
+            throw error;
         }
     }
 

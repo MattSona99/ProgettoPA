@@ -56,9 +56,9 @@ class VeicoloRepository {
             const nuovoVeicolo = await veicoloDao.create(item, { transaction });
             await transaction.commit()
             return nuovoVeicolo;
-        } catch {
+        } catch (error) {
             await transaction.rollback()
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del veicolo con targa ${item.targa}.`);;
+            throw error;
         }
     }
 
