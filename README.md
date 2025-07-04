@@ -761,7 +761,7 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 *Risposta:*
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwicnVvbG8iOiJvcGVyYXRvcmUiLCJpYXQiOjE3NTEzNzY0NDAsImV4cCI6MTc1MTM4MDA0MH0.Y24kyqu3lP3TcmhdIqC9h3blGbDkYXGuhODDUnZorgI"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwicnVvbG8iOiJvcGVyYXRvcmUiLCJpYXQiOjE3NTE2MjMwNjEsImV4cCI6MTc1MTYyNjY2MX0.VeOchsjtmCRuRNDd29E0rLROhPzO5QCy-Yzx-yleI4Y"
 }
 ```
 
@@ -775,9 +775,64 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_varco": 1,
+        "nome_autostrada": "A1",
+        "km": 10,
+        "smart": true,
+        "pioggia": false
+    },
+    {
+        "id_varco": 2,
+        "nome_autostrada": "A1",
+        "km": 50,
+        "smart": true,
+        "pioggia": false
+    },
+    {
+        "id_varco": 3,
+        "nome_autostrada": "A4",
+        "km": 120,
+        "smart": false,
+        "pioggia": true
+    },
+    {
+        "id_varco": 4,
+        "nome_autostrada": "A4",
+        "km": 161,
+        "smart": false,
+        "pioggia": true
+    },
+    {
+        "id_varco": 5,
+        "nome_autostrada": "A14",
+        "km": 75,
+        "smart": true,
+        "pioggia": false
+    },
+    {
+        "id_varco": 6,
+        "nome_autostrada": "A14",
+        "km": 126,
+        "smart": true,
+        "pioggia": true
+    },
+    {
+        "id_varco": 7,
+        "nome_autostrada": "A22",
+        "km": 40,
+        "smart": false,
+        "pioggia": true
+    },
+    {
+        "id_varco": 8,
+        "nome_autostrada": "A22",
+        "km": 90,
+        "smart": false,
+        "pioggia": false
+    }
+]
 ```
 
 - `GET /:id` – Cerca varco [operatore]
@@ -790,7 +845,19 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_varco": 3,
+    "nome_autostrada": "A4",
+    "km": 120,
+    "smart": false,
+    "pioggia": true,
+    "utente": {
+        "id_utente": 8,
+        "nome": "",
+        "cognome": "",
+        "email": "varco_2@example.com",
+        "ruolo": "varco",
+        "tokens": 100
+    }
 }
 ```
 
@@ -812,7 +879,11 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_varco": 9,
+    "nome_autostrada": "A16",
+    "km": 40,
+    "smart": false,
+    "pioggia": true
 }
 ```
 
@@ -830,9 +901,18 @@ Authorization: Bearer {authToken}
 ```
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    1,
+    [
+        {
+            "id_varco": 9,
+            "nome_autostrada": "A55",
+            "km": 33,
+            "smart": false,
+            "pioggia": true
+        }
+    ]
+]
 ```
 
 - `DELETE /:id` – Elimina varco [operatore]
@@ -845,7 +925,7 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "message": "Varco eliminato con successo."
 }
 ```
 
@@ -859,9 +939,80 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_tratta": 1,
+        "varco_in": {
+            "id_varco": 1,
+            "nome_autostrada": "A1",
+            "km": 10,
+            "smart": true,
+            "pioggia": false
+        },
+        "varco_out": {
+            "id_varco": 2,
+            "nome_autostrada": "A1",
+            "km": 50,
+            "smart": true,
+            "pioggia": false
+        },
+        "distanza": 39.7
+    },
+    {
+        "id_tratta": 2,
+        "varco_in": {
+            "id_varco": 3,
+            "nome_autostrada": "A4",
+            "km": 120,
+            "smart": false,
+            "pioggia": true
+        },
+        "varco_out": {
+            "id_varco": 4,
+            "nome_autostrada": "A4",
+            "km": 161,
+            "smart": false,
+            "pioggia": true
+        },
+        "distanza": 40.5
+    },
+    {
+        "id_tratta": 3,
+        "varco_in": {
+            "id_varco": 5,
+            "nome_autostrada": "A14",
+            "km": 75,
+            "smart": true,
+            "pioggia": false
+        },
+        "varco_out": {
+            "id_varco": 6,
+            "nome_autostrada": "A14",
+            "km": 126,
+            "smart": true,
+            "pioggia": true
+        },
+        "distanza": 50.6
+    },
+    {
+        "id_tratta": 4,
+        "varco_in": {
+            "id_varco": 7,
+            "nome_autostrada": "A22",
+            "km": 40,
+            "smart": false,
+            "pioggia": true
+        },
+        "varco_out": {
+            "id_varco": 8,
+            "nome_autostrada": "A22",
+            "km": 90,
+            "smart": false,
+            "pioggia": false
+        },
+        "distanza": 49.6
+    }
+]
 ```
 
 - `GET /` – Cerca tratta [operatore]
@@ -874,11 +1025,26 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tratta": 3,
+    "varco_in": {
+        "id_varco": 5,
+        "nome_autostrada": "A14",
+        "km": 75,
+        "smart": true,
+        "pioggia": false
+    },
+    "varco_out": {
+        "id_varco": 6,
+        "nome_autostrada": "A14",
+        "km": 126,
+        "smart": true,
+        "pioggia": true
+    },
+    "distanza": 50.6
 }
 ```
 
-- `POST /` – Crea tratta (v_in, v_out, distanza) [operatore]
+- `POST /` – Crea tratta (varco_in, varco_out) [operatore]
 
 *Richiesta Body/Query*
 ```bash
@@ -894,7 +1060,10 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tratta": 5,
+    "varco_in": 3,
+    "varco_out": 4,
+    "distanza": 41
 }
 ```
 
@@ -914,7 +1083,22 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tratta": 5,
+    "varco_in": {
+        "id_varco": 5,
+        "nome_autostrada": "A14",
+        "km": 75,
+        "smart": true,
+        "pioggia": false
+    },
+    "varco_out": {
+        "id_varco": 6,
+        "nome_autostrada": "A14",
+        "km": 126,
+        "smart": true,
+        "pioggia": true
+    },
+    "distanza": 51
 }
 ```
 
@@ -928,7 +1112,7 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "message": "Tratta eliminata con successo."
 }
 ```
 
@@ -942,9 +1126,168 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "targa": "AB123CD",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 1,
+            "tipo": "autovettura",
+            "limite_velocita": 130
+        },
+        "utente": {
+            "id_utente": 1,
+            "nome": "Matteo",
+            "cognome": "Sonaglioni",
+            "email": "msonaglioni@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "EF456GH",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 2,
+            "tipo": "motociclo",
+            "limite_velocita": 130
+        },
+        "utente": {
+            "id_utente": 2,
+            "nome": "Enzo",
+            "cognome": "Cingoli",
+            "email": "ecingoli@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "IJ789KL",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 3,
+            "tipo": "roulotte",
+            "limite_velocita": 80
+        },
+        "utente": {
+            "id_utente": 3,
+            "nome": "Giuseppe",
+            "cognome": "Verdi",
+            "email": "gverdi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "MN321OP",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 4,
+            "tipo": "autocarri",
+            "limite_velocita": 130
+        },
+        "utente": {
+            "id_utente": 4,
+            "nome": "Mario",
+            "cognome": "Bianchi",
+            "email": "mbianchi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "QR654ST",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 5,
+            "tipo": "autobus",
+            "limite_velocita": 100
+        },
+        "utente": {
+            "id_utente": 5,
+            "nome": "Luigi",
+            "cognome": "Verdi",
+            "email": "lverdi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "UV987WX",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 6,
+            "tipo": "pesante",
+            "limite_velocita": 80
+        },
+        "utente": {
+            "id_utente": 1,
+            "nome": "Matteo",
+            "cognome": "Sonaglioni",
+            "email": "msonaglioni@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "YZ741AB",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 7,
+            "tipo": "eccezionale",
+            "limite_velocita": 60
+        },
+        "utente": {
+            "id_utente": 2,
+            "nome": "Enzo",
+            "cognome": "Cingoli",
+            "email": "ecingoli@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "CD852EF",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 1,
+            "tipo": "autovettura",
+            "limite_velocita": 130
+        },
+        "utente": {
+            "id_utente": 3,
+            "nome": "Giuseppe",
+            "cognome": "Verdi",
+            "email": "gverdi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "GH963IJ",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 2,
+            "tipo": "motociclo",
+            "limite_velocita": 130
+        },
+        "utente": {
+            "id_utente": 4,
+            "nome": "Mario",
+            "cognome": "Bianchi",
+            "email": "mbianchi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    },
+    {
+        "targa": "KL159MN",
+        "tipo_veicolo": {
+            "id_tipo_veicolo": 3,
+            "tipo": "roulotte",
+            "limite_velocita": 80
+        },
+        "utente": {
+            "id_utente": 5,
+            "nome": "Luigi",
+            "cognome": "Verdi",
+            "email": "lverdi@example.com",
+            "ruolo": "automobilista",
+            "tokens": 100
+        }
+    }
+]
 ```
 
 - `GET /:targa` – Cerca veicolo [operatore]
@@ -957,7 +1300,20 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "targa": "MN321OP",
+    "tipo_veicolo": {
+        "id_tipo_veicolo": 4,
+        "tipo": "autocarri",
+        "limite_velocita": 130
+    },
+    "utente": {
+        "id_utente": 4,
+        "nome": "Mario",
+        "cognome": "Bianchi",
+        "email": "mbianchi@example.com",
+        "ruolo": "automobilista",
+        "tokens": 100
+    }
 }
 ```
 
@@ -978,7 +1334,9 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "targa": "MN321OZ",
+    "tipo_veicolo": 3,
+    "utente": 2
 }
 ```
 
@@ -997,7 +1355,20 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "targa": "MN321OZ",
+    "tipo_veicolo": {
+        "id_tipo_veicolo": 4,
+        "tipo": "autocarri",
+        "limite_velocita": 130
+    },
+    "utente": {
+        "id_utente": 1,
+        "nome": "Matteo",
+        "cognome": "Sonaglioni",
+        "email": "msonaglioni@example.com",
+        "ruolo": "automobilista",
+        "tokens": 100
+    }
 }
 ```
 
@@ -1011,11 +1382,11 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "message": "Veicolo eliminato con successo."
 }
 ```
 
-### Veicoli (`/tipoVeicolo`)
+### TipoVeicolo (`/tipoVeicolo`)
 - `GET /` – Elenco tipo veicoli [operatore]
 
 *Richiesta Body/Query*
@@ -1025,9 +1396,43 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_tipo_veicolo": 1,
+        "tipo": "autovettura",
+        "limite_velocita": 130
+    },
+    {
+        "id_tipo_veicolo": 2,
+        "tipo": "motociclo",
+        "limite_velocita": 130
+    },
+    {
+        "id_tipo_veicolo": 3,
+        "tipo": "roulotte",
+        "limite_velocita": 80
+    },
+    {
+        "id_tipo_veicolo": 4,
+        "tipo": "autocarri",
+        "limite_velocita": 130
+    },
+    {
+        "id_tipo_veicolo": 5,
+        "tipo": "autobus",
+        "limite_velocita": 100
+    },
+    {
+        "id_tipo_veicolo": 6,
+        "tipo": "pesante",
+        "limite_velocita": 80
+    },
+    {
+        "id_tipo_veicolo": 7,
+        "tipo": "eccezionale",
+        "limite_velocita": 60
+    }
+]
 ```
 
 - `GET /:id` – Cerca tipo veicolo [operatore]
@@ -1040,7 +1445,9 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tipo_veicolo": 2,
+    "tipo": "motociclo",
+    "limite_velocita": 130
 }
 ```
 
@@ -1060,7 +1467,9 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tipo_veicolo": 8,
+    "tipo": "Prova",
+    "limite_velocita": 130
 }
 ```
 
@@ -1072,14 +1481,17 @@ Authorization: Bearer {authToken}
 ```
 ```json
 {
-    "tipo": "prova_3"
+    "tipo": "prova_2",
+    "limite_velocita": 100
 }
 ```
 
 *Risposta:*
 ```json
 {
-  "": 
+    "id_tipo_veicolo": 8,
+    "tipo": "prova_2",
+    "limite_velocita": 100
 }
 ```
 
@@ -1093,7 +1505,7 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "message": "Tipo di veicolo eliminato"
 }
 ```
 
@@ -1107,9 +1519,98 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_transito": 1,
+        "targa": "AB123CD",
+        "tratta": 1,
+        "data_in": "2025-06-28T08:00:00.000Z",
+        "data_out": "2025-06-28T08:40:00.000Z",
+        "velocita_media": 59.55,
+        "delta_velocita": -70.45
+    },
+    {
+        "id_transito": 2,
+        "targa": "EF456GH",
+        "tratta": 1,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:15:00.000Z",
+        "velocita_media": 158.8,
+        "delta_velocita": 28.8
+    },
+    {
+        "id_transito": 3,
+        "targa": "IJ789KL",
+        "tratta": 2,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:25:00.000Z",
+        "velocita_media": 97.2,
+        "delta_velocita": 37.2
+    },
+    {
+        "id_transito": 4,
+        "targa": "MN321OP",
+        "tratta": 2,
+        "data_in": "2025-06-28T08:00:00.000Z",
+        "data_out": "2025-06-28T08:45:00.000Z",
+        "velocita_media": 54,
+        "delta_velocita": -56
+    },
+    {
+        "id_transito": 5,
+        "targa": "QR654ST",
+        "tratta": 3,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:25:00.000Z",
+        "velocita_media": 121.44,
+        "delta_velocita": 21.44
+    },
+    {
+        "id_transito": 6,
+        "targa": "UV987WX",
+        "tratta": 3,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:20:00.000Z",
+        "velocita_media": 151.8,
+        "delta_velocita": 71.8
+    },
+    {
+        "id_transito": 7,
+        "targa": "YZ741AB",
+        "tratta": 4,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:20:00.000Z",
+        "velocita_media": 148.8,
+        "delta_velocita": 88.8
+    },
+    {
+        "id_transito": 8,
+        "targa": "CD852EF",
+        "tratta": 4,
+        "data_in": "2025-06-28T08:00:00.000Z",
+        "data_out": "2025-06-28T08:50:00.000Z",
+        "velocita_media": 59.52,
+        "delta_velocita": -70.48
+    },
+    {
+        "id_transito": 9,
+        "targa": "GH963IJ",
+        "tratta": 1,
+        "data_in": "2025-06-28T08:00:00.000Z",
+        "data_out": "2025-06-28T08:40:00.000Z",
+        "velocita_media": 59.55,
+        "delta_velocita": -70.45
+    },
+    {
+        "id_transito": 10,
+        "targa": "KL159MN",
+        "tratta": 2,
+        "data_in": "2025-06-28T09:00:00.000Z",
+        "data_out": "2025-06-28T09:25:00.000Z",
+        "velocita_media": 97.2,
+        "delta_velocita": 37.2
+    }
+]
 ```
 
 - `GET /:id` – Cerca transito [operatore]
@@ -1122,7 +1623,28 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_transito": 3,
+    "targa": "IJ789KL",
+    "tratta": {
+        "id_tratta": 2,
+        "varco_in": 3,
+        "varco_out": 4,
+        "distanza": 40.5
+    },
+    "data_in": "2025-06-28T09:00:00.000Z",
+    "data_out": "2025-06-28T09:25:00.000Z",
+    "velocita_media": 97.2,
+    "delta_velocita": 37.2,
+    "veicolo": {
+        "targa": "IJ789KL",
+        "tipo_veicolo": 3,
+        "utente": 3
+    },
+    "tipoVeicolo": {
+        "id_tipo_veicolo": 3,
+        "tipo": "roulotte",
+        "limite_velocita": 80
+    }
 }
 ```
 
@@ -1144,7 +1666,13 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_transito": 11,
+    "targa": "UV987WX",
+    "tratta": 2,
+    "data_in": "2025-06-28T06:00:00.000Z",
+    "data_out": "2025-06-28T16:40:00.000Z",
+    "velocita_media": 3.79688,
+    "delta_velocita": -56.20312
 }
 ```
 
@@ -1170,18 +1698,27 @@ Authorization: Bearer {authToken}
 ```
 ```json
 {
-    "targa": "UV987WX",
-    "tratta": 2,
-    "data_in": "2025-06-28 08:00:00",
-    "data_out": "2025-06-28 18:40:00"
+    "data_in": "2025-06-28T06:30:00.000Z",
+    "data_out": "2025-06-28T06:40:00.000Z"
 }
 ```
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    1,
+    [
+        {
+            "id_transito": 11,
+            "targa": "UV987WX",
+            "tratta": 2,
+            "data_in": "2025-06-28T06:30:00.000Z",
+            "data_out": "2025-06-28T06:40:00.000Z",
+            "velocita_media": 243,
+            "delta_velocita": 163
+        }
+    ]
+]
 ```
 
 - `DELETE /:id` – Elimina transito [operatore]
@@ -1194,7 +1731,7 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "message": "Transito eliminato con successo."
 }
 ```
 
@@ -1206,9 +1743,44 @@ Authorization: Bearer {authToken}
 Authorization: Bearer {authToken}
 ```
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_multa": 1,
+        "uuid_pagamento": "92c1e299-0ee0-4089-9092-1822a95fc3c1",
+        "transito": 2,
+        "importo": 150
+    },
+    {
+        "id_multa": 2,
+        "uuid_pagamento": "68af3843-9b7a-4067-9009-f684aea70af4",
+        "transito": 3,
+        "importo": 120
+    },
+    {
+        "id_multa": 3,
+        "uuid_pagamento": "48cffbd0-2bec-4946-a21e-077625a41f59",
+        "transito": 5,
+        "importo": 130
+    },
+    {
+        "id_multa": 4,
+        "uuid_pagamento": "e334be7f-0299-4e2e-b2d4-0918e2c86f87",
+        "transito": 6,
+        "importo": 180
+    },
+    {
+        "id_multa": 5,
+        "uuid_pagamento": "f6dc714a-1f5b-46a1-931d-78a297153302",
+        "transito": 7,
+        "importo": 200
+    },
+    {
+        "id_multa": 6,
+        "uuid_pagamento": "2a3fba50-3f95-40c4-bd61-6aca589d08ac",
+        "transito": 10,
+        "importo": 110
+    }
+]
 ```
 *Risposta:*
 ```json
@@ -1223,17 +1795,43 @@ Authorization: Bearer {authToken}
 ```bash
 Authorization: Bearer {authToken}
 ```
-```json
-{
-  "": 
-}
+Params
+```
+targa: EF456GH
+dataIn: 2025-01-28
+dataOut: 2025-12-28
 ```
 
 *Risposta:*
 ```json
-{
-  "": 
-}
+[
+    {
+        "id_multa": 1,
+        "uuid_pagamento": "92c1e299-0ee0-4089-9092-1822a95fc3c1",
+        "importo": 150,
+        "transito": {
+            "id": 2,
+            "targa": "EF456GH",
+            "data_in": "2025-06-28T09:00:00.000Z",
+            "data_out": "2025-06-28T09:15:00.000Z",
+            "velocita_media": 158.8,
+            "delta_velocita": 28.8,
+            "tratta": {
+                "id": 1,
+                "distanza": 39.7,
+                "varcoIn": {
+                    "nome_autostrada": "A1",
+                    "km": 10
+                },
+                "varcoOut": {
+                    "nome_autostrada": "A1",
+                    "km": 50
+                }
+            }
+        },
+        "condizioni_ambientali": "nessuna pioggia"
+    }
+]
 ```
 
 - `POST /multe` - Inserimento da operatore [operatore]
