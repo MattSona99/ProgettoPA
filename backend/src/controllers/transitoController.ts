@@ -111,8 +111,8 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
     const { id } = req.params;
     const updatedData = req.body;
     try {
-        const [, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
-        res.status(StatusCodes.OK).json({ message: `Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
+        const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
+        res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
     } catch (error: any) {
         const status = error.statusCode || 500;
         const message = error.message || "Errore interno del server.";
