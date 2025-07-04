@@ -637,7 +637,7 @@ sequenceDiagram
   A -->> C:  
 ```
 
-- **GET /multe/dettagli**
+- **GET /multa/dettagli**
 Questa rotta consente a un automobilista o un operatore di consultare tutte le multe ricevute in un determinato intervallo temporale, filtrate in base alle targhe dei veicoli di sua proprietà (mentre operatore può vederle tutte). Dopo la verifica del token e del ruolo da parte del middleware, il sistema procede con la validazione dei parametri forniti, come il periodo e l’elenco delle targhe. Il controller coordina il recupero dei dati attraverso il repository, che interroga in sequenza le tabelle di Veicoli, Transiti, Multe, Tratte e Varchi per ottenere tutte le informazioni necessarie. Il risultato è una risposta JSON ricca di dettagli, utile per l'utente che desidera conoscere non solo l'importo della sanzione, ma anche la dinamica del transito che ha generato la multa, inclusi limiti di velocità, condizioni ambientali e caratteristiche del tratto percorso.
 ```mermaid
 sequenceDiagram
@@ -651,7 +651,7 @@ sequenceDiagram
   participant S as Sequelize
   participant F as Factory
 
-  C ->> A: GET /multe/dettagli
+  C ->> A: GET /multa/dettagli
   A ->> M: Token e ruolo verificati
   M -->> A:
   A ->> MV: validateGetMulteByTargheEPeriodo
@@ -681,7 +681,7 @@ sequenceDiagram
   A -->> C:
 ```
 
-- **GET /multe/download/:id**
+- **GET /multa/download/:id**
 Questa rotta fornisce all’utente la possibilità di scaricare un bollettino PDF relativo a una multa specifica, identificata tramite `id`. Dopo l’autenticazione, il controller avvia una complessa catena di richieste che ricostruisce tutte le informazioni necessarie per compilare correttamente il bollettino. Si parte dalla multa, poi si recuperano i dati dell’utente, del transito associato, del veicolo e infine del tratto percorso. L’interazione tra i DAO e i repository garantisce che tutte le entità correlate vengano caricate, così da includere nel PDF dati come targa, data, ora, varco di rilevamento e importo. Il bollettino generato può essere usato per il pagamento o per la consultazione offline da parte dell’utente, rendendo l’esperienza completa e accessibile.
 
 ```mermaid
@@ -698,7 +698,7 @@ sequenceDiagram
   participant S as Sequelize
   participant F as Factory
 
-  C ->> A: GET /multe/dettagli
+  C ->> A: GET /multa/dettagli
   A ->> M: Token e ruolo verificati
   M -->> A:
   A ->> CN: downlaodBollettinoPDF
@@ -1718,7 +1718,7 @@ Authorization: Bearer {authToken}
 }
 ```
 
-### Multe (`/api/multe`)
+### Multe (`/multa`)
 - `GET /` – Elenco multe [operatore]
 
 *Richiesta Body/Query*
