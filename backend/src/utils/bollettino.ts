@@ -4,6 +4,13 @@ import QRCode from "qrcode";
 import { MultaAttributes } from "../models/multa";
 import { HttpErrorCodes, HttpErrorFactory } from "./errorHandler";
 
+/**
+ * Funzione per generare il bollettino in formato PDF.
+ * 
+ * @param multa - La multa per generare il bollettino.
+ * @param targa - La targa del veicolo.
+ * @returns - Un buffer contenente il bollettino in formato PDF.
+ */
 export async function generateBollettinoPDFBuffer(multa: MultaAttributes, targa: string): Promise<Buffer> {
     const pdf = new jsPDF();
     const qrData = `Targa: ${targa}\nImporto: ${multa.importo}\nID: ${multa.id_multa}\nUUID: ${multa.uuid_pagamento}`;

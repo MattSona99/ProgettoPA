@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { 
     getAllMulte,
     getMulteByTargheEPeriodo,
-    createMulta,
     downloadBollettinoPDF
  } from '../controllers/multaController';
 import { authMiddleware, authorize } from '../middleware/authMiddleware';
