@@ -11,15 +11,15 @@ interface TipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
 
 // Classe TipoVeicoloDao che implementa l'interfaccia TipoVeicoloDAO
 class TipoVeicoloDao implements TipoVeicoloDAO {
-    
+
     /**
      * Funzione per ottenere tutti i tipi di veicolo.
      * 
      * @returns {Promise<TipoVeicolo[]>} - Una promessa che risolve con un array di tipi di veicolo.
      */
     public async getAll(): Promise<TipoVeicolo[]> {
-        try{
-        return await TipoVeicolo.findAll();
+        try {
+            return await TipoVeicolo.findAll();
         } catch (error) {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei tipi di veicolo.");
         }
@@ -32,14 +32,15 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @returns {Promise<TipoVeicolo | null>} - Una promessa che risolve con il tipo di veicolo trovato o null se non trovato.
      */
     public async getById(id: number): Promise<TipoVeicolo | null> {
-        try{
+        try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
+            } else {
+                return tipoVeicolo;
             }
-            return tipoVeicolo;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del tipo di veicolo con id ${id}.`);
+            throw error;
         }
     }
 
@@ -49,7 +50,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
      * @param {TipoVeicolo} item - L'oggetto parziale del tipo di veicolo da creare.
      * @returns {Promise<TipoVeicolo>} - Una promessa che risolve con il nuovo tipo di veicolo creato.
      */
-    public async create(item:TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
+    public async create(item: TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
         try {
             return await TipoVeicolo.create(item, options);
         } catch (error) {

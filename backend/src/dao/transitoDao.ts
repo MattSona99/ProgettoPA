@@ -1,6 +1,6 @@
-import {DAO} from "./daoInterface";
-import Transito, {TransitoAttributes, TransitoCreationAttributes} from "../models/transito";
-import {Transaction} from "sequelize";
+import { DAO } from "./daoInterface";
+import Transito, { TransitoAttributes, TransitoCreationAttributes } from "../models/transito";
+import { Transaction } from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
@@ -35,10 +35,11 @@ class TransitoDao implements TransitoDAO {
             const transito = await Transito.findByPk(id);
             if (!transito) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
+            } else {
+                return transito;
             }
-            return transito;
-        } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
+        } catch (error: any) {
+            throw Error(error.message);
         }
     }
 
@@ -69,12 +70,14 @@ class TransitoDao implements TransitoDAO {
             if (!existingTransito) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
             }
-            const [indexedCount] = await Transito.update(transito, { where: { id_transito: id }, returning: true });
-            const updatedTransito = await Transito.findAll({ where: { id_transito: id } });
+            const [row, updatedTransito] = await Transito.update(transito, { where: { id_transito: id }, returning: true });
+            if (row === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non aggiornato.`);
+            }
 
-            return [indexedCount, updatedTransito];
+            return [row, updatedTransito];
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del transito con ID ${id}.`);
+            throw error;
         }
     }
 

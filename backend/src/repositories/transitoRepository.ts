@@ -100,7 +100,7 @@ class TransitoRepository {
             console.log(limiteVelocita);
 
             // Calcolo della velocità media e del delta
-            const transitoCompleto = this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
+            const transitoCompleto = await this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
 
             // Se il ruolo è 'operatore', si forza l'inserimento del transito
             if (ruolo === null) {
@@ -158,49 +158,44 @@ class TransitoRepository {
         let veicolo: Veicolo | null = null;
         let tipoVeicolo: TipoVeicolo | null = null;
         try {
-            console.log(transito);
             // Controllo se il transito esiste
             const existingTransito = await transitoDao.getById(id);
-            if (!existingTransito) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
-            }
 
             // Controllo se la tratta non sia vuota
             if (transito.tratta) {
                 // Controllo se la tratta esiste
                 tratta = await trattaDao.getById(transito.tratta);
-                if (!tratta) {
-                    throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
-                }
             } else {
-                tratta = await trattaDao.getById(existingTransito.tratta);
+                tratta = await trattaDao.getById(existingTransito!.tratta);
             }
 
             // Controllo se la targa non sia vuota
             if (transito.targa) {
-                // Controllo se il veicolo esiste
-                veicolo = await Veicolo.findOne({ where: { targa: transito.targa } });
-                if (!veicolo) {
-                    throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${transito.targa} non trovato.`);
-                }
-                tipoVeicolo = await TipoVeicolo.findOne({ where: { id_tipo_veicolo: veicolo.tipo_veicolo } });
+                // Controllo se il veicolo esiste dalla targa
+                veicolo = await veicoloDao.getById(transito.targa);
+
+                // Cerco il tipo di veicolo per prendere il limite di velocità
+                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
             } else {
-                veicolo = await Veicolo.findOne({ where: { targa: existingTransito.targa } });
-                tipoVeicolo = await TipoVeicolo.findOne({ where: { id_tipo_veicolo: veicolo!.tipo_veicolo } });
+                // Prendo il veicolo dalla targa del transito esistente
+                veicolo = await veicoloDao.getById(existingTransito!.targa);
+
+                // Cerco il tipo di veicolo per prendere il limite di velocità
+                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
             }
 
             // Controllo se la data di ingresso non sia vuota
             if (!transito.data_in) {
-                transito.data_in = existingTransito.data_in;
+                transito.data_in = existingTransito!.data_in;
             }
 
             // Controllo se la data di uscita non sia vuota
             if (!transito.data_out) {
-                transito.data_out = existingTransito.data_out;
+                transito.data_out = existingTransito!.data_out;
             }
 
             // Aggiorno il transito
-            const transitoCompleto = this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
+            const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
             const transitoAggiornato: TransitoAttributes = {
                 id_transito: id,
                 tratta: tratta!.id_tratta,
@@ -210,14 +205,9 @@ class TransitoRepository {
                 velocita_media: transitoCompleto.velocita_media ?? 0,
                 delta_velocita: transitoCompleto.delta_velocita ?? 0
             }
-            console.log(transitoAggiornato);
-            const updatedTransito = await transitoDao.update(id, transitoAggiornato);
-            if (!updatedTransito) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
-            }
-            return updatedTransito;
+            return await transitoDao.update(id, transitoAggiornato);
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell\'aggiornamento del transito con ID ${id}.`);
+            throw error;
         }
     }
 
@@ -321,7 +311,7 @@ class TransitoRepository {
      * @param distanza - La distanza della tratta.
      * @returns - L'oggetto transito con la velocita media e la delta velocita.
      */
-    private calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): TransitoCreationAttributes { // Calcolo della velocita media 
+    private async calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): Promise<TransitoCreationAttributes> { // Calcolo della velocita media 
         const tempoPercorrenza = ((transito.data_out.getTime() - transito.data_in.getTime()) / 1000) / 3600;
         const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
         const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));

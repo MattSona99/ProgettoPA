@@ -33,9 +33,14 @@ class TrattaDao implements TrattaDAO {
      */
     public async getById(id: number): Promise<Tratta | null> {
         try {
-            return await Tratta.findByPk(id);
+            const tratta = await Tratta.findByPk(id);
+            if (!tratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            } else {
+                return tratta;
+            }
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
+            throw error;
         }
     }
 

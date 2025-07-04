@@ -1,9 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import e, { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
-import varcoDao from '../dao/varcoDao';
 import varcoRepository from '../repositories/varcoRepository';
 import Multa from '../models/multa';
 
@@ -112,13 +111,12 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
     const { id } = req.params;
     const updatedData = req.body;
     try {
-        const updatedTransito = await transitoRepository.updateTransito(parseInt(id), updatedData);
-        if (!updatedTransito) {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
-        }
-        res.status(StatusCodes.OK).json(updatedTransito);
-    } catch (error) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell\'aggiornamento del transito."));
+        const [, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
+        res.status(StatusCodes.OK).json({ message: `Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
+    } catch (error: any) {
+        const status = error.statusCode || 500;
+        const message = error.message || "Errore interno del server.";
+        res.status(status).json({ error: message });
     }
 }
 

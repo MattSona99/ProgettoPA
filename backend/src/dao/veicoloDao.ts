@@ -35,10 +35,11 @@ class VeicoloDao implements VeicoloDAO {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+            } else {
+                return veicolo;
             }
-            return veicolo;
         } catch (error) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
+            throw error;
         }
     }
 
@@ -48,7 +49,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction}): Promise<Veicolo> {
+    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction }): Promise<Veicolo> {
         try {
             return await Veicolo.create(item, options);
         } catch (error) {
@@ -83,7 +84,7 @@ class VeicoloDao implements VeicoloDAO {
      * @param {string} targa - La targa del veicolo da eliminare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async delete(targa: string, options?: { transaction?: Transaction}): Promise<number> {
+    public async delete(targa: string, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
