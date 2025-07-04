@@ -1910,7 +1910,13 @@ Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API 
 Per facilitare lo sviluppo didattico del progetto, sono state adottate alcune scelte implementative mirate.
 Come già evidenziato, l'intero sistema è stato progettato secondo un approccio modulare, realizzato attraverso lo sviluppo di un backend utilizzato il pattern MVC, per facilitare possibili implementazioni e modifiche future.
 
-Considerata la natura del progetto, che non include lo sviluppo di un frontend, le rotte sono state testate tramite Postman. Ogni rotta prevede meccanismi di autenticazione ed autorizzazione, modulati in base al ruolo dell'utente.
+Considerata la natura del progetto, che non include lo sviluppo di un frontend, le rotte sono state testate tramite Postman. Ogni rotta prevede meccanismi di autenticazione ed autorizzazione, modulati in base al ruolo dell'utente. Inoltre, per l'agevolazione delle richieste, si consiglia di inserire nella rotta di `login` (Post-response) il seguente script, per settare in modo automatico il `BearerToken` per le autorizzazioni delle restanti rotte:
+```javascript
+pm.test("Save token", function () {
+    const response = pm.response.json();
+    pm.globals.set("BearerToken", response.token);
+});
+```
 
 Per quanto riguarda l'implementazione della logica legata alle multe, si è scelto di considerare la presenza di condizioni ambientali avverse (pioggia) solo nei casi in cui nel Transito entrambi i varchi, di ingresso (`varco_in`) e di uscita (`varco_out`), riportino il campo `pioggia=true`. Questa scelta è stata adottata per garantire maggiore coerenza ed affidabilità nella rilevazione delle condizioni meteo, riducendo il rischio di penalizzazioni ingiustificate dovute a segnalazioni parziali o localizzate.
 
