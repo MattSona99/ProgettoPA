@@ -8,7 +8,7 @@
 - [🛠️ Progettazione](#progettazione)
   - [🏗️ Architettura](#architettura)
   - [🧑‍💼 Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
-  - [🗂️ Diagramma E‑R](#diagramma-e-r)
+  - [🗂️ Diagramma E‑R](#diagramma-e--r)
   - [🧩 Pattern Utilizzati](#pattern-utilizzati)
   - [📈 Diagrammi delle sequenze](#diagrammi-delle-sequenze)
 - [🌐 Rotte API](#rotte-api)
