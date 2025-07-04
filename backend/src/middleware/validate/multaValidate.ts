@@ -8,12 +8,6 @@ import validateRequest from './validateRequestMiddleware';
 // Regular Expression per le targhe italiane
 const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
 
-export const validateCreateMulta = [
-    body('importo').isInt({ min: 1 }).withMessage('Importo deve essere un numero intero positivo.'),
-    body('transito').isInt({ min: 1 }).withMessage('Transito ID deve essere un numero intero positivo.'),
-    validateRequest
-];
-
 export const validateGetMulteByTargheEPeriodo = [
     query('targa')
     .exists().withMessage('Serve almeno una targa.')
