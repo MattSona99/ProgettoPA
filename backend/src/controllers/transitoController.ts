@@ -5,6 +5,7 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
 import varcoRepository from '../repositories/varcoRepository';
 import Multa from '../models/multa';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 /**
  * Funzione per ottenere tutti i transiti.
@@ -43,7 +44,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     const id_utente = (req as any).user.id; // ID dell'utente passato nell'header
 
     try {
-        if (ruolo === 'operatore') { // Operatore forza manualmente l'inserimento del transito
+        if (ruolo === RuoloUtente.OPERATORE) { // Operatore forza manualmente l'inserimento del transito
             const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
             if (!createdTransito) {
                 next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
@@ -53,7 +54,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             } else {
                 res.status(StatusCodes.CREATED).json(createdTransito);
             }
-        } else if (ruolo === 'varco') { // Il varco può essere di 2 tipologie: smart o non smart
+        } else if (ruolo === RuoloUtente.VARCO) { // Il varco può essere di 2 tipologie: smart o non smart
             // Verifica se l'utente è associato a un varco
             const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
             if (!isVarcoAssociato) {

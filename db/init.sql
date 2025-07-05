@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS utente (
     nome VARCHAR(100),
     cognome VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
-    ruolo VARCHAR(50) CHECK (ruolo IN ('automobilista', 'operatore', 'varco')) NOT NULL,
-    tokens INT DEFAULT 100
+    ruolo VARCHAR(50) CHECK (ruolo IN ('automobilista', 'operatore', 'varco')) NOT NULL
 );
 
 -- Creazione tabella VARCO --

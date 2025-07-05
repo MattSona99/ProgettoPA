@@ -13,6 +13,7 @@ import {
     validateUpdateTipoVeicolo,
     validateDeleteTipoVeicolo
 } from '../middleware/validate/tipoVeicoloValidate';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 const router = Router();
 
@@ -20,11 +21,11 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione dei tipi di veicolo
-router.get('/tipoVeicolo', authorize(['operatore']), getAllTipoVeicolo);
-router.get('/tipoVeicolo/:id', authorize(['operatore']), validateGetTipoVeicoloById, getTipoVeicoloById);
-router.post('/tipoVeicolo', authorize(['operatore']), validateCreateTipoVeicolo, createTipoVeicolo);
-router.put('/tipoVeicolo/:id', authorize(['operatore']), validateUpdateTipoVeicolo, updateTipoVeicolo);
-router.delete('/tipoVeicolo/:id', authorize(['operatore']), validateDeleteTipoVeicolo, deleteTipoVeicolo);
+router.get('/tipoVeicolo', authorize([RuoloUtente.OPERATORE]), getAllTipoVeicolo);
+router.get('/tipoVeicolo/:id', authorize([RuoloUtente.OPERATORE]), validateGetTipoVeicoloById, getTipoVeicoloById);
+router.post('/tipoVeicolo', authorize([RuoloUtente.OPERATORE]), validateCreateTipoVeicolo, createTipoVeicolo);
+router.put('/tipoVeicolo/:id', authorize([RuoloUtente.OPERATORE]), validateUpdateTipoVeicolo, updateTipoVeicolo);
+router.delete('/tipoVeicolo/:id', authorize([RuoloUtente.OPERATORE]), validateDeleteTipoVeicolo, deleteTipoVeicolo);
 
 export default router;
 

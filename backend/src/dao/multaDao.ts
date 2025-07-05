@@ -6,6 +6,7 @@ import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
 import Veicolo from "../models/veicolo";
 import Utente from "../models/utente";
+import { RuoloUtente } from "../enums/RuoloUtente";
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface IMultaDAO extends DAO<IMultaAttributes, number> {
@@ -119,7 +120,7 @@ class MultaDao implements IMultaDAO {
         try {
             let veicoliUtente: Veicolo[] = [];
             // 1) Prendo tutti i veicoli dell'utente
-            if (utente.ruolo === "automobilista") {
+            if (utente.ruolo === RuoloUtente.AUTOMOBILISTA) {
                 veicoliUtente = await Veicolo.findAll({
                     where: {
                         targa: { [Op.in]: targhe },
@@ -128,7 +129,7 @@ class MultaDao implements IMultaDAO {
                     attributes: ['targa']
                 });
             }
-            else if (utente.ruolo === "operatore") {
+            else if (utente.ruolo === RuoloUtente.OPERATORE) {
                 veicoliUtente = await Veicolo.findAll({
                     where: {
                         targa: { [Op.in]: targhe }
