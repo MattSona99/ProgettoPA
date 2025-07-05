@@ -40,7 +40,7 @@ Il progetto consiste nella realizzazione di un sistema backend per la gestione d
   Utente      API Server        Backend Server         PostgreSQL
   |               |                  |                    |
   |  ---> Richiesta HTTP  -------->  |                    |
-  |               |  --> Elabora logica (Node.js)        |
+  |               |  --> Elabora logica (Node.js)         |
   |               |                  |  ---> Query ------>|
   |               |                  |  <--- Risposta ----|
   |               |  <-- Risultato --|                    |
