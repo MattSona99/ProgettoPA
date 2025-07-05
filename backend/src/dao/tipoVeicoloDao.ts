@@ -1,11 +1,11 @@
-import TipoVeicolo, { TipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
+import TipoVeicolo, { ITipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
 import { Transaction } from 'sequelize';
 import { DAO } from './daoInterface';
-import { TipoVeicoloAttributes } from '../models/tipoVeicolo';
+import { ITipoVeicoloAttributes } from '../models/tipoVeicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TipoVeicoloDAO che estende la DAO per includere metodi specifici per TipoVeicolo
-interface ITipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
+interface ITipoVeicoloDAO extends DAO<ITipoVeicoloAttributes, number> {
     // Metodi specifici per TipoVeicolo, se necessari
 }
 
@@ -50,7 +50,7 @@ class TipoVeicoloDao implements ITipoVeicoloDAO {
      * @param {TipoVeicolo} item - L'oggetto parziale del tipo di veicolo da creare.
      * @returns {Promise<TipoVeicolo>} - Una promessa che risolve con il nuovo tipo di veicolo creato.
      */
-    public async create(item: TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
+    public async create(item: ITipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
         try {
             return await TipoVeicolo.create(item, options);
         } catch {

@@ -2,7 +2,7 @@ import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
 import Transito from "../models/transito";
 import Tratta from "../models/tratta";
-import { TrattaAttributes, TrattaCreationAttributes } from "../models/tratta";
+import { ITrattaAttributes, ITrattaCreationAttributes } from "../models/tratta";
 import Varco from "../models/varco";
 import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
@@ -46,10 +46,10 @@ class TrattaRepository {
     /**
      * Funzione per creare una nuova tratta.
      * 
-     * @param {TrattaCreationAttributes} tratta - L'oggetto parziale della tratta da creare.
+     * @param {ITrattaCreationAttributes} tratta - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async createTratta(tratta: TrattaCreationAttributes): Promise<Tratta> {
+    public async createTratta(tratta: ITrattaCreationAttributes): Promise<Tratta> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
@@ -75,10 +75,10 @@ class TrattaRepository {
      * Funzione per aggiornare una tratta.
      * 
      * @param {number} id - L'ID della tratta da aggiornare.
-     * @param {TrattaAttributes} tratta - L'oggetto parziale della tratta da aggiornare.
+     * @param {ITrattaAttributes} tratta - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async updateTratta(id: number, tratta: TrattaAttributes): Promise<[number, Tratta[]]> {
+    public async updateTratta(id: number, tratta: ITrattaAttributes): Promise<[number, Tratta[]]> {
         try {
             // Controlla se la tratta esiste
             const trattaToUpdate = await trattaDao.getById(id);
@@ -111,7 +111,7 @@ class TrattaRepository {
 
                 // Completo e modifico il tratto
                 const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
-                const trattaCompleta: TrattaAttributes = {
+                const trattaCompleta: ITrattaAttributes = {
                     ...trattaModificata,
                     id_tratta: id,
                     distanza: trattaModificata.distanza !== undefined ? trattaModificata.distanza : 0
@@ -138,7 +138,7 @@ class TrattaRepository {
 
                 // Completo e modifico il tratto
                 const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
-                const trattaCompleta: TrattaAttributes = {
+                const trattaCompleta: ITrattaAttributes = {
                     ...trattaModificata,
                     id_tratta: id,
                     distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
@@ -174,7 +174,7 @@ class TrattaRepository {
             
             // Completo e modifico il tratto
             const trattaModificata = this.completeTratta(tratta, varcoIn, varcoOut);
-            const trattaCompleta: TrattaAttributes = {
+            const trattaCompleta: ITrattaAttributes = {
                 ...trattaModificata,
                 id_tratta: id,
                 distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
@@ -228,7 +228,7 @@ class TrattaRepository {
         }
     };
 
-    private completeTratta(tratta: TrattaCreationAttributes, varcoIn: Varco, varcoOut: Varco): TrattaCreationAttributes {
+    private completeTratta(tratta: ITrattaCreationAttributes, varcoIn: Varco, varcoOut: Varco): ITrattaCreationAttributes {
         const distanza = Math.abs(varcoIn.km - varcoOut.km);
         return { ...tratta, varco_in: varcoIn.id_varco, varco_out: varcoOut.id_varco, distanza: distanza };
     }

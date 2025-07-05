@@ -1,10 +1,10 @@
-import Veicolo, { VeicoloAttributes } from '../models/veicolo';
+import Veicolo, { IVeicoloAttributes } from '../models/veicolo';
 import { DAO } from './daoInterface';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
-interface IVeicoloDAO extends DAO<VeicoloAttributes, string> {
+interface IVeicoloDAO extends DAO<IVeicoloAttributes, string> {
     // Metodi specifici per Veicolo, se necessari
 }
 
@@ -49,7 +49,7 @@ class VeicoloDao implements IVeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async create(item: VeicoloAttributes, options?: { transaction?: Transaction }): Promise<Veicolo> {
+    public async create(item: IVeicoloAttributes, options?: { transaction?: Transaction }): Promise<Veicolo> {
         try {
             return await Veicolo.create(item, options);
         } catch {
@@ -64,7 +64,7 @@ class VeicoloDao implements IVeicoloDAO {
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(targa: string, item: VeicoloAttributes): Promise<[number, Veicolo[]]> {
+    public async update(targa: string, item: IVeicoloAttributes): Promise<[number, Veicolo[]]> {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {

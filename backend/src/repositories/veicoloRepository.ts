@@ -2,7 +2,7 @@ import tipoVeicoloDao from '../dao/tipoVeicoloDao';
 import utenteDao from '../dao/utenteDao';
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
-import { VeicoloAttributes } from '../models/veicolo';
+import { IVeicoloAttributes } from '../models/veicolo';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
@@ -46,10 +46,10 @@ class VeicoloRepository {
     /**
      * Funzione per creare un nuovo veicolo.
      * 
-     * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
+     * @param {IVeicoloAttributes} item - L'oggetto parziale del veicolo da creare.
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il nuovo veicolo creato.
      */
-    public async createVeicolo(item: VeicoloAttributes): Promise<Veicolo> {
+    public async createVeicolo(item: IVeicoloAttributes): Promise<Veicolo> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction()
         try {
@@ -66,10 +66,10 @@ class VeicoloRepository {
      * Funzione per aggiornare un veicolo.
      * 
      * @param {string} targa - La targa del veicolo da aggiornare.
-     * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
+     * @param {IVeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
      * @returns {Promise<number>} - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async updateVeicolo(targa: string, item: VeicoloAttributes): Promise<[number, Veicolo[]]> {
+    public async updateVeicolo(targa: string, item: IVeicoloAttributes): Promise<[number, Veicolo[]]> {
         try {
             return await veicoloDao.update(targa, item);
         } catch {

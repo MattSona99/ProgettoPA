@@ -1,10 +1,10 @@
 import { Transaction } from "sequelize";
-import Varco, { VarcoAttributes, VarcoCreationAttributes } from "../models/varco";
+import Varco, { IVarcoAttributes, IVarcoCreationAttributes } from "../models/varco";
 import { DAO } from "./daoInterface";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia VarcoDAO che estende la DAO per includere metodi specifici per Varco
-interface IVarcoDAO extends DAO<VarcoAttributes, number> {
+interface IVarcoDAO extends DAO<IVarcoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei varchi
 }
 
@@ -48,7 +48,7 @@ class VarcoDao implements IVarcoDAO {
      * @param item - L'oggetto parziale del varco da creare.
      * @returns - Una promessa che risolve con il nuovo varco creato.
      */
-    public async create(item: VarcoCreationAttributes, options?: { transaction?: Transaction }): Promise<Varco> {
+    public async create(item: IVarcoCreationAttributes, options?: { transaction?: Transaction }): Promise<Varco> {
         try {
             return await Varco.create(item, options);
         } catch {
@@ -63,7 +63,7 @@ class VarcoDao implements IVarcoDAO {
      * @param item - L'oggetto parziale del varco da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
-    public async update(id: number, item: VarcoAttributes): Promise<[number, Varco[]]> {
+    public async update(id: number, item: IVarcoAttributes): Promise<[number, Varco[]]> {
         try {
             const existingVarco = await Varco.findByPk(id);
             if (!existingVarco) {

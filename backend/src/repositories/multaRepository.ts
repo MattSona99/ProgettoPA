@@ -1,5 +1,5 @@
 import multaDao from "../dao/multaDao";
-import Multa, { MultaCreationAttributes } from "../models/multa";
+import Multa, { IMultaCreationAttributes } from "../models/multa";
 import Transito from "../models/transito";
 import Tratta from "../models/tratta";
 import Varco from "../models/varco";
@@ -17,7 +17,7 @@ class multaRepository {
      * @param item - L'oggetto parziale della multa da creare.
      * @returns - Una promessa che risolve con la nuova multa creata.
      */
-    public async create(item: MultaCreationAttributes): Promise<Multa> {
+    public async create(item: IMultaCreationAttributes): Promise<Multa> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {

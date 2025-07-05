@@ -1,10 +1,10 @@
 import {DAO} from './daoInterface';
-import Utente, {UtenteAttributes, UtenteCreationAttributes} from '../models/utente';
+import Utente, {IUtenteAttributes, IUtenteCreationAttributes} from '../models/utente';
 import {Transaction} from 'sequelize';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia UtenteDAO che estende la DAO per includere metodi specifici per Utente
-interface IUtenteDAO extends DAO<UtenteAttributes, number> {
+interface IUtenteDAO extends DAO<IUtenteAttributes, number> {
     // metodi da aggiungere nel caso specifico degli utenti
     getByEmail(email: string): Promise<Utente | null>;
 }
@@ -67,7 +67,7 @@ class UtenteDao implements IUtenteDAO {
      * @param utente - L'oggetto parziale dell'utente da creare.
      * @returns - Una promessa che risolve con l'utente creato.
      */
-    public async create(utente: UtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
+    public async create(utente: IUtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
             return await Utente.create(utente, options);
         } catch {
@@ -82,7 +82,7 @@ class UtenteDao implements IUtenteDAO {
      * @param utente - L'oggetto parziale dell'utente da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di utenti aggiornati.
      */
-    public async update(id: number, utente: UtenteAttributes): Promise<[number, Utente[]]> {
+    public async update(id: number, utente: IUtenteAttributes): Promise<[number, Utente[]]> {
         try {
             const existingUtente = await Utente.findByPk(id);
             if (!existingUtente) {

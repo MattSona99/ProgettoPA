@@ -1,10 +1,10 @@
 import { DAO } from "./daoInterface";
-import Transito, { TransitoAttributes, TransitoCreationAttributes } from "../models/transito";
+import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from "../models/transito";
 import { Transaction } from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
-interface ITransitoDAO extends DAO<TransitoAttributes, number> {
+interface ITransitoDAO extends DAO<ITransitoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei transiti
 }
 
@@ -49,7 +49,7 @@ class TransitoDao implements ITransitoDAO {
      * @param transito - L'oggetto transito da creare.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async create(transito: TransitoCreationAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
+    public async create(transito: ITransitoCreationAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(transito, options);
         } catch {
@@ -64,7 +64,7 @@ class TransitoDao implements ITransitoDAO {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
-    public async update(id: number, transito: TransitoAttributes): Promise<[number, Transito[]]> {
+    public async update(id: number, transito: ITransitoAttributes): Promise<[number, Transito[]]> {
         try {
             const existingTransito = await Transito.findByPk(id);
             if (!existingTransito) {

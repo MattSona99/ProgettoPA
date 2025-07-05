@@ -1,10 +1,10 @@
-import Transito, { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
+import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
-import Multa, { MultaCreationAttributes } from '../models/multa';
+import Multa, { IMultaCreationAttributes } from '../models/multa';
 import Tesseract from 'tesseract.js';
 import trattaDao from '../dao/trattaDao';
 import veicoloDao from '../dao/veicoloDao';
@@ -57,7 +57,7 @@ class TransitoRepository {
      * @param ruolo - Il ruolo dell'utente.
      * @returns - Una promessa che risolve con il transito creato.
      */
-    public async createTransito(transito: TransitoCreationAttributes, ruolo: Varco | null = null): Promise<{ transito: Transito | null, multa: Multa | null }> {
+    public async createTransito(transito: ITransitoCreationAttributes, ruolo: Varco | null = null): Promise<{ transito: Transito | null, multa: Multa | null }> {
         const response = {
             transito: null as Transito | null,
             multa: null as Multa | null
@@ -112,7 +112,7 @@ class TransitoRepository {
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                    const multa: MultaCreationAttributes = this.createMulta(newTransito);
+                    const multa: IMultaCreationAttributes = this.createMulta(newTransito);
                     const newMulta = await multaDao.create(multa, { transaction });
                     response['multa'] = newMulta;
                 }
@@ -153,7 +153,7 @@ class TransitoRepository {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
-    public async updateTransito(id: number, transito: TransitoCreationAttributes): Promise<[number, Transito[]]> {
+    public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[]]> {
         let tratta: Tratta | null = null;
         let veicolo: Veicolo | null = null;
         let tipoVeicolo: TipoVeicolo | null = null;
@@ -196,7 +196,7 @@ class TransitoRepository {
 
             // Aggiorno il transito
             const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
-            const transitoAggiornato: TransitoAttributes = {
+            const transitoAggiornato: ITransitoAttributes = {
                 id_transito: id,
                 tratta: tratta!.id_tratta,
                 targa: veicolo!.targa,
@@ -260,7 +260,7 @@ class TransitoRepository {
      * @param transito - Il transito associato alla multa.
      * @returns - L'oggetto parziale della multa da creare.
      */
-    private createMulta(transito: Transito): MultaCreationAttributes {
+    private createMulta(transito: Transito): IMultaCreationAttributes {
         // Calcolo dell'importo della multa (esempio)
         let importo = 0;
         const delta = transito.delta_velocita;
@@ -311,7 +311,7 @@ class TransitoRepository {
      * @param distanza - La distanza della tratta.
      * @returns - L'oggetto transito con la velocita media e la delta velocita.
      */
-    private async calcoloVelocita(transito: TransitoCreationAttributes, limiteVelocita: number, distanza: number): Promise<TransitoCreationAttributes> { // Calcolo della velocita media 
+    private async calcoloVelocita(transito: ITransitoCreationAttributes, limiteVelocita: number, distanza: number): Promise<ITransitoCreationAttributes> { // Calcolo della velocita media 
         const tempoPercorrenza = ((transito.data_out.getTime() - transito.data_in.getTime()) / 1000) / 3600;
         const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
         const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));

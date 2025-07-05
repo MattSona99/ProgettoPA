@@ -1,6 +1,6 @@
-import Multa, { MultaCreationAttributes } from "../models/multa";
+import Multa, { IMultaCreationAttributes } from "../models/multa";
 import { DAO } from "./daoInterface";
-import { MultaAttributes } from "../models/multa";
+import { IMultaAttributes } from "../models/multa";
 import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
 import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
@@ -8,7 +8,7 @@ import Veicolo from "../models/veicolo";
 import Utente from "../models/utente";
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
-interface IMultaDAO extends DAO<MultaAttributes, number> {
+interface IMultaDAO extends DAO<IMultaAttributes, number> {
     // metodi da aggiungere nel caso specifico delle multe
     getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }): Promise<Multa[]>
     getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa>
@@ -22,7 +22,7 @@ class MultaDao implements IMultaDAO {
      * 
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getAll(): Promise<MultaAttributes[]> {
+    public async getAll(): Promise<IMultaAttributes[]> {
         try {
             return await Multa.findAll();
         } catch {
@@ -54,7 +54,7 @@ class MultaDao implements IMultaDAO {
      * @param item - L'oggetto parziale della multa da creare.
      * @returns - Una promessa che risolve con la nuova multa creata.
      */
-    public async create(item: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
+    public async create(item: IMultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
             return await Multa.create(item, options);
         } catch {
@@ -69,7 +69,7 @@ class MultaDao implements IMultaDAO {
      * @param item - L'oggetto parziale della multa da aggiornare.
      * @returns - Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: MultaAttributes): Promise<[number, MultaAttributes[]]> {
+    public async update(id: number, item: IMultaAttributes): Promise<[number, IMultaAttributes[]]> {
         try {
             const multa = await Multa.update(item, { where: { id_multa: id } });
             if (!multa) {

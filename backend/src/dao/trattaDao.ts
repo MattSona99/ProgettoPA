@@ -1,11 +1,11 @@
-import Tratta, { TrattaCreationAttributes } from '../models/tratta';
+import Tratta, { ITrattaCreationAttributes } from '../models/tratta';
 import { DAO } from './daoInterface';
-import { TrattaAttributes } from '../models/tratta';
+import { ITrattaAttributes } from '../models/tratta';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
-interface ITrattaDAO extends DAO<TrattaAttributes, number> {
+interface ITrattaDAO extends DAO<ITrattaAttributes, number> {
     // Metodi specifici per Tratta, se necessari
 }
 
@@ -50,7 +50,7 @@ class TrattaDao implements ITrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async create(item: TrattaCreationAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
+    public async create(item: ITrattaCreationAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
         try {
             return await Tratta.create(item, options);
         } catch {
@@ -65,7 +65,7 @@ class TrattaDao implements ITrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
      */
-    public async update(id: number, item: TrattaAttributes): Promise<[number, Tratta[]]> {
+    public async update(id: number, item: ITrattaAttributes): Promise<[number, Tratta[]]> {
         try {
             const tratta = await Tratta.findByPk(id);
             if (!tratta) {
