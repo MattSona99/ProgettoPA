@@ -5,12 +5,12 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
-interface TrattaDAO extends DAO<TrattaAttributes, number> {
+interface ITrattaDAO extends DAO<TrattaAttributes, number> {
     // Metodi specifici per Tratta, se necessari
 }
 
 // Classe TrattaDao che implementa l'interfaccia TrattaDAO
-class TrattaDao implements TrattaDAO {
+class TrattaDao implements ITrattaDAO {
     
     /**
      * Funzione per ottenere tutte le tratte.

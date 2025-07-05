@@ -4,13 +4,13 @@ import {Transaction} from 'sequelize';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia UtenteDAO che estende la DAO per includere metodi specifici per Utente
-interface UtenteDAO extends DAO<UtenteAttributes, number> {
+interface IUtenteDAO extends DAO<UtenteAttributes, number> {
     // metodi da aggiungere nel caso specifico degli utenti
     getByEmail(email: string): Promise<Utente | null>;
 }
 
 // Classe UtenteDao che implementa l'interfaccia UtenteDAO
-class UtenteDao implements UtenteDAO {
+class UtenteDao implements IUtenteDAO {
 
     /**
      * Funzione per ottenere tutti gli utenti.

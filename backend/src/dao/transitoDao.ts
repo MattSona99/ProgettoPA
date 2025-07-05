@@ -4,12 +4,12 @@ import { Transaction } from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
-interface TransitoDAO extends DAO<TransitoAttributes, number> {
+interface ITransitoDAO extends DAO<TransitoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei transiti
 }
 
 // Classe TransitoDao che implementa l'interfaccia TransitoDAO
-class TransitoDao implements TransitoDAO {
+class TransitoDao implements ITransitoDAO {
 
     /**
      * Funzione per ottenere tutti i transiti.

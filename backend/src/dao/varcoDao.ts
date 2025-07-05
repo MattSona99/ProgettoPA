@@ -4,12 +4,12 @@ import { DAO } from "./daoInterface";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia VarcoDAO che estende la DAO per includere metodi specifici per Varco
-interface VarcoDAO extends DAO<VarcoAttributes, number> {
+interface IVarcoDAO extends DAO<VarcoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei varchi
 }
 
 // Classe VarcoDao che implementa l'interfaccia VarcoDAO
-class VarcoDao implements VarcoDAO {
+class VarcoDao implements IVarcoDAO {
 
     /**
      * Funzione per ottenere tutti i varchi.

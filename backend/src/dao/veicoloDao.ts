@@ -4,12 +4,12 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
-interface VeicoloDAO extends DAO<VeicoloAttributes, string> {
+interface IVeicoloDAO extends DAO<VeicoloAttributes, string> {
     // Metodi specifici per Veicolo, se necessari
 }
 
 // Classe VeicoloDao che implementa l'interfaccia VeicoloDAO
-class VeicoloDao implements VeicoloDAO {
+class VeicoloDao implements IVeicoloDAO {
 
     /**
      * Funzione per ottenere tutti i veicoli.

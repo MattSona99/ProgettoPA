@@ -8,12 +8,14 @@ import Veicolo from "../models/veicolo";
 import Utente from "../models/utente";
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
-interface MultaDAO extends DAO<MultaAttributes, number> {
+interface IMultaDAO extends DAO<MultaAttributes, number> {
     // metodi da aggiungere nel caso specifico delle multe
+    getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }): Promise<Multa[]>
+    getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa>
 }
 
 // Classe MultaDao che implementa l'interfaccia MultaDAO
-class MultaDao implements MultaDAO {
+class MultaDao implements IMultaDAO {
 
     /**
      * Funzione per ottenere tutte le multe.

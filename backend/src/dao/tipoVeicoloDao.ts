@@ -5,12 +5,12 @@ import { TipoVeicoloAttributes } from '../models/tipoVeicolo';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 // Interfaccia TipoVeicoloDAO che estende la DAO per includere metodi specifici per TipoVeicolo
-interface TipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
+interface ITipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
     // Metodi specifici per TipoVeicolo, se necessari
 }
 
 // Classe TipoVeicoloDao che implementa l'interfaccia TipoVeicoloDAO
-class TipoVeicoloDao implements TipoVeicoloDAO {
+class TipoVeicoloDao implements ITipoVeicoloDAO {
 
     /**
      * Funzione per ottenere tutti i tipi di veicolo.
