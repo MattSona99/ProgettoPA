@@ -53,6 +53,8 @@ JWT_SECRET=your_secret_key
 ```
 Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
+---
+
 ## Progettazione
 
 ### Architettura
@@ -110,7 +112,7 @@ ProgettoPA
 ├──LICENSE
 └──README.md
 ```
-
+---
 
 ### Diagramma dei casi d'uso
 
@@ -135,6 +137,7 @@ Operatore ---|Controllo| Multe([fa:fa-folder-open Multe])
 
 Varco(fa:fa-user-lock Varco) ---|Creazione| Transiti([fa:fa-folder-open Transiti])
 ```
+---
 
 ### Diagramma E‑R
 
@@ -201,6 +204,7 @@ classDiagram
     UTENTE --> IS_VARCO : gestisce
     VARCO --> IS_VARCO : è gestito
 ```
+---
 
 ### Pattern Utilizzati
 
@@ -235,6 +239,8 @@ All'interno del sistema sviluppato, il pattern è stato utilizzato per la creazi
 Infine, il pattern Singleton è stato usato dove è necessario garantire una sola istanza condivisa in tutto il sistema, come ad esempio per alcune configurazioni, o per servizi che devono essere accessibili ovunque, senza duplicazioni.
 
 L’uso combinato di questi pattern ha permesso di realizzare un’architettura robusta, estendibile e pronta per evolversi in progetti futuri più complessi.
+
+---
 
 ### Diagrammi delle sequenze
 
@@ -737,7 +743,7 @@ sequenceDiagram
   M -->> A: 
   A -->> C:
 ```
-
+---
 
 ## Rotte API
 
@@ -1837,6 +1843,8 @@ Authorization: Bearer {authToken}
   <img src="https://i.imgur.com/jbLU4vp.png" alt="Diagram" width="500"/>
 </p>
 
+---
+
 ## Scelte implementative
 
 Per facilitare lo sviluppo didattico del progetto, sono state adottate alcune scelte implementative mirate.
@@ -1852,6 +1860,7 @@ pm.test("Save token", function () {
 
 Per quanto riguarda l'implementazione della logica legata alle multe, si è scelto di considerare la presenza di condizioni ambientali avverse (pioggia) solo nei casi in cui nel Transito entrambi i varchi, di ingresso (`varco_in`) e di uscita (`varco_out`), riportino il campo `pioggia=true`. Questa scelta è stata adottata per garantire maggiore coerenza ed affidabilità nella rilevazione delle condizioni meteo, riducendo il rischio di penalizzazioni ingiustificate dovute a segnalazioni parziali o localizzate.
 
+---
 
 ## Strumenti utilizzati
 
@@ -1878,6 +1887,8 @@ Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti st
 * [GitHub](https://github.com/) come piattaforma di condivisione e versioning del codice;
 
 * [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
+
+---
 
 ## Autori
 
