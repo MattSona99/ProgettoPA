@@ -441,6 +441,7 @@ Ottenuto il transito, il repository recupera anche le entità correlate per cost
   - la tratta associata, attraverso `trattaDao.getById`;
   - il veicolo che ha effettuato il transito (`Veicolo.findOne`);
   - il relativo tipo di veicolo (`TipoVeicolo.findOne`).
+
 Tutte queste informazioni vengono aggregate e inviate dal controller al client. Se in qualunque punto si verifica un errore (transito inesistente, riferimenti nulli, ecc.), il controller si affida alla factory per creare l’errore corrispondente, che viene poi gestito dal middleware centralizzato per la gestione degli errori e inviato al client come risposta appropriata.
 ```mermaid
 sequenceDiagram
@@ -494,6 +495,7 @@ Dopo la creazione, il repository esegue una serie di interrogazioni per arricchi
   - recupera il veicolo tramite `VeicoloDAO.getById`;
   - da questo ottiene il tipo di veicolo con `TipoVeicoloDAO.getById`;
   - infine ottiene i dati della tratta associata tramite `TrattaDAO.getById`.
+
 Queste informazioni sono utilizzate per effettuare controlli aggiuntivi (ad esempio sul rispetto dei limiti di velocità) o per generare multe. Una volta completata la logica di business, il controller restituisce la risposta al client. Anche in questo caso, se si verificano errori (veicolo o tratta inesistenti, problemi di creazione nel DB, ecc.), si genera un errore tramite la factory, che viene poi gestito e restituito in forma strutturata.
 ```mermaid
 sequenceDiagram
@@ -583,6 +585,7 @@ Il flusso prevede:
   - validazione del `transitoId` ricevuto.
   - verifica della presenza di una multa collegata al transito.
   - ae non è presente alcuna multa, il transito viene eliminato dal database.
+
 In caso esista già una multa legata al transito, viene generato un errore e il transito non può essere cancellato.
 ```mermaid
 sequenceDiagram
