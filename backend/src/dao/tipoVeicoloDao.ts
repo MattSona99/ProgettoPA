@@ -39,8 +39,8 @@ class TipoVeicoloDao implements ITipoVeicoloDAO {
             } else {
                 return tipoVeicolo;
             }
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del tipo di veicolo con id ${id}.`);
+        } catch (error){
+            throw error;
         }
     }
 

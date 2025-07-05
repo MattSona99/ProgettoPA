@@ -38,8 +38,9 @@ class TransitoDao implements ITransitoDAO {
             } else {
                 return transito;
             }
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
+        } catch (error) {
+            throw error;
+            ;
         }
     }
 
@@ -76,8 +77,8 @@ class TransitoDao implements ITransitoDAO {
             }
 
             return [row, updatedTransito];
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
+        } catch (error) {
+            throw error;
         }
     }
 

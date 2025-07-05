@@ -114,7 +114,12 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
         const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 

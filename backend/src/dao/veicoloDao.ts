@@ -38,8 +38,9 @@ class VeicoloDao implements IVeicoloDAO {
             } else {
                 return veicolo;
             }
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
+        } catch (error) {
+            throw error;
+            ;
         }
     }
 

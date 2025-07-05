@@ -133,7 +133,7 @@ class TransitoRepository {
                     const newMulta = await multaDao.create(multa, { transaction });
                     response['multa'] = newMulta;
                 }
-                
+
 
                 await transaction.commit();
                 return response;
@@ -157,58 +157,56 @@ class TransitoRepository {
         let tratta: Tratta | null = null;
         let veicolo: Veicolo | null = null;
         let tipoVeicolo: TipoVeicolo | null = null;
-        try {
-            // Controllo se il transito esiste
-            const existingTransito = await transitoDao.getById(id);
 
-            // Controllo se la tratta non sia vuota
-            if (transito.tratta) {
-                // Controllo se la tratta esiste
-                tratta = await trattaDao.getById(transito.tratta);
-            } else {
-                tratta = await trattaDao.getById(existingTransito!.tratta);
-            }
+        // Controllo se il transito esiste
+        const existingTransito = await transitoDao.getById(id);
 
-            // Controllo se la targa non sia vuota
-            if (transito.targa) {
-                // Controllo se il veicolo esiste dalla targa
-                veicolo = await veicoloDao.getById(transito.targa);
-
-                // Cerco il tipo di veicolo per prendere il limite di velocità
-                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
-            } else {
-                // Prendo il veicolo dalla targa del transito esistente
-                veicolo = await veicoloDao.getById(existingTransito!.targa);
-
-                // Cerco il tipo di veicolo per prendere il limite di velocità
-                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
-            }
-
-            // Controllo se la data di ingresso non sia vuota
-            if (!transito.data_in) {
-                transito.data_in = existingTransito!.data_in;
-            }
-
-            // Controllo se la data di uscita non sia vuota
-            if (!transito.data_out) {
-                transito.data_out = existingTransito!.data_out;
-            }
-
-            // Aggiorno il transito
-            const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
-            const transitoAggiornato: ITransitoAttributes = {
-                id_transito: id,
-                tratta: tratta!.id_tratta,
-                targa: veicolo!.targa,
-                data_in: transitoCompleto.data_in,
-                data_out: transitoCompleto.data_out,
-                velocita_media: transitoCompleto.velocita_media ?? 0,
-                delta_velocita: transitoCompleto.delta_velocita ?? 0
-            }
-            return await transitoDao.update(id, transitoAggiornato);
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
+        // Controllo se la tratta non sia vuota
+        if (transito.tratta) {
+            // Controllo se la tratta esiste
+            tratta = await trattaDao.getById(transito.tratta);
+        } else {
+            tratta = await trattaDao.getById(existingTransito!.tratta);
         }
+
+        // Controllo se la targa non sia vuota
+        if (transito.targa) {
+            // Controllo se il veicolo esiste dalla targa
+            veicolo = await veicoloDao.getById(transito.targa);
+
+            // Cerco il tipo di veicolo per prendere il limite di velocità
+            tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
+        } else {
+            // Prendo il veicolo dalla targa del transito esistente
+            veicolo = await veicoloDao.getById(existingTransito!.targa);
+
+            // Cerco il tipo di veicolo per prendere il limite di velocità
+            tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
+        }
+
+        // Controllo se la data di ingresso non sia vuota
+        if (!transito.data_in) {
+            transito.data_in = existingTransito!.data_in;
+        }
+
+        // Controllo se la data di uscita non sia vuota
+        if (!transito.data_out) {
+            transito.data_out = existingTransito!.data_out;
+        }
+
+        // Aggiorno il transito
+        const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
+        const transitoAggiornato: ITransitoAttributes = {
+            id_transito: id,
+            tratta: tratta!.id_tratta,
+            targa: veicolo!.targa,
+            data_in: transitoCompleto.data_in,
+            data_out: transitoCompleto.data_out,
+            velocita_media: transitoCompleto.velocita_media ?? 0,
+            delta_velocita: transitoCompleto.delta_velocita ?? 0
+        }
+        return await transitoDao.update(id, transitoAggiornato);
+
     }
 
     /**

@@ -11,7 +11,7 @@ interface ITrattaDAO extends DAO<ITrattaAttributes, number> {
 
 // Classe TrattaDao che implementa l'interfaccia TrattaDAO
 class TrattaDao implements ITrattaDAO {
-    
+
     /**
      * Funzione per ottenere tutte le tratte.
      * 
@@ -39,8 +39,10 @@ class TrattaDao implements ITrattaDAO {
             } else {
                 return tratta;
             }
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
+        } catch (error) {
+            throw error;
+            ;
+
         }
     }
 
@@ -50,7 +52,7 @@ class TrattaDao implements ITrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da creare.
      * @returns {Promise<Tratta>} Una promessa che risolve con la nuova tratta creata.
      */
-    public async create(item: ITrattaCreationAttributes, options?: { transaction?: Transaction}): Promise<Tratta> {
+    public async create(item: ITrattaCreationAttributes, options?: { transaction?: Transaction }): Promise<Tratta> {
         try {
             return await Tratta.create(item, options);
         } catch {
