@@ -29,20 +29,14 @@ class TrattaDao implements ITrattaDAO {
      * Funzione per ottenere una tratta da un ID.
      * 
      * @param {number} id - L'ID della tratta da recuperare.
-     * @returns {Promise<Tratta | null>} Una promessa che risolve con la tratta trovata o null se non trovata.
+     * @returns {Promise<Tratta>} Una promessa che risolve con la tratta trovata.
      */
-    public async getById(id: number): Promise<Tratta | null> {
-        try {
-            const tratta = await Tratta.findByPk(id);
-            if (!tratta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
-            } else {
-                return tratta;
-            }
-        } catch (error) {
-            throw error;
-            ;
-
+    public async getById(id: number): Promise<Tratta> {
+        const tratta = await Tratta.findByPk(id);
+        if (!tratta) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+        } else {
+            return tratta;
         }
     }
 

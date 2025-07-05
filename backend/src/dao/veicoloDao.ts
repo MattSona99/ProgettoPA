@@ -28,19 +28,14 @@ class VeicoloDao implements IVeicoloDAO {
      * Funzione per ottenere un veicolo da una targa.
      * 
      * @param {string} targa - La targa del veicolo da recuperare.
-     * @returns {Promise<Veicolo | null>} - Una promessa che risolve con il veicolo trovato o null se non trovato.
+     * @returns {Promise<Veicolo>} - Una promessa che risolve con il veicolo trovato.
      */
-    public async getById(targa: string): Promise<Veicolo | null> {
-        try {
-            const veicolo = await Veicolo.findByPk(targa);
-            if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
-            } else {
-                return veicolo;
-            }
-        } catch (error) {
-            throw error;
-            ;
+    public async getById(targa: string): Promise<Veicolo> {
+        const veicolo = await Veicolo.findByPk(targa);
+        if (!veicolo) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+        } else {
+            return veicolo;
         }
     }
 

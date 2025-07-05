@@ -13,7 +13,12 @@ export const createMulta = async (req: Request, res: Response, next: NextFunctio
         const createdMulta = await multaRepository.create(req.body);
         res.status(StatusCodes.CREATED).json(createdMulta);
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -25,7 +30,12 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
         const multe = await multaDao.getAll();
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -36,7 +46,6 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
     const { targa, dataIn, dataOut } = req.query;
     const utente = (req as any).user;
     const arrayTarga = Array.isArray(targa) ? targa : [targa];
-    console.log(arrayTarga, dataIn, dataOut, utente);
     try {
         const multe = await multaRepository.getMulteByTargheEPeriodo(
             arrayTarga as string[],
@@ -46,7 +55,12 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
         );
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 
@@ -55,7 +69,7 @@ export const downloadBollettinoPDF = async (req: Request, res: Response, next: N
     const { id } = req.params;
     try {
         // Verifico che la multa sia associata all'utente e la recupero
-        const multa = await multaDao.getMultaByUtente(parseInt(id), id_utente);
+        const multa = await multaRepository.getMultaByUtente(parseInt(id), id_utente);
 
         // Recupero il transito per ottenere la targa
         const transito = await transitoRepository.getTransitoById(multa!.transito);
@@ -70,6 +84,11 @@ export const downloadBollettinoPDF = async (req: Request, res: Response, next: N
             .send(pdfBuffer);
     }
     catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }

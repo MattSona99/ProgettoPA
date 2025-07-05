@@ -26,11 +26,7 @@ class TransitoRepository {
      * @returns - Una promessa che risolve con un array di transiti.
      */
     public async getAllTransiti(): Promise<Transito[]> {
-        try {
-            return await transitoDao.getAll();
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei transiti.");
-        }
+        return await transitoDao.getAll();
     }
     /**
      * Funzione per ottenere un transito da un ID.
@@ -38,16 +34,10 @@ class TransitoRepository {
      * @param id - L'ID del transito da recuperare.
      * @returns - Una promessa che risolve con il transito trovato.
      */
-    public async getTransitoById(id: number): Promise<Transito | null> {
-        try {
-            const transito = await transitoDao.getById(id);
-            if (!transito) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
-            }
-            return await this.enrichTransito(transito);
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
-        }
+    public async getTransitoById(id: number) {
+        const transito = await transitoDao.getById(id);
+
+        return await this.enrichTransito(transito);
     }
 
     /**
@@ -64,50 +54,33 @@ class TransitoRepository {
         };
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
+
+        // Controllo se il veicolo esiste
+        const existingVeicolo = await veicoloDao.getById(transito.targa);
+
+        // Controllo se il tipo di veicolo esiste e ne ricavo il limite di velocità
+        const tipoVeicolo = await tipoVeicoloDao.getById(existingVeicolo!.tipo_veicolo);
+
+        // Controllo se la tratta esiste
+        const existingTratta = await trattaDao.getById(transito.tratta);
+
+        // Controllo se i varchi esistono
+        const varcoIn = await varcoDao.getById(existingTratta!.varco_in);
+        const varcoOut = await varcoDao.getById(existingTratta!.varco_out);
+
+        // Se entrambi i varchi hanno pioggia, la velocità consentita viene ridotta di 20km/h
+        let limiteVelocita = tipoVeicolo.limite_velocita;
+        if (varcoIn.pioggia && varcoOut.pioggia) {
+            limiteVelocita -= 20;
+        }
+
+        // Calcolo della velocità media e del delta
+        const transitoCompleto = await this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
         try {
-            // Controllo se il veicolo esiste
-            const existingVeicolo = await veicoloDao.getById(transito.targa);
-            if (!existingVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${transito.targa} non trovato.`);
-            }
-
-            // Controllo se il tipo di veicolo esiste e ne ricavo il limite di velocità
-            const tipoVeicolo = await tipoVeicoloDao.getById(existingVeicolo.tipo_veicolo);
-            if (!tipoVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con ID ${existingVeicolo.tipo_veicolo} non trovato.`);
-            }
-
-            // Controllo se la tratta esiste
-            const existingTratta = await trattaDao.getById(transito.tratta);
-            if (!existingTratta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${transito.tratta} non trovata.`);
-            }
-
-            // Controllo se i varchi esistono
-            const varcoIn = await varcoDao.getById(existingTratta.varco_in);
-            const varcoOut = await varcoDao.getById(existingTratta.varco_out);
-
-            if (!varcoIn || !varcoOut) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Uno dei varchi della tratta con ID ${transito.tratta} non è stato trovato.`);
-            }
-            console.log(varcoIn.pioggia, varcoOut.pioggia)
-
-            // Se entrambi i varchi hanno pioggia, la velocità consentita viene ridotta di 20km/h
-            let limiteVelocita = tipoVeicolo.limite_velocita;
-            if (varcoIn.pioggia && varcoOut.pioggia) {
-                limiteVelocita -= 20;
-            }
-            console.log(limiteVelocita);
-
-            // Calcolo della velocità media e del delta
-            const transitoCompleto = await this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
-
             // Se il ruolo è 'operatore', si forza l'inserimento del transito
             if (ruolo === null) {
                 const newTransito = await transitoDao.create(transitoCompleto, { transaction });
-                if (!newTransito) {
-                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
-                }
+
                 response['transito'] = newTransito;
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
@@ -122,14 +95,12 @@ class TransitoRepository {
 
             } else if (ruolo.smart) { // Se un varco è smart, si crea il transito
                 const newTransito = await transitoDao.create(transitoCompleto, { transaction });
-                if (!newTransito) {
-                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Errore nella creazione del transito con ID ${transito.id_transito}.`);
-                }
+
                 response['transito'] = newTransito;
 
                 // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 if (newTransito.delta_velocita > 0) {
-                    const multa = this.createMulta(newTransito);
+                    const multa: IMultaCreationAttributes = this.createMulta(newTransito);
                     const newMulta = await multaDao.create(multa, { transaction });
                     response['multa'] = newMulta;
                 }
@@ -151,7 +122,7 @@ class TransitoRepository {
      * 
      * @param id - L'ID del transito da aggiornare.
      * @param transito - L'oggetto transito da aggiornare.
-     * @returns - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
+     * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
      */
     public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[]]> {
         let tratta: Tratta | null = null;
@@ -213,21 +184,19 @@ class TransitoRepository {
      * Funzione per eliminare un transito.
      * 
      * @param id - L'ID del transito da eliminare.
-     * @returns - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[boolean, Transito]>} - Una promessa che risolve con il numero di righe eliminate e l'oggetto transito eliminato.
      */
-    public async deleteTransito(id: number): Promise<boolean> {
+    public async deleteTransito(id: number): Promise<[number, Transito]> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const deleted = await transitoDao.delete(id, { transaction });
-            if (!deleted) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non trovato.`);
-            }
+            const [rows, deletedTransito] = await transitoDao.delete(id, { transaction });
             await transaction.commit();
-            return true;
-        } catch {
+            return [rows, deletedTransito];
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
+            throw error;
+            ;
         }
     }
 
@@ -235,28 +204,26 @@ class TransitoRepository {
 
     /**
      * Funzione di stampa per le informazioni aggiuntive sui transiti.
+     * 
+     * @param transito - Il transito da arricchire.
      */
-    private async enrichTransito(transito: Transito): Promise<any> {
-        try {
-            const tratta = await trattaDao.getById(transito.tratta);
-            const veicolo = await Veicolo.findOne({ where: { targa: transito.targa } });
-            const tipoVeicolo = await TipoVeicolo.findOne({ where: { id_tipo_veicolo: veicolo!.tipo_veicolo } });
-            return {
-                ...transito.dataValues,
-                tratta: tratta ? tratta.dataValues : null,
-                veicolo: veicolo ? veicolo.dataValues : null,
-                tipoVeicolo: tipoVeicolo ? tipoVeicolo.dataValues : null
-            };
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul transito con ID ${transito.id_transito}.`);
-        }
+    private async enrichTransito(transito: Transito) {
+        const tratta = await trattaDao.getById(transito.tratta);
+        const veicolo = await veicoloDao.getById(transito.targa);
+        const tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
+        return {
+            ...transito.dataValues,
+            tratta: tratta ? tratta.dataValues : null,
+            veicolo: veicolo ? veicolo.dataValues : null,
+            tipoVeicolo: tipoVeicolo ? tipoVeicolo.dataValues : null
+        };
     }
 
     /**
      * Funzione di creazione di una multa associata al transito.
      * 
      * @param transito - Il transito associato alla multa.
-     * @returns - L'oggetto parziale della multa da creare.
+     * @returns {IMultaCreationAttributes} - L'oggetto parziale della multa da creare.
      */
     private createMulta(transito: Transito): IMultaCreationAttributes {
         // Calcolo dell'importo della multa (esempio)
@@ -276,7 +243,7 @@ class TransitoRepository {
         }
 
 
-        // Restituisci solo i campi richiesti da MultaCreationAttributes (senza id_multa e uuid_pagamento)
+        // Vengono restituiti solo i campi richiesti da MultaCreationAttributes (senza id_multa e uuid_pagamento)
         return {
             transito: transito.id_transito,
             importo: importo,
@@ -290,9 +257,9 @@ class TransitoRepository {
      * @param file - Il file dell'immagine da processare
      * @returns - Una promessa che risolve con la targa o null.
      */
-    public async processImage(file: any): Promise<string | null> {
+    public async processImage(file: Express.Multer.File): Promise<string | null> {
         try {
-            const { data: { text } } = await Tesseract.recognize(file, 'ita')
+            const { data: { text } } = await Tesseract.recognize(file.buffer, 'ita')
             const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
             const match = text.match(regex);
             return match ? match[0] : null;

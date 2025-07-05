@@ -8,18 +8,30 @@ import Multa from '../models/multa';
 
 /**
  * Funzione per ottenere tutti i transiti.
+ * 
+ * @returns - Una promessa che risolve con un array di transiti.
  */
 export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+
+
+            next(error);
+        }
     }
 };
 
 /**
  * Funzione per ottenere un transito da un ID.
+ * 
+ * @param id - L'ID del transito da recuperare.
+ * @returns - Una promessa che risolve con il transito trovato.
  */
 export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -30,12 +42,19 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
         }
         res.status(StatusCodes.OK).json(transito);
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 
 /**
  * Funzione per creare un nuovo transito.
+ * 
+ * @returns - Una promessa che risolve con il transito creato.
  */
 export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     const newTransito = req.body;
@@ -45,9 +64,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     try {
         if (ruolo === 'operatore') { // Operatore forza manualmente l'inserimento del transito
             const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
-            if (!createdTransito) {
-                next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
-            }
+
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
             } else {
@@ -57,18 +74,14 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             // Verifica se l'utente è associato a un varco
             const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
             if (!isVarcoAssociato) {
-                return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente."));
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente.");
             }
             // Recupera il varco associato all'utente
             const varco = await varcoRepository.getVarcoById(isVarcoAssociato.id_varco);
-            if (!varco) {
-                return next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Varco non trovato."));
-            }
+
             // Creazione del transito a seconda del tipo di varco
             const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, varco);
-            if (!createdTransito) {
-                next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nella creazione del transito."));
-            }
+
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
             }
@@ -76,15 +89,22 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
                 res.status(StatusCodes.CREATED).json(createdTransito);
             }
         } else {
-            return next(HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti."));
+            throw HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti.");
         }
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 
 /**
  * Funzione per creare un transito tramite un varco non smart.
+ * 
+ * @returns - Una promessa che risolve con il transito creato.
 */
 export const createTransitoByVarco = async (req: Request, res: Response, next: NextFunction) => {
     // Verifica se il file è stato caricato correttamente
@@ -92,20 +112,26 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
         return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "File non fornito o non valido."));
     }
     try {
-        const file = req.file.buffer;
+        const file = req.file as Express.Multer.File;
         // Processamento dell'immagine della targa per ottenere di ritorno la stessa
         // Utilizzo di tesseract.js o un altro OCR per leggere la targa
         const targa = await transitoRepository.processImage(file);
-        if (!targa) {
-            return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile leggere la targa dal file immagine."));
-        }
+
+        // DA COMPLETARE CON L'AGGIUNTA DEL TRANSITO
         res.status(StatusCodes.OK).json({ targa });
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }
 /**
  * Funzione per aggiornare un transito esistente.
+ * 
+ * @returns - Una promessa che risolve con il transito aggiornato.
  */
 export const updateTransito = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -125,6 +151,9 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
 
 /**
  * Funzione per eliminare un transito.
+ * 
+ * @param id - L'ID del transito da eliminare.
+ * @returns - Una promessa che risolve con un messaggio di conferma dell'eliminazione.
  */
 export const deleteTransito = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -133,13 +162,14 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         if (existingMulta) {
             next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata."));
         }
-        const deleted = await transitoRepository.deleteTransito(parseInt(id));
-        if (deleted) {
-            res.status(StatusCodes.OK).json({ message: "Transito eliminato con successo." });
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
-        }
+        const [deleted, deletedTransito] = await transitoRepository.deleteTransito(parseInt(id));
+        res.status(StatusCodes.OK).json({ message: `Row eliminate: ${deleted}, Transito con id = ${id} eliminato con successo:`, transito: deletedTransito });
     } catch (error) {
-        next(error);
+        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
+            const status = (error as { statusCode: number }).statusCode;
+            res.status(status).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 }

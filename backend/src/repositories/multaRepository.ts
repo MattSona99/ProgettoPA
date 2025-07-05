@@ -14,14 +14,14 @@ class multaRepository {
     /**
      * Funzione per creare una nuova multa.
      * 
-     * @param item - L'oggetto parziale della multa da creare.
-     * @returns - Una promessa che risolve con la nuova multa creata.
+     * @param itemMulta - L'oggetto parziale della multa da creare.
+     * @returns {Promise<Multa>} - Una promessa che risolve con la nuova multa creata.
      */
-    public async create(item: IMultaCreationAttributes): Promise<Multa> {
+    public async create(itemMulta: IMultaCreationAttributes): Promise<Multa> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const nuovaMulta = await multaDao.create(item, { transaction });
+            const nuovaMulta = await multaDao.create(itemMulta, { transaction });
             await transaction.commit();
             return nuovaMulta;
         } catch (error) {
@@ -38,16 +38,21 @@ class multaRepository {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }): Promise<any[]> {
-        try {
-            const multe = await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
-            const multeComplete = await this.enrichMulte(multe);
-            return multeComplete;
-        } catch {
-            throw HttpErrorFactory.createError(
-                HttpErrorCodes.InternalServerError,
-                `Errore nel recupero delle multe per le targhe ${targhe.join(", ")} nel periodo ${dataIn} - ${dataOut}.`);
-        }
+    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }){
+        const multe = await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
+        return await this.enrichMulte(multe);
+    }
+
+
+    /**
+     * Funzione per ottenere e verificare che la multa appartenga all'utente.
+     * 
+     * @param idMulta - L'ID della multa.
+     * @param idUtente - L'ID dell'utente.
+     * @returns {Promise<Multa>} - Una promessa che risolve con la multa con informazioni aggiuntive.
+     */
+    public async getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa> {
+        return await multaDao.getMultaByUtente(idMulta, idUtente);
     }
 
     /**
@@ -56,7 +61,6 @@ class multaRepository {
      * @param multe - Un array di multe.
      * @returns - Una promessa che risolve con un array di multe con informazioni aggiuntive.
      */
-
     private async enrichMulte(multe: Multa[]) {
         try {
             const multaCompleta = await Promise.all(multe.map(async m => {

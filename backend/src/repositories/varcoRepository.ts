@@ -27,18 +27,13 @@ class VarcoRepository {
      * Funzione per ottenere un varco da un ID.
      * 
      * @param id - L'ID del varco da recuperare.
-     * @returns - Una promessa che risolve con il varco trovato.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
      */
-    public async getVarcoById(id: number): Promise<Varco | null> {
-        try {
-            const varco = await varcoDao.getById(id);
-            if (!varco) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
-            }
-            return await this.enrichVarco(varco);
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${id}.`);
-        }
+    public async getVarcoById(id: number): Promise<Varco> {
+        const varco = await varcoDao.getById(id);
+
+        return await this.enrichVarco(varco);
+
     }
 
     /**
@@ -108,8 +103,8 @@ class VarcoRepository {
      */
     private async enrichVarco(varco: Varco): Promise<any> {
         try {
-            const isVarco = await IsVarco.findOne({ where: { id_varco : varco.id_varco } });
-            if(isVarco) {
+            const isVarco = await IsVarco.findOne({ where: { id_varco: varco.id_varco } });
+            if (isVarco) {
                 const utente = await utenteDao.getById(isVarco.id_utente);
                 return {
                     ...varco.dataValues,

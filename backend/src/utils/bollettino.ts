@@ -1,7 +1,7 @@
 // utils/pdf.ts
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
-import { MultaAttributes } from "../models/multa";
+import { IMultaAttributes } from "../models/multa";
 import { HttpErrorCodes, HttpErrorFactory } from "./errorHandler";
 
 /**
@@ -9,9 +9,9 @@ import { HttpErrorCodes, HttpErrorFactory } from "./errorHandler";
  * 
  * @param multa - La multa per generare il bollettino.
  * @param targa - La targa del veicolo.
- * @returns - Un buffer contenente il bollettino in formato PDF.
+ * @returns {Promise<Buffer>} - Un buffer contenente il bollettino in formato PDF.
  */
-export async function generateBollettinoPDFBuffer(multa: MultaAttributes, targa: string): Promise<Buffer> {
+export async function generateBollettinoPDFBuffer(multa: IMultaAttributes, targa: string): Promise<Buffer> {
     const pdf = new jsPDF();
     const qrData = `Targa: ${targa}\nImporto: ${multa.importo}\nID: ${multa.id_multa}\nUUID: ${multa.uuid_pagamento}`;
 
