@@ -292,11 +292,7 @@ Successivamente, il controller richiama il repository per ottenere i dati del ve
 ```
 
 - **POST /veicolo**
-La chiamata `POST /veicolo` permette al client di creare un nuovo veicolo all'interno del sistema. Una volta ricevuta la richiesta, l'applicazione verifica l’autenticità del token JWT e i privilegi dell’utente tramite il middleware di autenticazione.
-
-Se l’accesso è autorizzato, i dati forniti vengono validati per assicurarsi che rispettino i requisiti previsti per la creazione di un veicolo (targa, tipo, utente). Dopo la validazione, il controller attiva il processo di creazione chiamando il repository, che a sua volta si appoggia al DAO per interagire con il database.
-
-Il DAO utilizza Sequelize per inserire il nuovo record nella tabella dei veicoli. Una volta completata l’operazione, i dati del nuovo veicolo vengono restituiti risalendo la catena. Se si verifica un errore (ad esempio un duplicato o un problema di integrità), viene generato tramite la factory degli errori e gestito dal middleware di error handling, che infine invia una risposta di errore o successo al client, a seconda dell’esito.
+La chiamata `POST /veicolo` permette al client di creare un nuovo veicolo all'interno del sistema. Una volta ricevuta la richiesta, l'applicazione verifica l’autenticità del token JWT e i privilegi dell’utente tramite il middleware di autenticazione. Se l’accesso è autorizzato, i dati forniti vengono validati per assicurarsi che rispettino i requisiti previsti per la creazione di un veicolo (targa, tipo, utente). Dopo la validazione, il controller attiva il processo di creazione chiamando il repository, che a sua volta si appoggia al DAO per interagire con il database. Il DAO utilizza Sequelize per inserire il nuovo record nella tabella dei veicoli. Una volta completata l’operazione, i dati del nuovo veicolo vengono restituiti risalendo la catena. Se si verifica un errore (ad esempio un duplicato o un problema di integrità), viene generato tramite la factory degli errori e gestito dal middleware di error handling, che infine invia una risposta di errore o successo al client, a seconda dell’esito.
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -329,11 +325,7 @@ sequenceDiagram
 ```
 
 - **DELETE /veicolo**
-La chiamata `DELETE /veicolo/:id` consente al client di eliminare un veicolo specifico identificato tramite il suo ID. Una volta inviata la richiesta, il sistema verifica il token JWT e il ruolo dell’utente per accertarsi che l’operazione sia autorizzata.
-
-Dopo l’autenticazione, viene effettuata la validazione dell’ID del veicolo da eliminare. Superata la validazione, il controller invoca il repository, che a sua volta chiama il DAO per gestire l’eliminazione. Il DAO interroga il database tramite Sequelize, inizialmente cercando il veicolo con `findByPk` per verificarne l’esistenza. Se il veicolo è presente, viene eseguita l’operazione di cancellazione con `destroy`.
-
-Il risultato dell’operazione viene quindi risalito fino al controller. Se si verifica un errore, viene creato tramite la factory degli errori e gestito dal middleware di errore. Infine, viene inviata al client una risposta che conferma l’avvenuta eliminazione o comunica l’errore rilevato.
+La chiamata `DELETE /veicolo/:id` consente al client di eliminare un veicolo specifico identificato tramite il suo ID. Una volta inviata la richiesta, il sistema verifica il token JWT e il ruolo dell’utente per accertarsi che l’operazione sia autorizzata. Dopo l’autenticazione, viene effettuata la validazione dell’ID del veicolo da eliminare. Superata la validazione, il controller invoca il repository, che a sua volta chiama il DAO per gestire l’eliminazione. Il DAO interroga il database tramite Sequelize, inizialmente cercando il veicolo con `findByPk` per verificarne l’esistenza. Se il veicolo è presente, viene eseguita l’operazione di cancellazione con `destroy`. Il risultato dell’operazione viene quindi risalito fino al controller. Se si verifica un errore, viene creato tramite la factory degli errori e gestito dal middleware di errore. Infine, viene inviata al client una risposta che conferma l’avvenuta eliminazione o comunica l’errore rilevato.
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -368,11 +360,7 @@ sequenceDiagram
 ```
 
 - **POST /tratta**
-Questa rotta gestisce la creazione di una nuova tratta, cioè un collegamento tra due varchi. Dopo l’invio della richiesta da parte del client, il middleware autentica l’utente e ne controlla i privilegi.
-
-Il corpo della richiesta viene validato per verificare la correttezza delle informazioni, in particolare degli ID dei due varchi estremi. Il controller, tramite il repository, effettua due interrogazioni al DAO dei varchi (`varcoDao.getById`) per verificare che entrambi esistano nel sistema.
-
-Se i varchi sono validi, si procede con la creazione della tratta nel database tramite il DAO (`trattaDao.create`), che sfrutta `Sequelize.Tratta.create.` Infine, il risultato viene risalito fino al client. In caso di problemi (varchi inesistenti, errore di creazione, ecc.), viene generato e gestito un errore.
+Questa rotta gestisce la creazione di una nuova tratta, cioè un collegamento tra due varchi. Dopo l’invio della richiesta da parte del client, il middleware autentica l’utente e ne controlla i privilegi. Il corpo della richiesta viene validato per verificare la correttezza delle informazioni, in particolare degli ID dei due varchi estremi. Il controller, tramite il repository, effettua due interrogazioni al DAO dei varchi (`varcoDao.getById`) per verificare che entrambi esistano nel sistema. Se i varchi sono validi, si procede con la creazione della tratta nel database tramite il DAO (`trattaDao.create`), che sfrutta `Sequelize.Tratta.create.` Infine, il risultato viene risalito fino al client. In caso di problemi (varchi inesistenti, errore di creazione, ecc.), viene generato e gestito un errore.
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -410,11 +398,7 @@ sequenceDiagram
 ```
 
 - **DELETE /tratta/:id**
-Questa rotta permette di eliminare una tratta specificata tramite il suo ID. Dopo l’autenticazione e la verifica del ruolo da parte del middleware, l’ID fornito viene validato.
-
-Il controller controlla che non ci siano transiti associati alla tratta tramite una query (`Transito.findOne`). Se la tratta non è collegata ad alcun transito (quindi può essere eliminata senza violare integrità referenziale), il controller procede all’eliminazione passando per il repository e il DAO.
-
-Il DAO interroga il database per verificare l’esistenza della tratta (`findByPk`) e, se presente, la elimina con `destroy`. Eventuali errori vengono gestiti attraverso la factory e propagati al middleware, che fornisce la risposta al client.
+Questa rotta permette di eliminare una tratta specificata tramite il suo ID. Dopo l’autenticazione e la verifica del ruolo da parte del middleware, l’ID fornito viene validato. Il controller controlla che non ci siano transiti associati alla tratta tramite una query (`Transito.findOne`). Se la tratta non è collegata ad alcun transito (quindi può essere eliminata senza violare integrità referenziale), il controller procede all’eliminazione passando per il repository e il DAO. Il DAO interroga il database per verificare l’esistenza della tratta (`findByPk`) e, se presente, la elimina con `destroy`. Eventuali errori vengono gestiti attraverso la factory e propagati al middleware, che fornisce la risposta al client.
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -454,9 +438,9 @@ sequenceDiagram
 Questa rotta permette di ottenere i dettagli completi di un transito a partire dal suo identificativo. Come sempre, il flusso inizia con il client che invia la richiesta e l'applicazione che la intercetta, passando prima attraverso il middleware per la verifica del token JWT e dei privilegi di ruolo. Superato il controllo di sicurezza, l’app si affida al modulo di validazione per controllare la correttezza del parametro `id`.
 Una volta validata la richiesta, il controller TransitoController invoca il metodo del repository, che a sua volta interroga il TransitoDAO per ottenere il transito richiesto dal database tramite `findByPk`.
 Ottenuto il transito, il repository recupera anche le entità correlate per costruire una risposta completa e arricchita:
-- la tratta associata, attraverso `trattaDao.getById`;
-- il veicolo che ha effettuato il transito (`Veicolo.findOne`);
-- il relativo tipo di veicolo (`TipoVeicolo.findOne`).
+  - la tratta associata, attraverso `trattaDao.getById`;
+  - il veicolo che ha effettuato il transito (`Veicolo.findOne`);
+  - il relativo tipo di veicolo (`TipoVeicolo.findOne`).
 Tutte queste informazioni vengono aggregate e inviate dal controller al client. Se in qualunque punto si verifica un errore (transito inesistente, riferimenti nulli, ecc.), il controller si affida alla factory per creare l’errore corrispondente, che viene poi gestito dal middleware centralizzato per la gestione degli errori e inviato al client come risposta appropriata.
 ```mermaid
 sequenceDiagram
@@ -507,9 +491,9 @@ sequenceDiagram
 Questa rotta consente la creazione manuale di un transito da parte di un operatore o un varco smart (ad esempio in caso di mancata rilevazione automatica o inserimento retroattivo). Anche in questo caso, tutto parte con l’invio della richiesta da parte del client, l’autenticazione dell’utente e la verifica dei privilegi tramite middleware.
 Il payload viene quindi validato (`validateCreateTransito`) per assicurarsi che contenga dati coerenti (veicolo, tratta, varco, ecc.). A questo punto entra in gioco il controller, che chiama il repository. Il repository passa il compito di creare il transito al DAO (`transitoDao.create`), che usa `Sequelize.Transito.create` per l’inserimento nel database.
 Dopo la creazione, il repository esegue una serie di interrogazioni per arricchire il dato:
-- recupera il veicolo tramite `VeicoloDAO.getById`;
-- da questo ottiene il tipo di veicolo con `TipoVeicoloDAO.getById`;
-- infine ottiene i dati della tratta associata tramite `TrattaDAO.getById`.
+  - recupera il veicolo tramite `VeicoloDAO.getById`;
+  - da questo ottiene il tipo di veicolo con `TipoVeicoloDAO.getById`;
+  - infine ottiene i dati della tratta associata tramite `TrattaDAO.getById`.
 Queste informazioni sono utilizzate per effettuare controlli aggiuntivi (ad esempio sul rispetto dei limiti di velocità) o per generare multe. Una volta completata la logica di business, il controller restituisce la risposta al client. Anche in questo caso, se si verificano errori (veicolo o tratta inesistenti, problemi di creazione nel DB, ecc.), si genera un errore tramite la factory, che viene poi gestito e restituito in forma strutturata.
 ```mermaid
 sequenceDiagram
@@ -565,8 +549,7 @@ sequenceDiagram
 ```
 
 - **POST /transito/manuale**
-Questa rotta consente l'invio di un'immagine contenente una targa, che viene elaborata tramite Tesseract.js per l'estrazione automatica del numero di targa. Il sistema utilizza l'OCR per leggere la targa e predispone i dati necessari per la successiva registrazione manuale del transito.
-È previsto il controllo del token di autenticazione e del ruolo dell’utente (che deve essere un operatore di varco).
+Questa rotta consente l'invio di un'immagine contenente una targa, che viene elaborata tramite Tesseract.js per l'estrazione automatica del numero di targa. Il sistema utilizza l'OCR per leggere la targa e predispone i dati necessari per la successiva registrazione manuale del transito. È previsto il controllo del token di autenticazione e del ruolo dell’utente (che deve essere un operatore di varco).
 ```mermaid
 sequenceDiagram
   participant C as Client
@@ -597,9 +580,9 @@ sequenceDiagram
 - **DELETE /transito**
 Questa rotta consente l'eliminazione di un transito esistente, identificato dal suo `id`. Prima di procedere, il sistema verifica l'autenticazione e il ruolo dell’utente. L’eliminazione è permessa solo se non esiste alcuna multa associata al transito in questione.
 Il flusso prevede:
-- Validazione del `transitoId` ricevuto.
-- Verifica della presenza di una multa collegata al transito.
-- Se non è presente alcuna multa, il transito viene eliminato dal database.
+  - validazione del `transitoId` ricevuto.
+  - verifica della presenza di una multa collegata al transito.
+  - ae non è presente alcuna multa, il transito viene eliminato dal database.
 In caso esista già una multa legata al transito, viene generato un errore e il transito non può essere cancellato.
 ```mermaid
 sequenceDiagram
