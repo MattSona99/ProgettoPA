@@ -5,6 +5,7 @@
 
 # Indice
 - [🎯 Obiettivo](#obiettivo)
+- [⚙️ Setup & Installazione](#setup--installazione)
 - [🛠️ Progettazione](#progettazione)
   - [🏗️ Architettura](#architettura)
   - [🧑‍💼 Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
@@ -12,7 +13,6 @@
   - [🧩 Pattern Utilizzati](#pattern-utilizzati)
   - [📈 Diagrammi delle sequenze](#diagrammi-delle-sequenze)
 - [🌐 Rotte API](#rotte-api)
-- [⚙️ Setup & Installazione](#setup--installazione)
 - [💡 Scelte implementative](#scelte-implementative)
 - [🧰 Strumenti utilizzati](#strumenti-utilizzati)
 - [👥 Autori](#autori)
@@ -24,6 +24,34 @@
 Il progetto consiste nella realizzazione di un sistema backend per la gestione dei transiti di veicoli tra varchi autostradali, con calcolo automatico di eventuali **multe** in base alla **velocità media** rilevata. Il sistema supporta **OCR (Tesseract.js)** per l'identificazione automatica delle targhe, gestione utenti con **JWT**, **CRUD completo per varchi, tratte, veicoli e transiti**, generazione di **bollettini PDF** e ruoli differenziati (Operatore, Varco, Automobilista).
 
 ---
+
+## Setup & Installazione
+
+Per l'installazione e la configurazione del progetto è necessario innanzitutto installare [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/). Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, è sufficiente eseguire i seguenti comandi sul proprio terminale:
+```
+# Clona il repository
+git clone https://github.com/MattSona99/ProgettoPA.git
+
+# Entra nella cartella del progetto
+cd ProgettoPA
+
+# Importa il file '.env' all'interno della directory principale
+
+# Avvia il progetto
+docker-compose up --build
+```
+Esempio di file .env
+```
+DB_NAME=progettoPA_DB
+DB_USER=myuser
+DB_PASSWORD=mypassword
+DB_PORT=5432
+DB_HOST=postgres
+
+BACKEND_PORT=3000
+JWT_SECRET=your_secret_key
+```
+Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
 ## Progettazione
 
@@ -1808,34 +1836,6 @@ Authorization: Bearer {authToken}
 <p align="center">
   <img src="https://i.imgur.com/jbLU4vp.png" alt="Diagram" width="500"/>
 </p>
-
-## Setup & Installazione
-
-Per l'installazione e la configurazione del progetto è necessario innanzitutto installare [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/). Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, è sufficiente eseguire i seguenti comandi sul proprio terminale:
-```
-# Clona il repository
-git clone https://github.com/MattSona99/ProgettoPA.git
-
-# Entra nella cartella del progetto
-cd ProgettoPA
-
-# Importa il file '.env' all'interno della directory principale
-
-# Avvia il progetto
-docker-compose up --build
-```
-Esempio di file .env
-```
-DB_NAME=progettoPA_DB
-DB_USER=myuser
-DB_PASSWORD=mypassword
-DB_PORT=5432
-DB_HOST=postgres
-
-BACKEND_PORT=3000
-JWT_SECRET=your_secret_key
-```
-Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
 ## Scelte implementative
 
