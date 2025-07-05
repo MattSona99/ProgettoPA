@@ -8,6 +8,7 @@ import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import { 
     validateGetMulteByTargheEPeriodo
  } from '../middleware/validate/multaValidate';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 const router = Router();
 
@@ -15,8 +16,8 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle multe
-router.get('/multa', authorize(['operatore']), getAllMulte);
-router.get('/multa/dettagli', authorize(['operatore', 'automobilista']), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
-router.get('/multa/download/:id', authorize(['automobilista']), downloadBollettinoPDF);
+router.get('/multa', authorize([RuoloUtente.OPERATORE]), getAllMulte);
+router.get('/multa/dettagli', authorize([RuoloUtente.OPERATORE, RuoloUtente.AUTOMOBILISTA]), validateGetMulteByTargheEPeriodo, getMulteByTargheEPeriodo);
+router.get('/multa/download/:id', authorize([RuoloUtente.AUTOMOBILISTA]), downloadBollettinoPDF);
 
 export default router;

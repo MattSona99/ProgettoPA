@@ -1,4 +1,6 @@
 import { StatusCodes } from "http-status-codes";
+import { HttpErrorCodes } from "../enums/HttpErrorCodes";
+
 
 /**
  * Estensione della classe Error per la gestione degli errori personalizzati.
@@ -13,21 +15,6 @@ export class HttpError extends Error {
         this.code = code;
         Object.setPrototypeOf(this, HttpError.prototype);
     }
-}
-
-/**
- * Enum per la gestione degli errori personalizzati.
- */
-export enum HttpErrorCodes {
-    BadRequest = 'BadRequest',
-    Unauthorized = 'Unauthorized',
-    Forbidden = 'Forbidden',
-    NotFound = 'NotFound',
-    InternalServerError = 'InternalServerError',
-    InvalidID = 'InvalidID',
-    InvalidToken = 'InvalidToken',
-    JsonWebTokenError = 'JsonWebTokenError',
-    TokenExpiredError = 'TokenExpiredError',
 }
 
 /**

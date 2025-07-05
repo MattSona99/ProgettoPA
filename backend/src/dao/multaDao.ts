@@ -6,6 +6,7 @@ import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
 import Veicolo from "../models/veicolo";
 import Utente from "../models/utente";
+import { RuoloUtente } from "../enums/RuoloUtente";
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface IMultaDAO extends DAO<IMultaAttributes, number> {
@@ -111,28 +112,29 @@ class MultaDao implements IMultaDAO {
         dataOut: string,
         utente: { id: number, ruolo: string }
     ): Promise<Multa[]> {
-        let veicoliUtente: Veicolo[] = [];
-        // 1) Prendo tutti i veicoli dell'utente
-        if (utente.ruolo === "automobilista") {
-            veicoliUtente = await Veicolo.findAll({
-                where: {
-                    targa: { [Op.in]: targhe },
-                    utente: { [Op.eq]: utente.id }
-                },
-                attributes: ['targa']
-            });
-        }
-        else if (utente.ruolo === "operatore") {
-            veicoliUtente = await Veicolo.findAll({
-                where: {
-                    targa: { [Op.in]: targhe }
-                },
-                attributes: ['targa']
-            });
-        }
-        else {
-            throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato");
-        }
+        try {
+            let veicoliUtente: Veicolo[] = [];
+            // 1) Prendo tutti i veicoli dell'utente
+            if (utente.ruolo === RuoloUtente.AUTOMOBILISTA) {
+                veicoliUtente = await Veicolo.findAll({
+                    where: {
+                        targa: { [Op.in]: targhe },
+                        utente: { [Op.eq]: utente.id }
+                    },
+                    attributes: ['targa']
+                });
+            }
+            else if (utente.ruolo === RuoloUtente.OPERATORE) {
+                veicoliUtente = await Veicolo.findAll({
+                    where: {
+                        targa: { [Op.in]: targhe }
+                    },
+                    attributes: ['targa']
+                });
+            }
+            else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato");
+            }
 
         if (veicoliUtente.length === 0) {
             throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicoli associati a quelle targhe non trovati o non associati all'utente");

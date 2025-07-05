@@ -13,6 +13,7 @@ import {
     validateUpdateVeicolo,
     validateDeleteVeicolo
 } from '../middleware/validate/veicoloValidate';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 const router = Router();
 
@@ -20,10 +21,10 @@ const router = Router();
 router.use(authMiddleware)
 
 // Rotte per la gestione dei veicoli
-router.get('/veicolo', authorize(['operatore']), getAllVeicoli);
-router.get('/veicolo/:targa', authorize(['operatore']), validateGetVeicoloById, getVeicoloById);
-router.post('/veicolo', authorize(['operatore']), validateCreateVeicolo, createVeicolo);
-router.put('/veicolo/:targa', authorize(['operatore']), validateUpdateVeicolo, updateVeicolo);
-router.delete('/veicolo/:targa', authorize(['operatore']), validateDeleteVeicolo, deleteVeicolo);
+router.get('/veicolo', authorize([RuoloUtente.OPERATORE]), getAllVeicoli);
+router.get('/veicolo/:targa', authorize([RuoloUtente.OPERATORE]), validateGetVeicoloById, getVeicoloById);
+router.post('/veicolo', authorize([RuoloUtente.OPERATORE]), validateCreateVeicolo, createVeicolo);
+router.put('/veicolo/:targa', authorize([RuoloUtente.OPERATORE]), validateUpdateVeicolo, updateVeicolo);
+router.delete('/veicolo/:targa', authorize([RuoloUtente.OPERATORE]), validateDeleteVeicolo, deleteVeicolo);
 
 export default router;

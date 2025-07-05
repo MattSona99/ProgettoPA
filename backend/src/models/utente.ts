@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import Database from '../utils/database';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 const sequelize = Database.getInstance();
 
@@ -22,7 +23,7 @@ class Utente extends Model<IUtenteAttributes, IUtenteCreationAttributes> impleme
   public nome!: string;
   public cognome!: string;
   public email!: string;
-  public ruolo!: string;
+  public ruolo!: RuoloUtente;
   public tokens!: number;
 }
 
@@ -48,7 +49,7 @@ Utente.init(
       unique: true
     },
     ruolo: {
-      type: DataTypes.ENUM('automobilista', 'operatore', 'varco'),
+      type: DataTypes.ENUM(...Object.values(RuoloUtente)),
       allowNull: false
     },
     tokens: {

@@ -15,6 +15,7 @@ import {
     getAllTransiti
 } from '../controllers/transitoController';
 import { uploadImage } from '../utils/upload';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 const router = Router();
 
@@ -22,11 +23,11 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione del transito
-router.get('/transito', authorize(['operatore']), getAllTransiti);
-router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
-router.post('/transito/smart', authorize(['operatore', 'varco']), validateCreateTransito, createTransito);
-router.post('/transito/manuale', authorize(['varco']), uploadImage.single('image'), createTransitoByVarco);
-router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
-router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
+router.get('/transito', authorize([RuoloUtente.OPERATORE]), getAllTransiti);
+router.get('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateGetTransitoById, getTransitoById);
+router.post('/transito/smart', authorize([RuoloUtente.OPERATORE, RuoloUtente.VARCO]), validateCreateTransito, createTransito);
+router.post('/transito/manuale', authorize([RuoloUtente.VARCO]), uploadImage.single('image'), createTransitoByVarco);
+router.put('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateUpdateTransito, updateTransito);
+router.delete('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateDeleteTransito, deleteTransito);
 
 export default router;

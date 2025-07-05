@@ -13,6 +13,7 @@ import {
     validateUpdateTratta, 
     validateDeleteTratta 
 } from '../middleware/validate/trattaValidate';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 
 const router = Router();
@@ -21,10 +22,10 @@ const router = Router();
 router.use(authMiddleware);
 
 // Rotte per la gestione delle tratte
-router.get('/tratta', authorize(['operatore']), getAllTratte);
-router.get('/tratta/:id', authorize(['operatore']), validateGetTrattaById, getTrattaById);
-router.post('/tratta', authorize(['operatore']), validateCreateTratta, createTratta);
-router.put('/tratta/:id', authorize(['operatore']), validateUpdateTratta, updateTratta);
-router.delete('/tratta/:id', authorize(['operatore']), validateDeleteTratta, deleteTratta);
+router.get('/tratta', authorize([RuoloUtente.OPERATORE]), getAllTratte);
+router.get('/tratta/:id', authorize([RuoloUtente.OPERATORE]), validateGetTrattaById, getTrattaById);
+router.post('/tratta', authorize([RuoloUtente.OPERATORE]), validateCreateTratta, createTratta);
+router.put('/tratta/:id', authorize([RuoloUtente.OPERATORE]), validateUpdateTratta, updateTratta);
+router.delete('/tratta/:id', authorize([RuoloUtente.OPERATORE]), validateDeleteTratta, deleteTratta);
 
 export default router;
