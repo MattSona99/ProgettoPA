@@ -4,7 +4,7 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Varco
-export interface VarcoAttributes {
+export interface IVarcoAttributes {
   id_varco: number;
   nome_autostrada: string;
   km: number;
@@ -13,10 +13,10 @@ export interface VarcoAttributes {
 }
 
 // Interfaccia per le proprietà di creazione del modello Varco
-export interface VarcoCreationAttributes extends Optional<VarcoAttributes, 'id_varco'> {}
+export interface IVarcoCreationAttributes extends Optional<IVarcoAttributes, 'id_varco'> {}
 
 // Implementazione del modello Varco
-class Varco extends Model<VarcoAttributes, VarcoCreationAttributes> implements VarcoAttributes {
+class Varco extends Model<IVarcoAttributes, IVarcoCreationAttributes> implements IVarcoAttributes {
   public id_varco!: number;
   public nome_autostrada!: string;
   public km!: number;

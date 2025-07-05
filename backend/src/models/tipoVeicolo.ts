@@ -4,17 +4,17 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello TipoVeicolo
-export interface TipoVeicoloAttributes {
+export interface ITipoVeicoloAttributes {
   id_tipo_veicolo: number;
   tipo: string;
   limite_velocita: number;
 }
 
 // Interfaccia per le proprietà di creazione del modello TipoVeicolo
-export interface TipoVeicoloCreationAttributes extends Optional<TipoVeicoloAttributes, 'id_tipo_veicolo'> {}
+export interface ITipoVeicoloCreationAttributes extends Optional<ITipoVeicoloAttributes, 'id_tipo_veicolo'> {}
 
 // Implementazione del modello TipoVeicolo
-class TipoVeicolo extends Model<TipoVeicoloAttributes, TipoVeicoloCreationAttributes> implements TipoVeicoloAttributes {
+class TipoVeicolo extends Model<ITipoVeicoloAttributes, ITipoVeicoloCreationAttributes> implements ITipoVeicoloAttributes {
   public id_tipo_veicolo!: number;
   public tipo!: string;
   public limite_velocita!: number;

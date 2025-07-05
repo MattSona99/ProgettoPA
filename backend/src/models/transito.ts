@@ -6,7 +6,7 @@ import Tratta from './tratta';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Transito
-export interface TransitoAttributes {
+export interface ITransitoAttributes {
     id_transito: number;
     targa: string; // Riferimento alla targa del veicolo
     tratta: number; // Riferimento all'ID della tratta
@@ -18,10 +18,10 @@ export interface TransitoAttributes {
 }
 
 // Interfaccia per le proprietà di creazione del modello Transito
-export interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito' | 'velocita_media' | 'delta_velocita'> {}
+export interface ITransitoCreationAttributes extends Optional<ITransitoAttributes, 'id_transito' | 'velocita_media' | 'delta_velocita'> {}
 
 // Implementazione del modello Transito
-class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {
+class Transito extends Model<ITransitoAttributes, ITransitoCreationAttributes> implements ITransitoAttributes {
     public id_transito!: number;
     public targa!: string;
     public tratta!: number;

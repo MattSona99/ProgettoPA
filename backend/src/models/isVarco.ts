@@ -4,13 +4,13 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello IsVarco
-export interface IsVarcoAttributes {
+export interface IIsVarcoAttributes {
     id_utente: number;
     id_varco: number;
 }
 
 // Implementazione del modello Multa
-class IsVarco extends Model<IsVarcoAttributes> implements IsVarcoAttributes {
+class IsVarco extends Model<IIsVarcoAttributes> implements IIsVarcoAttributes {
     public id_utente!: number;
     public id_varco!: number;
 }

@@ -4,7 +4,7 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Utente
-export interface UtenteAttributes {
+export interface IUtenteAttributes {
   id_utente: number;
   nome: string;
   cognome: string;
@@ -14,10 +14,10 @@ export interface UtenteAttributes {
 }
 
 // Interfaccia per le proprietà di creazione del modello Utente
-export interface UtenteCreationAttributes extends Optional<UtenteAttributes, 'id_utente' | 'tokens'> {}
+export interface IUtenteCreationAttributes extends Optional<IUtenteAttributes, 'id_utente' | 'tokens'> {}
 
 // Implementazione del modello Utente
-class Utente extends Model<UtenteAttributes, UtenteCreationAttributes> implements UtenteAttributes {
+class Utente extends Model<IUtenteAttributes, IUtenteCreationAttributes> implements IUtenteAttributes {
   public id_utente!: number;
   public nome!: string;
   public cognome!: string;

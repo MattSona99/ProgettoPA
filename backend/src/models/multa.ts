@@ -5,7 +5,7 @@ import Transito from './transito';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Multa
-export interface MultaAttributes {
+export interface IMultaAttributes {
   id_multa: number;
   uuid_pagamento: string;
   transito: number;
@@ -13,10 +13,10 @@ export interface MultaAttributes {
 }
 
 // Interfaccia per le proprietà di creazione del modello Multa
-export interface MultaCreationAttributes extends Optional<MultaAttributes, 'id_multa' | 'uuid_pagamento'> {}
+export interface IMultaCreationAttributes extends Optional<IMultaAttributes, 'id_multa' | 'uuid_pagamento'> {}
 
 // Implementazione del modello Multa
-class Multa extends Model<MultaAttributes, MultaCreationAttributes> implements MultaAttributes {
+class Multa extends Model<IMultaAttributes, IMultaCreationAttributes> implements IMultaAttributes {
   public id_multa!: number;
   public uuid_pagamento!: string;
   public transito!: number;

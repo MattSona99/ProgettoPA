@@ -5,17 +5,17 @@ import Varco from './varco';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Tratta
-export interface TrattaAttributes {
+export interface ITrattaAttributes {
   id_tratta: number;
   varco_in: number;
   varco_out: number;
   distanza: number;
 }
 // Interfaccia per le proprietà di creazione del modello Tratta
-export interface TrattaCreationAttributes extends Optional<TrattaAttributes, 'id_tratta' | 'distanza'> {}
+export interface ITrattaCreationAttributes extends Optional<ITrattaAttributes, 'id_tratta' | 'distanza'> {}
 
 // Implementazione del modello Tratta
-class Tratta extends Model<TrattaAttributes, TrattaCreationAttributes> implements TrattaAttributes {
+class Tratta extends Model<ITrattaAttributes, ITrattaCreationAttributes> implements ITrattaAttributes {
   public id_tratta!: number;
   public varco_in!: number;
   public varco_out!: number;

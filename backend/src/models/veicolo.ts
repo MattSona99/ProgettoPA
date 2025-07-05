@@ -7,14 +7,14 @@ import Utente from './utente';
 const sequelize = Database.getInstance();
 
 // Interfaccia per le proprietà del modello Veicolo
-export interface VeicoloAttributes {
+export interface IVeicoloAttributes {
   targa: string;
   tipo_veicolo: number;
   utente: number;
 }
 
 // Implementazione del modello Veicolo
-class Veicolo extends Model<VeicoloAttributes> implements VeicoloAttributes {
+class Veicolo extends Model<IVeicoloAttributes> implements IVeicoloAttributes {
   public targa!: string;
   public tipo_veicolo!: number;
   public utente!: number;
