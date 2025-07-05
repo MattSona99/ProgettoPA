@@ -1672,11 +1672,11 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 ```json
-[
-    1,
-    [
+{
+    "message": "Row modificate: 1, Transito con id = 12 aggiornato con successo.",
+    "transito": [
         {
-            "id_transito": 11,
+            "id_transito": 12,
             "targa": "UV987WX",
             "tratta": 2,
             "data_in": "2025-06-28T06:30:00.000Z",
@@ -1685,7 +1685,7 @@ Authorization: Bearer {authToken}
             "delta_velocita": 163
         }
     ]
-]
+}
 ```
 
 - `DELETE /:id` – Elimina transito [operatore]
@@ -1709,6 +1709,8 @@ Authorization: Bearer {authToken}
 ```bash
 Authorization: Bearer {authToken}
 ```
+
+*Risposta:*
 ```json
 [
     {
@@ -1748,12 +1750,6 @@ Authorization: Bearer {authToken}
         "importo": 110
     }
 ]
-```
-*Risposta:*
-```json
-{
-  "": 
-}
 ```
 
 - `GET /dettagli` – Lista multe per targa e periodo [operatore/automobilista]
@@ -1814,13 +1810,9 @@ Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
-```json
-{
-  "": 
-}
-```
-
----
+<p align="center">
+  <img src="https://i.imgur.com/jbLU4vp.png" alt="Diagram" width="500"/>
+</p>
 
 ## Setup & Installazione
 
