@@ -217,9 +217,7 @@ Dato che la maggior parte dei diagrammi risultavano con la stessa struttura, mos
 - **POST /login**
 La rotta descritta costituisce il punto centrale del meccanismo di autenticazione dell'intero sistema. In fase di login, l'utente invia una richiesta con le proprie credenziali al middleware di autenticazione (`authMiddleware`), che accede all'ambiente di esecuzione (`.env`) per recuperare la chiave segreta utilizzata nella firma dei token JWT.
 Una volta ottenuta la chiave, il middleware genera un token JWT firmato, contenente le informazioni di autenticazione dell’utente, e lo restituisce come risposta alla richiesta iniziale.
-Successivamente, per accedere alle rotte protette, l’utente include il token nelle richieste. Il middleware intercetta la richiesta e utilizza nuovamente la chiave segreta per verificare l’autenticità del token. Se il token è valido, la libreria JWT restituisce il payload decodificato, consentendo l’accesso alla risorsa richiesta. In caso contrario, il token viene considerato non valido e il middleware genera un errore, restituendo un messaggio di accesso negato.
-
-Il token JWT, una volta ottenuto, sarà dunque utilizzato dall’utente per autenticarsi nelle richieste successive verso le API che richiedono autorizzazione.
+Successivamente, per accedere alle rotte protette, l’utente include il token nelle richieste. Il middleware intercetta la richiesta e utilizza nuovamente la chiave segreta per verificare l’autenticità del token. Se il token è valido, la libreria JWT restituisce il payload decodificato, consentendo l’accesso alla risorsa richiesta. In caso contrario, il token viene considerato non valido e il middleware genera un errore, restituendo un messaggio di accesso negato. Il token JWT, una volta ottenuto, sarà dunque utilizzato dall’utente per autenticarsi nelle richieste successive verso le API che richiedono autorizzazione.
 
 ```mermaid
 sequenceDiagram
