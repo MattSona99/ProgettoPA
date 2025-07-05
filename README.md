@@ -1803,11 +1803,6 @@ dataOut: 2025-12-28
 ```bash
 Authorization: Bearer {authToken}
 ```
-```json
-{
-  "": 
-}
-```
 
 *Risposta:*
 <p align="center">
