@@ -758,7 +758,8 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 *Richiesta Body/Query*
 ```json
 {
-  "email": "mrossi@example.com"
+  "email": "mrossi@example.com",
+  "password": "password
 }
 ```
 *Risposta:*
