@@ -11,6 +11,7 @@ import transitoRoutes from './routes/transitoRoutes';
 import authRoutes from './routes/authRoutes';
 import multaRoutes from './routes/multaRoutes';
 import { HttpErrorCodes, HttpErrorFactory } from './utils/errorHandler';
+import { errorHandler } from './middleware/errorHandlerMiddleware';
 
 // Caricamento delle variabili d'ambiente (.env)
 dotenv.config();
@@ -29,7 +30,9 @@ app.use('/', transitoRoutes );
 app.use('/', multaRoutes);
 // Middleware per la gestione di rotte non esistenti
 app.use((req, res, next) => {
-    next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."));
+    next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Rotta non trovata."));
 });
+
+app.use(errorHandler);
 
 export default app;

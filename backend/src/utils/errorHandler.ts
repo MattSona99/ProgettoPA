@@ -1,7 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { HttpErrorCodes } from "../enums/HttpErrorCodes";
 
-
 /**
  * Estensione della classe Error per la gestione degli errori personalizzati.
  */

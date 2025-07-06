@@ -17,14 +17,7 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
         const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-
-
-            next(error);
-        }
+        next(error);
     }
 };
 
@@ -43,12 +36,7 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
         }
         res.status(StatusCodes.OK).json(transito);
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 
@@ -93,12 +81,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             throw HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: il ruolo non è autorizzato a creare transiti.");
         }
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 
@@ -121,12 +104,7 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
         // DA COMPLETARE CON L'AGGIUNTA DEL TRANSITO
         res.status(StatusCodes.OK).json({ targa });
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 /**
@@ -141,12 +119,7 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
         const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 
@@ -166,11 +139,6 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         const [deleted, deletedTransito] = await transitoRepository.deleteTransito(parseInt(id));
         res.status(StatusCodes.OK).json({ message: `Row eliminate: ${deleted}, Transito con id = ${id} eliminato con successo:`, transito: deletedTransito });
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }

@@ -13,12 +13,7 @@ export const createMulta = async (req: Request, res: Response, next: NextFunctio
         const createdMulta = await multaRepository.create(req.body);
         res.status(StatusCodes.CREATED).json(createdMulta);
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 
