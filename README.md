@@ -89,6 +89,7 @@ ProgettoPA
 │   ├── src
 │   │   ├── controllers
 │   │   ├── dao
+│   │   ├── enums
 │   │   ├── middleware
 │   │   ├── models
 │   │   ├── repositories
@@ -149,6 +150,7 @@ classDiagram
         string nome
         string cognome
         string email
+        string password
         string ruolo
         int tokens
     }
