@@ -10,6 +10,7 @@ export interface IUtenteAttributes {
   nome: string;
   cognome: string;
   email: string;
+  password: string;
   ruolo: string;
   tokens: number;
 }
@@ -23,6 +24,7 @@ class Utente extends Model<IUtenteAttributes, IUtenteCreationAttributes> impleme
   public nome!: string;
   public cognome!: string;
   public email!: string;
+  public password!: string;
   public ruolo!: RuoloUtente;
   public tokens!: number;
 }
@@ -47,6 +49,10 @@ Utente.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     ruolo: {
       type: DataTypes.ENUM(...Object.values(RuoloUtente)),

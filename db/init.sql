@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS utente (
     nome VARCHAR(100),
     cognome VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
     ruolo VARCHAR(50) CHECK (ruolo IN ('automobilista', 'operatore', 'varco')) NOT NULL
 );
 
@@ -72,21 +73,21 @@ CREATE TABLE IF NOT EXISTS multa (
 -- SEEDING DEL DATABASE --
 
 -- Inserimento dati tabella UTENTE --
-INSERT INTO utente (nome, cognome, email, ruolo) VALUES
-    ('Matteo', 'Sonaglioni', 'msonaglioni@example.com', 'automobilista'),
-    ('Enzo', 'Cingoli', 'ecingoli@example.com', 'automobilista'),
-    ('Giuseppe', 'Verdi', 'gverdi@example.com', 'automobilista'),
-    ('Mario', 'Bianchi', 'mbianchi@example.com', 'automobilista'),
-    ('Luigi', 'Verdi', 'lverdi@example.com', 'automobilista'),
-    ('Mario', 'Rossi', 'mrossi@example.com', 'operatore'),
-    ('', '', 'varco_1@example.com', 'varco'),
-    ('', '', 'varco_2@example.com', 'varco'),
-    ('', '', 'varco_3@example.com', 'varco'),
-    ('', '', 'varco_4@example.com', 'varco'),
-    ('', '', 'varco_5@example.com', 'varco'),
-    ('', '', 'varco_6@example.com', 'varco'),
-    ('', '', 'varco_7@example.com', 'varco'),
-    ('', '', 'varco_8@example.com', 'varco');
+INSERT INTO utente (nome, cognome, email, password, ruolo) VALUES
+    ('Matteo', 'Sonaglioni', 'msonaglioni@example.com', 'password', 'automobilista'),
+    ('Enzo', 'Cingoli', 'ecingoli@example.com', 'password', 'automobilista'),
+    ('Giuseppe', 'Verdi', 'gverdi@example.com', 'password', 'automobilista'),
+    ('Mario', 'Bianchi', 'mbianchi@example.com', 'password', 'automobilista'),
+    ('Luigi', 'Verdi', 'lverdi@example.com', 'password', 'automobilista'),
+    ('Mario', 'Rossi', 'mrossi@example.com', 'password', 'operatore'),
+    ('', '', 'varco_1@example.com', 'password', 'varco'),
+    ('', '', 'varco_2@example.com', 'password', 'varco'),
+    ('', '', 'varco_3@example.com', 'password', 'varco'),
+    ('', '', 'varco_4@example.com', 'password', 'varco'),
+    ('', '', 'varco_5@example.com', 'password', 'varco'),
+    ('', '', 'varco_6@example.com', 'password', 'varco'),
+    ('', '', 'varco_7@example.com', 'password', 'varco'),
+    ('', '', 'varco_8@example.com', 'password', 'varco');
 
 -- Inserimento dati tabella VARCO --
 INSERT INTO varco (nome_autostrada, km, smart, pioggia) VALUES

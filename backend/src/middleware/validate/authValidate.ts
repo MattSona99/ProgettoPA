@@ -9,5 +9,7 @@ export const validateLogin = [
     body('email')
         .notEmpty().withMessage('Email è obbligatoria.')
         .isEmail().withMessage('Email non è valida.'),
+    body('password')
+        .notEmpty().withMessage('Password è obbligatoria.'),
     validateRequest
 ]
