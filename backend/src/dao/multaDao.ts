@@ -105,7 +105,6 @@ class MultaDao implements IMultaDAO {
      * @param dataOut - La data di fine del periodo.
      * @returns {Promise<Multa[]>} - Una promessa che risolve con un array di multe.
      */
-
     public async getMulteByTargheEPeriodo(
         targhe: string[],
         dataIn: string,
@@ -133,45 +132,46 @@ class MultaDao implements IMultaDAO {
                 });
             }
             else {
-                throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato");
+                throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato.");
             }
 
-        if (veicoliUtente.length === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicoli associati a quelle targhe non trovati o non associati all'utente");
+            if (veicoliUtente.length === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targhe} non trovato o non associato all'utente.`);
+            }
+
+            // 2) Prendo i transiti con le targhe dell'utente, filtrati per periodo
+            const transiti = await Transito.findAll({
+                where: {
+                    targa: { [Op.in]: veicoliUtente.map(v => v.targa) },
+                    [Op.or]: [
+                        { data_in: { [Op.between]: [dataIn, dataOut] } },
+                        { data_out: { [Op.between]: [dataIn, dataOut] } },
+                        {
+                            data_in: { [Op.gte]: dataIn },
+                            data_out: { [Op.lte]: dataOut }
+                        }
+                    ]
+                },
+                attributes: ['id_transito', 'targa', 'tratta', 'data_in', 'data_out', 'velocita_media', 'delta_velocita']
+            });
+
+            if (transiti.length === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Nessun transito trovato per le targhe ${targhe} e il periodo specificato.`);
+            }
+
+            // 3) Recupero le multe che fanno riferimento a quegli id_transito
+            const multe = await Multa.findAll({
+                where: { transito: { [Op.in]: transiti.map(t => t.id_transito) } },
+                attributes: ['id_multa', 'uuid_pagamento', 'importo', 'transito'],
+            });
+
+            if (multe.length === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Nessuna multa trovata.");
+            }
+            return multe;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
         }
-
-        // 2) Prendo i transiti con le targhe dell'utente, filtrati per periodo
-        const transiti = await Transito.findAll({
-            where: {
-                targa: { [Op.in]: veicoliUtente.map(v => v.targa) },
-                [Op.or]: [
-                    { data_in: { [Op.between]: [dataIn, dataOut] } },
-                    { data_out: { [Op.between]: [dataIn, dataOut] } },
-                    {
-                        data_in: { [Op.gte]: dataIn },
-                        data_out: { [Op.lte]: dataOut }
-                    }
-                ]
-            },
-            attributes: ['id_transito', 'targa', 'tratta', 'data_in', 'data_out', 'velocita_media', 'delta_velocita']
-        });
-
-        if (transiti.length === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transiti associati a quelle targhe non trovato o non associati all'utente");
-        }
-
-        // 3) Recupero le multe che fanno riferimento a quegli id_transito
-        const multe = await Multa.findAll({
-            where: { transito: { [Op.in]: transiti.map(t => t.id_transito) } },
-            attributes: ['id_multa', 'uuid_pagamento', 'importo', 'transito'],
-        });
-
-        if (multe.length === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Nessuna multa trovata");
-        }
-
-        return multe;
-
     }
 
 
@@ -182,8 +182,8 @@ class MultaDao implements IMultaDAO {
      * @param idUtente - La data di inizio del periodo.
      * @returns {Promise<Multa>} - Una promessa che risolve con una multa.
      */
-
     public async getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa> {
+
         // 1) Recupero la multa
         const multa = await Multa.findByPk(idMulta);
         if (!multa) {
