@@ -196,7 +196,6 @@ class TransitoRepository {
         } catch (error) {
             await transaction.rollback();
             throw error;
-            ;
         }
     }
 

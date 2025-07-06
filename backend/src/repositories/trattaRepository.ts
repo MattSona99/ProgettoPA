@@ -213,6 +213,9 @@ class TrattaRepository {
 
     /**
      * Funzione di stampa per le informazioni aggiuntive sulle tratte.
+     * 
+     * @param {Tratta} tratta - L'oggetto parziale della tratta da creare.
+     * @returns {Promise<any>} Una promessa che risolve con l'oggetto completo della tratta.
      */
     private async enrichTratta(tratta: Tratta): Promise<any> {
         try {
@@ -228,6 +231,14 @@ class TrattaRepository {
         }
     };
 
+    /**
+     * Funzione per completare la tratta calcolando la distanza.
+     * 
+     * @param tratta - L'oggetto parziale della tratta da creare.
+     * @param varcoIn - Il varco di ingresso.
+     * @param varcoOut  - Il varco di uscita.
+     * @returns {ITrattaCreationAttributes} L'oggetto completo della tratta.
+     */
     private completeTratta(tratta: ITrattaCreationAttributes, varcoIn: Varco, varcoOut: Varco): ITrattaCreationAttributes {
         const distanza = Math.abs(varcoIn.km - varcoOut.km);
         return { ...tratta, varco_in: varcoIn.id_varco, varco_out: varcoOut.id_varco, distanza: distanza };

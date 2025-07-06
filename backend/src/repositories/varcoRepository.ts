@@ -99,7 +99,7 @@ class VarcoRepository {
     // HELPER PRIVATI
 
     /**
-     * Funzione di stampa per le informazioni aggiuntive sui veicoli
+     * Funzione di stampa per le informazioni aggiuntive sui veicoli.
      */
     private async enrichVarco(varco: Varco): Promise<any> {
         try {
