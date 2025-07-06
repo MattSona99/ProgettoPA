@@ -1,7 +1,7 @@
 import Varco from '../models/varco';
 import varcoDao from '../dao/varcoDao';
 import Database from '../utils/database';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import utenteDao from '../dao/utenteDao';
 import IsVarco from '../models/isVarco';
 
@@ -13,34 +13,29 @@ class VarcoRepository {
     /**
      * Funzione per ottenere tutti i varchi.
      * 
-     * @returns - Una promessa che risolve con un array di varchi.
+     * @returns {Promise<Varco[]>} - Una promessa che risolve con un array di varchi.
      */
     public async getAllVarco(): Promise<Varco[]> {
-        try {
-            return await varcoDao.getAll();
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
-        }
+        return await varcoDao.getAll();
     }
 
     /**
      * Funzione per ottenere un varco da un ID.
      * 
      * @param id - L'ID del varco da recuperare.
-     * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
+     * @returns - Una promessa che risolve con il varco trovato.
      */
-    public async getVarcoById(id: number): Promise<Varco> {
+    public async getVarcoById(id: number) {
         const varco = await varcoDao.getById(id);
 
         return await this.enrichVarco(varco);
-
     }
 
     /**
      * Funzione per la creazione di un nuovo varco.
      * 
      * @param varcoData - L'oggetto parziale del varco da creare.
-     * @returns - Una promessa che risolve con il nuovo varco creato.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il nuovo varco creato.
      */
     public async createVarco(varcoData: Varco): Promise<Varco> {
         const sequelize = Database.getInstance();
@@ -51,7 +46,11 @@ class VarcoRepository {
             return newVarco;
         } catch (error) {
             await transaction.rollback();
-            throw error;
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiunta del varco.");
+            }
         }
     }
 
@@ -60,39 +59,34 @@ class VarcoRepository {
      * 
      * @param id - L'ID del varco da aggiornare.
      * @param varcoData - L'oggetto parziale del varco da aggiornare.
-     * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
+     * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
     public async updateVarco(id: number, varcoData: Varco): Promise<[number, Varco[]]> {
-        try {
-            const updatedVarco = await varcoDao.update(id, varcoData);
-            if (!updatedVarco) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
-            }
-            return updatedVarco;
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
-        }
+        await varcoDao.getById(id);
+        const [rows, updatedVarco] = await varcoDao.update(id, varcoData);
+        return [rows, updatedVarco];
     }
 
     /**
      * Funzione per eliminare un varco.
      * 
      * @param id - L'ID del varco da eliminare.
-     * @returns - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Varco]>} - Una promessa che risolve con il numero di righe eliminate e il varco eliminato.
      */
-    public async deleteVarco(id: number): Promise<boolean> {
+    public async deleteVarco(id: number): Promise<[number, Varco]> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const deleted = await varcoDao.delete(id, { transaction });
-            if (!deleted) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
-            }
+            const [rows, deletedVarco] = await varcoDao.delete(id, { transaction });
             await transaction.commit();
-            return true;
-        } catch {
+            return [rows, deletedVarco];
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            }
         }
     }
 
@@ -101,7 +95,7 @@ class VarcoRepository {
     /**
      * Funzione di stampa per le informazioni aggiuntive sui veicoli.
      */
-    private async enrichVarco(varco: Varco): Promise<any> {
+    private async enrichVarco(varco: Varco) {
         try {
             const isVarco = await IsVarco.findOne({ where: { id_varco: varco.id_varco } });
             if (isVarco) {
@@ -113,8 +107,12 @@ class VarcoRepository {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${varco.id_varco} non trovato.`);
             }
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei varchi.");
+            }
         }
     }
 }

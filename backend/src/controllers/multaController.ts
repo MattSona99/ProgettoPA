@@ -50,12 +50,7 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
         );
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
             next(error);
-        }
     }
 }
 

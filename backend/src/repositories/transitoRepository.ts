@@ -1,7 +1,7 @@
 import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from '../models/transito';
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
 import Multa, { IMultaCreationAttributes } from '../models/multa';
@@ -23,7 +23,7 @@ class TransitoRepository {
     /**
      * Funzione per ottenere tutti i transiti.
      * 
-     * @returns - Una promessa che risolve con un array di transiti.
+     * @returns {Promise<Transito[]>} - Una promessa che risolve con un array di transiti.
      */
     public async getAllTransiti(): Promise<Transito[]> {
         return await transitoDao.getAll();
@@ -45,7 +45,7 @@ class TransitoRepository {
      * 
      * @param transito - L'oggetto transito da creare.
      * @param ruolo - Il ruolo dell'utente.
-     * @returns - Una promessa che risolve con il transito creato.
+     * @returns {Promise<{ transito: Transito | null, multa: Multa | null }>} - Una promessa che risolve con il transito creato e la multa associata se presente.
      */
     public async createTransito(transito: ITransitoCreationAttributes, ruolo: Varco | null = null): Promise<{ transito: Transito | null, multa: Multa | null }> {
         const response = {
@@ -113,7 +113,11 @@ class TransitoRepository {
             }
         } catch (error) {
             await transaction.rollback();
-            throw error
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel creare il transito.`);
+            }
         }
     }
 
@@ -122,7 +126,7 @@ class TransitoRepository {
      * 
      * @param id - L'ID del transito da aggiornare.
      * @param transito - L'oggetto transito da aggiornare.
-     * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e l'array di transiti aggiornati.
+     * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di transiti aggiornati.
      */
     public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[]]> {
         let tratta: Tratta | null = null;
@@ -177,7 +181,6 @@ class TransitoRepository {
             delta_velocita: transitoCompleto.delta_velocita ?? 0
         }
         return await transitoDao.update(id, transitoAggiornato);
-
     }
 
     /**
@@ -195,7 +198,11 @@ class TransitoRepository {
             return [rows, deletedTransito];
         } catch (error) {
             await transaction.rollback();
-            throw error;
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del transito con ID ${id}.`);
+            }
         }
     }
 

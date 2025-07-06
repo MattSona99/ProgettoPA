@@ -31,9 +31,6 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
     const { id } = req.params;
     try {
         const transito = await transitoRepository.getTransitoById(parseInt(id));
-        if (!transito) {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Transito non trovato."))
-        }
         res.status(StatusCodes.OK).json(transito);
     } catch (error) {
         next(error);

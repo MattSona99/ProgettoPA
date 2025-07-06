@@ -4,7 +4,7 @@ import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
 import { IVeicoloAttributes } from '../models/veicolo';
 import Database from '../utils/database';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 
 /**
  * Classe VeicoloRepository che gestisce le operazioni relative ai veicoli.
@@ -14,33 +14,24 @@ class VeicoloRepository {
     /**
      * Funzione per ottenere tutti i veicoli.
      * 
-     * @returns {Promise<any[]>} - Una promessa che risolve con un array di più Promise.
+     * @returns - Una promessa che risolve con un array di più Promise.
      */
-    public async getAllVeicoli(): Promise<any[]> {
-        try {
-            const veicoli = await veicoloDao.getAll();
-            return await Promise.all(veicoli.map(veicolo => this.enrichVeicolo(veicolo)));
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
-        }
+    public async getAllVeicoli() {
+        const veicoli = await veicoloDao.getAll();
+
+        return await Promise.all(veicoli.map(veicolo => this.enrichVeicolo(veicolo)));
     }
 
     /**
      * Funzione per ottenere un veicolo da una targa.
      * 
      * @param {string} targa - La targa del veicolo da recuperare.
-     * @returns {Promise<Veicolo | null>} - Una promessa che risolve con il veicolo trovato o null se non trovato.
+     * @returns - Una promessa che risolve con il veicolo trovato o null se non trovato.
      */
-    public async getVeicoloById(targa: string): Promise<Veicolo | null> {
-        try {
-            const veicolo = await veicoloDao.getById(targa);
-            if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
-            }
-            return await this.enrichVeicolo(veicolo);
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
-        }
+    public async getVeicoloById(targa: string) {
+        const veicolo = await veicoloDao.getById(targa);
+
+        return await this.enrichVeicolo(veicolo);
     }
 
     /**
@@ -58,7 +49,11 @@ class VeicoloRepository {
             return nuovoVeicolo;
         } catch (error) {
             await transaction.rollback()
-            throw error;
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nell'aggiunta del veicolo.");
+            }
         }
     }
 
@@ -67,35 +62,34 @@ class VeicoloRepository {
      * 
      * @param {string} targa - La targa del veicolo da aggiornare.
      * @param {IVeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
-     * @returns {Promise<number>} - Una promessa che risolve con il numero di righe aggiornate.
+     * @returns {Promise<[number, Veicolo]>} - Una promessa che risolve con il numero di righe aggiornate.
      */
     public async updateVeicolo(targa: string, item: IVeicoloAttributes): Promise<[number, Veicolo[]]> {
-        try {
-            return await veicoloDao.update(targa, item);
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
-        }
+        await this.getVeicoloById(targa);
+        const [rows, updatedVeicolo] = await veicoloDao.update(targa, item);
+        return [rows, updatedVeicolo];
     }
 
     /**
      * Funzione per eliminare un veicolo.
      * 
      * @param {string} targa - La targa del veicolo da eliminare.
-     * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Veicolo]>} - Una promessa che risolve con il numero di righe eliminate.
      */
-    public async deleteVeicolo(targa: string): Promise<boolean> {
+    public async deleteVeicolo(targa: string): Promise<[number, Veicolo]> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const deleted = await veicoloDao.delete(targa);
-            if (!deleted) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
-            }
+            const [rows, deletedVeicolo] = await veicoloDao.delete(targa);
             await transaction.commit();
-            return true;
-        } catch {
+            return [rows, deletedVeicolo];
+        } catch (error) {
             await transaction.rollback();
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            }
         }
     }
 
@@ -104,18 +98,14 @@ class VeicoloRepository {
     /**
      * Funzione di stampa per le informazioni aggiuntive sui veicoli.
      */
-    private async enrichVeicolo(veicolo: Veicolo): Promise<any> {
-        try {
-            const tipo_veicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
-            const utente = await utenteDao.getById(veicolo.utente);
-            return {
-                ...veicolo.dataValues,
-                tipo_veicolo: tipo_veicolo ? tipo_veicolo.dataValues : null,
-                utente: utente ? utente.dataValues : null
-            };
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero delle informazioni aggiuntive sul veicolo con targa ${veicolo.targa}.`);
-        }
+    private async enrichVeicolo(veicolo: Veicolo) {
+        const tipo_veicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
+        const utente = await utenteDao.getById(veicolo.utente);
+        return {
+            ...veicolo.dataValues,
+            tipo_veicolo: tipo_veicolo ? tipo_veicolo.dataValues : null,
+            utente: utente ? utente.dataValues : null
+        };
     }
 }
 

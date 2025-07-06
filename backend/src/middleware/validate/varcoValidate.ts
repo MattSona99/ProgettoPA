@@ -21,9 +21,9 @@ export const validateCreateVarco = [
 export const validateUpdateVarco = [
     param('id').isInt({min: 1}).withMessage('ID deve essere un numero intero.'),
     body('nome_autostrada').optional().isString().withMessage('Nome deve essere una stringa.'),
-    body('km').optional().isInt({min: 1}).withMessage('Chilometraggio (KM) deve essere un numero intero.'),
-    body('smart').optional().isBoolean().withMessage('Smart deve essere una stringa.'),
-    body('pioggia').optional().isBoolean().withMessage('Pioggia deve essere una stringa.'),
+    body('km').optional().isInt({min: 1,max: 800}).withMessage('Chilometraggio (KM) deve essere un numero intero.'),
+    body('smart').optional().isBoolean().withMessage('Smart deve essere un valore booleano.'),
+    body('pioggia').optional().isBoolean().withMessage('Pioggia deve essere un valore booleano.'),
     validateRequest
 ];
 
