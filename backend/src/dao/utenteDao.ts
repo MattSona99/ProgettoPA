@@ -1,7 +1,7 @@
-import {DAO} from './daoInterface';
-import Utente, {IUtenteAttributes, IUtenteCreationAttributes} from '../models/utente';
-import {Transaction} from 'sequelize';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { DAO } from './daoInterface';
+import Utente, { IUtenteAttributes, IUtenteCreationAttributes } from '../models/utente';
+import { Transaction } from 'sequelize';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 
 // Interfaccia UtenteDAO che estende la DAO per includere metodi specifici per Utente
 interface IUtenteDAO extends DAO<IUtenteAttributes, number> {
@@ -15,7 +15,7 @@ class UtenteDao implements IUtenteDAO {
     /**
      * Funzione per ottenere tutti gli utenti.
      * 
-     * @returns - Una promessa che risolve con un array di utenti
+     * @returns {Promise<Utente[]>} - Una promessa che risolve con un array di utenti
      */
     public async getAll(): Promise<Utente[]> {
         try {
@@ -29,17 +29,21 @@ class UtenteDao implements IUtenteDAO {
      * Funzione per ottenere un utente da un ID.
      * 
      * @param id - L'ID da utilizzare per ottenere l'utente.
-     * @returns - Una promessa che risolve con l'utente trovato.
+     * @returns {Promise<Utente>} - Una promessa che risolve con l'utente trovato.
      */
-    public async getById(id: number): Promise<Utente | null> {
+    public async getById(id: number): Promise<Utente> {
         try {
             const utente = await Utente.findByPk(id);
             if (!utente) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
             }
             return utente;
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con ID ${id}.`);
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con ID ${id}.`);
+            }
         }
     }
 
@@ -47,17 +51,21 @@ class UtenteDao implements IUtenteDAO {
      * Funzione per ottenere un utente da una email.
      * 
      * @param email - L'email da utilizzare per ottenere l'utente.
-     * @returns - Una promessa che risolve con l'utente trovato.
+     * @returns {Promise<Utente>} - Una promessa che risolve con l'utente trovato.
      */
-    public async getByEmail(email: string): Promise<Utente | null> {
+    public async getByEmail(email: string): Promise<Utente> {
         try {
             const utente = await Utente.findOne({ where: { email } });
             if (!utente) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con email ${email} non trovato.`);
             }
             return utente;
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con email ${email}.`);
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dell'utente con email ${email}.`);
+            }
         }
     }
 
@@ -65,7 +73,7 @@ class UtenteDao implements IUtenteDAO {
      * Funzione per la creazione di un nuovo utente.
      * 
      * @param utente - L'oggetto parziale dell'utente da creare.
-     * @returns - Una promessa che risolve con l'utente creato.
+     * @returns {Promise<Utente>} - Una promessa che risolve con l'utente creato.
      */
     public async create(utente: IUtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
         try {
@@ -80,22 +88,21 @@ class UtenteDao implements IUtenteDAO {
      * 
      * @param id - L'ID dell'utente da aggiornare.
      * @param utente - L'oggetto parziale dell'utente da aggiornare.
-     * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di utenti aggiornati.
+     * @returns {Promise<[number, Utente[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di utenti aggiornati.
      */
     public async update(id: number, utente: IUtenteAttributes): Promise<[number, Utente[]]> {
         try {
-            const existingUtente = await Utente.findByPk(id);
-            if (!existingUtente) {
+            const [rows, updatedUtente] = await Utente.update(utente, { where: { id_utente: id }, returning: true });
+            if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
             }
-            const [indexedCount] = await Utente.update(utente, {
-                where: { id_utente: id },
-                returning: true
-            });
-            const updatedItem = await Utente.findAll({ where: { id_utente: id } });
-            return [indexedCount, updatedItem];
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento dell'utente con ID ${id}.`);
+            return [rows, updatedUtente];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento dell'utente con ID ${id}.`);
+            }
         }
     }
 
@@ -103,20 +110,25 @@ class UtenteDao implements IUtenteDAO {
      * Funzione per eliminare un utente.
      * 
      * @param id - L'ID dell'utente da eliminare.
-     * @returns - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Utente]>} - Una promessa che risolve con il numero di righe eliminate e l'utente eliminato.
      */
-    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<[number, Utente]> {
         try {
-            const deletedCount = await Utente.destroy({
-                where: { id_utente: id },
-                ...options
-            });
-            if (deletedCount === 0) {
+            const utente = await Utente.findByPk(id);
+            if (!utente) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
             }
-            return deletedCount;
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione dell'utente con ID ${id}.`);
+            const rows = await Utente.destroy({ where: { id_utente: id }, ...options });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${id} non trovato.`);
+            }
+            return [rows, utente];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione dell'utente con ID ${id}.`);
+            }
         }
     }
 }

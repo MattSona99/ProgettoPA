@@ -1,6 +1,6 @@
 import Veicolo, { IVeicoloAttributes } from '../models/veicolo';
 import { DAO } from './daoInterface';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
@@ -31,11 +31,19 @@ class VeicoloDao implements IVeicoloDAO {
      * @returns {Promise<Veicolo>} - Una promessa che risolve con il veicolo trovato.
      */
     public async getById(targa: string): Promise<Veicolo> {
-        const veicolo = await Veicolo.findByPk(targa);
-        if (!veicolo) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
-        } else {
-            return veicolo;
+        try {
+            const veicolo = await Veicolo.findByPk(targa);
+            if (!veicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+            } else {
+                return veicolo;
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
+            }
         }
     }
 
@@ -58,19 +66,21 @@ class VeicoloDao implements IVeicoloDAO {
      * 
      * @param {string} targa - La targa del veicolo da aggiornare.
      * @param {VeicoloAttributes} item - L'oggetto parziale del veicolo da aggiornare.
-     * @returns {Promise<number>} - Una promessa che risolve con il numero di righe aggiornate.
+     * @returns {Promise<[number, Veicolo[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di veicoli aggiornati.
      */
     public async update(targa: string, item: IVeicoloAttributes): Promise<[number, Veicolo[]]> {
         try {
-            const veicolo = await Veicolo.findByPk(targa);
-            if (!veicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
+            const [rows, updatedVeicolo] = await Veicolo.update(item, { where: { targa: targa }, returning: true });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non aggiornato .`);
             }
-            const [rows] = await Veicolo.update(item, { where: { targa: targa }, returning: true });
-            const updated = await Veicolo.findAll({ where: { targa: targa } });
-            return [rows, updated];
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
+            return [rows, updatedVeicolo];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
+            }
         }
     }
 
@@ -78,17 +88,25 @@ class VeicoloDao implements IVeicoloDAO {
      * Funzione per eliminare un veicolo.
      * 
      * @param {string} targa - La targa del veicolo da eliminare.
-     * @returns {Promise<number>} - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Veicolo]>} - Una promessa che risolve con il numero di righe eliminate e il veicolo eliminato.
      */
-    public async delete(targa: string): Promise<number> {
+    public async delete(targa: string): Promise<[number, Veicolo]> {
         try {
             const veicolo = await Veicolo.findByPk(targa);
             if (!veicolo) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non trovato.`);
             }
-            return await Veicolo.destroy({ where: { targa: targa } });
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            const rows = await Veicolo.destroy({ where: { targa: targa } });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targa} non eliminato.`);
+            }
+            return [rows, veicolo];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del veicolo con targa ${targa}.`);
+            }
         }
     }
 }

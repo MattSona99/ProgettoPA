@@ -1,7 +1,7 @@
 import { Transaction } from "sequelize";
 import Varco, { IVarcoAttributes, IVarcoCreationAttributes } from "../models/varco";
 // import { DAO } from "./daoInterface";
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 
 // Interfaccia VarcoDAO che estende la DAO per includere metodi specifici per Varco
 /* interface IVarcoDAO extends DAO<IVarcoAttributes, number> {
@@ -14,7 +14,7 @@ class VarcoDao /* implements IVarcoDAO */ {
     /**
      * Funzione per ottenere tutti i varchi.
      * 
-     * @returns - Una promessa che risolve con un array di varchi.
+     * @returns {Promise<Varco[]>} - Una promessa che risolve con un array di varchi.
      */
     public async getAll(): Promise<Varco[]> {
         try {
@@ -28,14 +28,22 @@ class VarcoDao /* implements IVarcoDAO */ {
      * Funzione per ottenere un varco da un ID.
      * 
      * @param id - L'ID da utilizzare per ottenere il varco.
-     * @returns - Una promessa che risolve con il varco trovato.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
      */
     public async getById(id: number): Promise<Varco> {
-        const varco = await Varco.findByPk(id);
-        if (!varco) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
-        } else {
-            return varco;
+        try {
+            const varco = await Varco.findByPk(id);
+            if (!varco) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
+            } else {
+                return varco;
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${id}.`);
+            }
         }
     }
 
@@ -43,7 +51,7 @@ class VarcoDao /* implements IVarcoDAO */ {
      * Funzione per la creazione di un nuovo varco.
      * 
      * @param item - L'oggetto parziale del varco da creare.
-     * @returns - Una promessa che risolve con il nuovo varco creato.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il nuovo varco creato.
      */
     public async create(item: IVarcoCreationAttributes, options?: { transaction?: Transaction }): Promise<Varco> {
         try {
@@ -58,25 +66,22 @@ class VarcoDao /* implements IVarcoDAO */ {
      * 
      * @param id - L'ID del varco da aggiornare.
      * @param item - L'oggetto parziale del varco da aggiornare.
-     * @returns - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
+     * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
     public async update(id: number, item: IVarcoAttributes): Promise<[number, Varco[]]> {
-        const existingVarco = await Varco.findByPk(id);
-        if (!existingVarco) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
+        try {
+            const [rows, updatedVarco] = await Varco.update(item, { where: { id_varco: id }, returning: true });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non aggiornato .`);
+            }
+            return [rows, updatedVarco];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
+            }
         }
-        const [rows] = await Varco.update(item, {
-            where: { id_varco: id },
-            returning: true
-        });
-        if (rows === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non aggiornato .`);
-        }
-        const updated = await Varco.findAll({ where: { id_varco: id } });
-        if (updated.length === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco aggiornato con ID ${id} non trovato.`);
-        }
-        return [rows, updated];
 
     }
 
@@ -85,17 +90,25 @@ class VarcoDao /* implements IVarcoDAO */ {
      * 
      * @param id - L'ID del varco da eliminare.
      * @param options - Opzioni per la transazione.
-     * @returns - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Varco]>} - Una promessa che risolve con il numero di righe eliminate e il varco eliminato.
      */
-    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<[number, Varco]> {
         try {
             const varco = await Varco.findByPk(id);
             if (!varco) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non trovato.`);
             }
-            return await Varco.destroy({ where: { id_varco: id }, ...options });
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            const rows = await Varco.destroy({ where: { id_varco: id }, ...options });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non eliminato.`);
+            }
+            return [rows, varco];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione del varco con ID ${id}.`);
+            }
         }
     }
 }

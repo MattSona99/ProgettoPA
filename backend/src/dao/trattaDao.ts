@@ -1,7 +1,7 @@
 import Tratta, { ITrattaCreationAttributes } from '../models/tratta';
 import { DAO } from './daoInterface';
 import { ITrattaAttributes } from '../models/tratta';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import { Transaction } from 'sequelize';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
@@ -32,11 +32,19 @@ class TrattaDao implements ITrattaDAO {
      * @returns {Promise<Tratta>} Una promessa che risolve con la tratta trovata.
      */
     public async getById(id: number): Promise<Tratta> {
-        const tratta = await Tratta.findByPk(id);
-        if (!tratta) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
-        } else {
-            return tratta;
+        try {
+            const tratta = await Tratta.findByPk(id);
+            if (!tratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            } else {
+                return tratta;
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
+            }
         }
     }
 
@@ -59,19 +67,21 @@ class TrattaDao implements ITrattaDAO {
      * 
      * @param {number} id - L'ID della tratta da aggiornare.
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
-     * @returns {Promise<number>} Una promessa che risolve con il numero di righe aggiornate.
+     * @returns {Promise<[number, Tratta[]]>} Una promessa che risolve con il numero di righe aggiornate e un array di tratte aggiornate.
      */
     public async update(id: number, item: ITrattaAttributes): Promise<[number, Tratta[]]> {
         try {
-            const tratta = await Tratta.findByPk(id);
-            if (!tratta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            const [rows, updatedTratta] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non aggiornata.`);
             }
-            const [rows] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
-            const updated = await Tratta.findAll({ where: { id_tratta: id } });
-            return [rows, updated];
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
+            return [rows, updatedTratta];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della tratta con ID ${id}.`);
+            }
         }
     }
 
@@ -79,13 +89,25 @@ class TrattaDao implements ITrattaDAO {
      * Funzione per eliminare una tratta.
      * 
      * @param {number} id - L'ID della tratta da eliminare.
-     * @returns {Promise<number>} Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Tratta]>} - Una promessa che risolve con il numero di righe eliminate e la tratta eliminata.
      */
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number): Promise<[number, Tratta]> {
         try {
-            return await Tratta.destroy({ where: { id_tratta: id } });
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
+            const tratta = await Tratta.findByPk(id);
+            if (!tratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non trovata.`);
+            }
+            const rows = await Tratta.destroy({ where: { id_tratta: id } });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non eliminata.`);
+            }
+            return [rows, tratta];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
+            }
         }
     }
 }

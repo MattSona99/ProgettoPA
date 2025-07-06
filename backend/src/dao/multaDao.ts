@@ -1,7 +1,7 @@
 import Multa, { IMultaCreationAttributes } from "../models/multa";
 import { DAO } from "./daoInterface";
 import { IMultaAttributes } from "../models/multa";
-import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
+import { HttpErrorFactory, HttpErrorCodes, HttpError } from "../utils/errorHandler";
 import { Op, Transaction } from "sequelize";
 import Transito from "../models/transito";
 import Veicolo from "../models/veicolo";
@@ -38,11 +38,19 @@ class MultaDao implements IMultaDAO {
      * @returns {Promise<Multa>} - Una promessa che risolve con un array di multe.
      */
     public async getById(id: number): Promise<Multa> {
-        const multa = await Multa.findByPk(id);
-        if (!multa) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
+        try {
+            const multa = await Multa.findByPk(id);
+            if (!multa) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
+            }
+            return multa;
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della multa con ID ${id}.`);
+            }
         }
-        return multa;
     }
 
     /**
@@ -67,33 +75,44 @@ class MultaDao implements IMultaDAO {
      * @returns {Promise<[number, IMultaAttributes[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di multe aggiornate.
      */
     public async update(id: number, item: IMultaAttributes): Promise<[number, IMultaAttributes[]]> {
-        const multa = await Multa.update(item, { where: { id_multa: id } });
-        if (!multa) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
+        try {
+            const [rows, updatedMulta] = await Multa.update(item, { where: { id_multa: id }, returning: true });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Multa con ID ${id} non aggiornata.`);
+            }
+            return [rows, updatedMulta];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento della multa con ID ${id}.`);
+            }
         }
-        const [rows, updatedMulta] = await Multa.update(item, { where: { id_multa: id }, returning: true });
-        if (rows === 0) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Multa con ID ${id} non aggiornata.`);
-        }
-        return [rows, updatedMulta];
     }
 
     /**
      * Funzione per eliminare una multa.
      * 
      * @param id - L'ID della multa da eliminare.
-     * @returns - Una promessa che risolve con il numero di righe eliminate.
+     * @returns {Promise<[number, Multa]>} - Una promessa che risolve con il numero di righe eliminate e la multa eliminata.
      */
-    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
-
-        const multa = await Multa.findByPk(id);
-        if (!multa) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
-        }
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<[number, Multa]> {
         try {
-            return await Multa.destroy({ where: { id_multa: id }, ...options });
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della multa con ID ${id}.`);
+            const multa = await Multa.findByPk(id);
+            if (!multa) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${id} non trovata.`);
+            }
+            const rows = await Multa.destroy({ where: { id_multa: id }, ...options });
+            if (rows === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Multa con ID ${id} non eliminata.`);
+            }
+            return [rows, multa];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della multa con ID ${id}.`);
+            }
         }
     }
 
@@ -169,8 +188,12 @@ class MultaDao implements IMultaDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Nessuna multa trovata.");
             }
             return multe;
-        } catch {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
+            }
         }
     }
 
@@ -183,33 +206,39 @@ class MultaDao implements IMultaDAO {
      * @returns {Promise<Multa>} - Una promessa che risolve con una multa.
      */
     public async getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa> {
-
-        // 1) Recupero la multa
-        const multa = await Multa.findByPk(idMulta);
-        if (!multa) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${idMulta} non trovata.`);
+        try {
+            // 1) Recupero la multa
+            const multa = await Multa.findByPk(idMulta);
+            if (!multa) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${idMulta} non trovata.`);
+            }
+            // 2) Recupero l'utente
+            const utente = await Utente.findByPk(idUtente);
+            if (!utente) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${idUtente} non trovato.`);
+            }
+            // 3) Recupero il transito
+            const transito = await Transito.findByPk(multa.transito);
+            if (!transito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${multa.transito} non trovato.`);
+            }
+            // 4) Recupero il veicolo
+            const veicolo = await Veicolo.findByPk(transito.targa);
+            if (!veicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${transito.targa} non trovato.`);
+            }
+            // 5) Verifico che la multa appartenga all'utente
+            if (veicolo.utente !== idUtente) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${idMulta} non appartiene all'utente con ID ${idUtente}.`);
+            }
+            return multa;
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della multa con ID ${idMulta}.`);
+            }
         }
-        // 2) Recupero l'utente
-        const utente = await Utente.findByPk(idUtente);
-        if (!utente) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Utente con ID ${idUtente} non trovato.`);
-        }
-        // 3) Recupero il transito
-        const transito = await Transito.findByPk(multa.transito);
-        if (!transito) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${multa.transito} non trovato.`);
-        }
-        // 4) Recupero il veicolo
-        const veicolo = await Veicolo.findByPk(transito.targa);
-        if (!veicolo) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${transito.targa} non trovato.`);
-        }
-        // 5) Verifico che la multa appartenga all'utente
-        if (veicolo.utente !== idUtente) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${idMulta} non appartiene all'utente con ID ${idUtente}.`);
-        }
-
-        return multa;
     }
 }
 
