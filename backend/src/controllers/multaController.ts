@@ -25,12 +25,7 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
         const multe = await multaDao.getAll();
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }
 
@@ -38,10 +33,11 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
  * Funzione per ottenere le multe per le targhe e il periodo specificato.
  */
 export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa, dataIn, dataOut } = req.query;
-    const utente = (req as any).user;
-    const arrayTarga = Array.isArray(targa) ? targa : [targa];
     try {
+        const { targa, dataIn, dataOut } = req.query;
+        const utente = (req as any).user;
+        const arrayTarga = Array.isArray(targa) ? targa : [targa];
+
         const multe = await multaRepository.getMulteByTargheEPeriodo(
             arrayTarga as string[],
             dataIn as string,
@@ -50,14 +46,15 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
         );
         res.status(StatusCodes.OK).json(multe);
     } catch (error) {
-            next(error);
+        next(error);
     }
 }
 
 export const downloadBollettinoPDF = async (req: Request, res: Response, next: NextFunction) => {
-    const id_utente = (req as any).user.id;
-    const { id } = req.params;
     try {
+        const id_utente = (req as any).user.id;
+        const { id } = req.params;
+        
         // Verifico che la multa sia associata all'utente e la recupero
         const multa = await multaRepository.getMultaByUtente(parseInt(id), id_utente);
 
@@ -74,11 +71,6 @@ export const downloadBollettinoPDF = async (req: Request, res: Response, next: N
             .send(pdfBuffer);
     }
     catch (error) {
-        if (typeof error === 'object' && error !== null && 'statusCode' in error && 'message' in error) {
-            const status = (error as { statusCode: number }).statusCode;
-            res.status(status).json({ error: error.message });
-        } else {
-            next(error);
-        }
+        next(error);
     }
 }

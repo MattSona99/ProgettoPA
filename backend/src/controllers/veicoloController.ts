@@ -15,7 +15,9 @@ export const validateTarga = (targa: string): boolean => {
 export const getAllVeicoli = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const veicoli = await veicoloRepository.getAllVeicoli();
+
         res.status(StatusCodes.OK).json(veicoli);
+
     } catch (error) {
         next(error);
     }
@@ -25,15 +27,13 @@ export const getAllVeicoli = async (req: Request, res: Response, next: NextFunct
  * Funzione per ottenere un Veicolo da una targa.
  */
 export const getVeicoloById = async (req: Request, res: Response, next: NextFunction) => {
-    const targa = req.params.targa;
-
     try {
+        const targa = req.params.targa;
+
         const veicolo = await veicoloRepository.getVeicoloById(targa);
-        if (veicolo) {
-            res.status(StatusCodes.OK).json(veicolo);
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."))
-        }
+
+        res.status(StatusCodes.OK).json(veicolo);
+
     } catch (error) {
         next(error);
     }
@@ -43,16 +43,18 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
  * Funzione per creare un nuovo Veicolo.
  */
 export const createVeicolo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa } = req.body;
-
-    // Validazione del formato della targa
-    if (!validateTarga(targa)) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
-    }
-
     try {
+        const { targa } = req.body;
+
+        // Validazione del formato della targa
+        if (!validateTarga(targa)) {
+            next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
+        }
+
         const nuovoVeicolo = await veicoloRepository.createVeicolo(req.body);
+
         res.status(StatusCodes.CREATED).json(nuovoVeicolo);
+
     } catch (error) {
         next(error);
     }
@@ -63,21 +65,18 @@ export const createVeicolo = async (req: Request, res: Response, next: NextFunct
  * Funzione per aggiornare un Veicolo.
  */
 export const updateVeicolo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa } = req.params;
-
-    // Validazione del formato della targa
-    if (!validateTarga(targa)) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
-    }
-
     try {
-        const [updated] = await veicoloRepository.updateVeicolo(targa, req.body);
-        if (updated) {
-            const updatedVeicolo = await veicoloRepository.getVeicoloById(targa);
-            res.status(StatusCodes.OK).json(updatedVeicolo);
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
+        const { targa } = req.params;
+
+        // Validazione del formato della targa
+        if (!validateTarga(targa)) {
+            next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
         }
+
+        const [rows, updatedVeicolo] = await veicoloRepository.updateVeicolo(targa, req.body);
+
+        res.status(StatusCodes.OK).json({ message: `Row modificate: ${rows}, Veicolo con targa = ${targa} aggiornato con successo.`, veicolo: updatedVeicolo });
+
     } catch (error) {
         next(error);
     }
@@ -87,20 +86,18 @@ export const updateVeicolo = async (req: Request, res: Response, next: NextFunct
  * Funzione per eliminare un Veicolo.
  */
 export const deleteVeicolo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa } = req.params;
-
-    // Validazione del formato della targa
-    if (!validateTarga(targa)) {
-        next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
-    }
-
     try {
-        const deleted = await veicoloRepository.deleteVeicolo(targa);
-        if (deleted) {
-            res.status(StatusCodes.OK).json({ message: "Veicolo eliminato con successo." });
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Veicolo non trovato."));
+        const { targa } = req.params;
+
+        // Validazione del formato della targa
+        if (!validateTarga(targa)) {
+            next(HttpErrorFactory.createError(HttpErrorCodes.InvalidID, "Formato targa non valido."));
         }
+
+        const [rows, deletedVeicolo] = await veicoloRepository.deleteVeicolo(targa);
+       
+        res.status(StatusCodes.OK).json({ message: `Row eliminate: ${rows}, Veicolo con targa = ${targa} eliminato con successo.`, veicolo: deletedVeicolo });
+        
     } catch (error) {
         next(error);
     }

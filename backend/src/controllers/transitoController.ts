@@ -15,7 +15,9 @@ import { RuoloUtente } from '../enums/RuoloUtente';
 export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const transiti = await transitoRepository.getAllTransiti();
+
         res.status(StatusCodes.OK).json(transiti);
+
     } catch (error) {
         next(error);
     }
@@ -28,10 +30,13 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
  * @returns - Una promessa che risolve con il transito trovato.
  */
 export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
+
         const transito = await transitoRepository.getTransitoById(parseInt(id));
+
         res.status(StatusCodes.OK).json(transito);
+
     } catch (error) {
         next(error);
     }
@@ -110,11 +115,14 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
  * @returns - Una promessa che risolve con il transito aggiornato.
  */
 export const updateTransito = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const updatedData = req.body;
     try {
+        const { id } = req.params;
+        const updatedData = req.body;
+
         const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
+
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
+
     } catch (error) {
         next(error);
     }
@@ -127,14 +135,18 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
  * @returns - Una promessa che risolve con un messaggio di conferma dell'eliminazione.
  */
 export const deleteTransito = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
+
         const existingMulta = await Multa.findOne({ where: { transito: id } });
         if (existingMulta) {
             next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata."));
         }
+
         const [deleted, deletedTransito] = await transitoRepository.deleteTransito(parseInt(id));
+
         res.status(StatusCodes.OK).json({ message: `Row eliminate: ${deleted}, Transito con id = ${id} eliminato con successo:`, transito: deletedTransito });
+        
     } catch (error) {
         next(error);
     }

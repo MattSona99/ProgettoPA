@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import trattaRepository from '../repositories/trattaRepository';
 import { StatusCodes } from 'http-status-codes';
-import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 
 /**
  * Funzione per ottenere tutte le tratte.
@@ -9,7 +8,9 @@ import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 export const getAllTratte = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const tratte = await trattaRepository.getAllTratte();
+
         res.status(StatusCodes.OK).json(tratte);
+
     } catch (error) {
         next(error);
     }
@@ -19,14 +20,13 @@ export const getAllTratte = async (req: Request, res: Response, next: NextFuncti
  * Funzione per ottenere una tratta da un ID. 
  */
 export const getTrattaById = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
     try {
+        const id = parseInt(req.params.id);
+
         const tratta = await trattaRepository.getTrattaById(id);
-        if (tratta) {
-            res.status(StatusCodes.OK).json(tratta);
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
-        }
+
+        res.status(StatusCodes.OK).json(tratta);
+
     } catch (error) {
         next(error);
     }
@@ -38,7 +38,9 @@ export const getTrattaById = async (req: Request, res: Response, next: NextFunct
 export const createTratta = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const nuovaTratta = await trattaRepository.createTratta(req.body);
+
         res.status(StatusCodes.CREATED).json(nuovaTratta);
+
     } catch (error) {
         next(error);
     }
@@ -48,15 +50,13 @@ export const createTratta = async (req: Request, res: Response, next: NextFuncti
  * Funzione per aggiornare una tratta esistente.
  */
 export const updateTratta = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
     try {
-        const [updated] = await trattaRepository.updateTratta(id, req.body);
-        if (updated) {
-            const updatedTratta = await trattaRepository.getTrattaById(id);
-            res.status(StatusCodes.OK).json(updatedTratta);
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
-        }
+        const id = parseInt(req.params.id);
+
+        const [rows, updatedTratta] = await trattaRepository.updateTratta(id, req.body);
+
+        res.status(StatusCodes.OK).json({ message: `Row modificate: ${rows}, Tratta con id = ${id} aggiornata con successo.`, tratta: updatedTratta });
+
     } catch (error) {
         next(error);
     }
@@ -66,14 +66,13 @@ export const updateTratta = async (req: Request, res: Response, next: NextFuncti
  * Funzione per eliminare una tratta.
  */
 export const deleteTratta = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
     try {
-        const deleted = await trattaRepository.deleteTratta(id);
-        if (deleted) {
-            res.status(StatusCodes.OK).json({ message: "Tratta eliminata con successo." });
-        } else {
-            next(HttpErrorFactory.createError(HttpErrorCodes.NotFound, "Tratta non trovata."));
-        }
+        const id = parseInt(req.params.id);
+
+        const [rows, deletedTratta] = await trattaRepository.deleteTratta(id);
+
+        res.status(StatusCodes.OK).json({ message: `Row eliminate: ${rows}, Tratta con id = ${id} eliminata con successo.`, tratta: deletedTratta });
+
     } catch (error) {
         next(error);
     }
