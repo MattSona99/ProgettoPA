@@ -759,7 +759,7 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 ```json
 {
   "email": "mrossi@example.com",
-  "password": "password
+  "password": "password"
 }
 ```
 *Risposta:*
@@ -905,9 +905,9 @@ Authorization: Bearer {authToken}
 ```
 *Risposta:*
 ```json
-[
-    1,
-    [
+{
+    "message": "Row modificate: 1, Varco con id = 9 aggiornato con successo.",
+    "varco": [
         {
             "id_varco": 9,
             "nome_autostrada": "A55",
@@ -916,7 +916,7 @@ Authorization: Bearer {authToken}
             "pioggia": true
         }
     ]
-]
+}
 ```
 
 - `DELETE /:id` – Elimina varco [operatore]
