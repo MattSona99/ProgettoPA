@@ -2,7 +2,6 @@ import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from '../m
 import transitoDao from '../dao/transitoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
-import Varco from '../models/varco';
 import multaDao from '../dao/multaDao';
 import Multa, { IMultaCreationAttributes } from '../models/multa';
 import Tesseract from 'tesseract.js';
@@ -48,7 +47,7 @@ class TransitoRepository {
      * @param ruolo - Il ruolo dell'utente.
      * @returns {Promise<{ transito: Transito | null, multa: Multa | null }>} - Una promessa che risolve con il transito creato e la multa associata se presente.
      */
-    public async createTransito(transito: ITransitoCreationAttributes, ruolo: Varco | null = null): Promise<{ transito: Transito | null, multa: Multa | null }> {
+    public async createTransito(transito: ITransitoCreationAttributes): Promise<{ transito: Transito | null, multa: Multa | null }> {
         const response = {
             transito: null as Transito | null,
             multa: null as Multa | null
@@ -78,40 +77,20 @@ class TransitoRepository {
         // Calcolo della velocità media e del delta
         const transitoCompleto = await this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
         try {
-            // Se il ruolo è 'operatore', si forza l'inserimento del transito
-            if (ruolo === null) {
-                const newTransito = await transitoDao.create(transitoCompleto, { transaction });
 
-                response['transito'] = newTransito;
+            const newTransito = await transitoDao.create(transitoCompleto, { transaction });
 
-                // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                    const multa: IMultaCreationAttributes = this.createMulta(newTransito);
-                    const newMulta = await multaDao.create(multa, { transaction });
-                    response['multa'] = newMulta;
-                }
+            response['transito'] = newTransito;
 
-                await transaction.commit();
-                return response;
-
-            } else if (ruolo.smart) { // Se un varco è smart, si crea il transito
-                const newTransito = await transitoDao.create(transitoCompleto, { transaction });
-
-                response['transito'] = newTransito;
-
-                // Se il transito ha una velocità superiore a quella consentita, si crea una multa
-                if (newTransito.delta_velocita > 0) {
-                    const multa: IMultaCreationAttributes = this.createMulta(newTransito);
-                    const newMulta = await multaDao.create(multa, { transaction });
-                    response['multa'] = newMulta;
-                }
-
-
-                await transaction.commit();
-                return response;
-            } else { // Se il ruolo è di un varco non smart, non si può creare un transito
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco non è di tipo smart, quindi non può creare transiti.`);
+            // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+            if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
+                const multa: IMultaCreationAttributes = this.createMulta(newTransito);
+                const newMulta = await multaDao.create(multa, { transaction });
+                response['multa'] = newMulta;
             }
+
+            await transaction.commit();
+            return response;
         } catch (error) {
             await transaction.rollback();
             if (error instanceof HttpError) {

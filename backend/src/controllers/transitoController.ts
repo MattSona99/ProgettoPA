@@ -63,7 +63,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             }
         } else if (ruolo === RuoloUtente.VARCO) { // Il varco può essere di 2 tipologie: smart o non smart
             // Verifica se l'utente è associato a un varco
-            const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
+            const isVarcoAssociato = await IsVarco.findOne({ where: { id_utente: id_utente } });
             if (!isVarcoAssociato) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente.");
             }
@@ -112,7 +112,7 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
         }
 
         // Verifica se l'utente è associato a un varco
-        const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
+        const isVarcoAssociato = await IsVarco.findOne({ where: { id_utente: id_utente } });
         if (!isVarcoAssociato) {
             return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente."));
         }
@@ -129,7 +129,6 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
             data_in: data_in.data_in,
             data_out: new Date()
         };
-        console.log(newTransito);
 
         const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
 
