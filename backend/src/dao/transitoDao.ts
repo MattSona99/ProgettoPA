@@ -1,15 +1,18 @@
 import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from "../models/transito";
-import { Transaction } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import { DAO } from "./daoInterface";
+import Veicolo from "../models/veicolo";
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
 interface ITransitoDAO extends DAO<ITransitoAttributes, number> {
-    // metodi da aggiungere nel caso specifico dei transiti)
+    // metodi da aggiungere nel caso specifico dei transiti
+    getByTratta(id: number): Promise<Transito | null>;
+    getByVeicoli(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]>
 }
 
 // Classe TransitoDao che implementa l'interfaccia TransitoDAO
-class TransitoDao  implements ITransitoDAO {
+class TransitoDao implements ITransitoDAO {
 
     /**
      * Funzione per ottenere tutti i transiti.
@@ -44,6 +47,44 @@ class TransitoDao  implements ITransitoDAO {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
             }
+        }
+    }
+
+    /**
+     * Funzione per ottenere un transito da una tratta.
+     * 
+     * @param { number } id - L'ID della tratta da utilizzare per ottenere il transito.
+     * @returns {Promise<Transito>} - Una promessa che risolve con il transito trovato.
+     */
+
+    public async getByTratta(id: number): Promise<Transito | null> {
+        try {
+            const transito = await Transito.findOne({ where: { tratta: id } });
+            return transito;
+
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
+        }
+    }
+
+    public async getByVeicoli(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]> {
+        try {
+            return await Transito.findAll({
+                where: {
+                    targa: { [Op.in]: veicoli.map(v => v.targa) },
+                    [Op.or]: [
+                        { data_in: { [Op.between]: [dataIn, dataOut] } },
+                        { data_out: { [Op.between]: [dataIn, dataOut] } },
+                        {
+                            data_in: { [Op.gte]: dataIn },
+                            data_out: { [Op.lte]: dataOut }
+                        }
+                    ]
+                },
+                attributes: ['id_transito', 'targa', 'tratta', 'data_in', 'data_out', 'velocita_media', 'delta_velocita']
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dei transiti per le targhe ${veicoli.map(veicolo => veicolo.targa)} e il periodo specificato.`);
         }
     }
 

@@ -1,11 +1,13 @@
 import Veicolo, { IVeicoloAttributes } from '../models/veicolo';
 import { DAO } from './daoInterface';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
+import { RuoloUtente } from '../enums/RuoloUtente';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
 interface IVeicoloDAO extends DAO<IVeicoloAttributes, string> {
     // Metodi specifici per Veicolo, se necessari
+    getByTarghe(utente: { id: number, ruolo: string }, targhe: string[]): Promise<Veicolo[]>
 }
 
 // Classe VeicoloDao che implementa l'interfaccia VeicoloDAO
@@ -44,6 +46,41 @@ class VeicoloDao implements IVeicoloDAO {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}.`);
             }
+        }
+    }
+
+    /**
+     * Funzione per ottenere un veicolo da una targa.
+     * 
+     * @param {utente} utente - L'utente che ha effettuato la richiesta.
+     * @param {string[]} targhe - Le targhe dei veicoli da recuperare.
+     * @returns {Promise<Veicolo[]>} - Una promessa che risolve con i veicoli trovati.
+     */
+
+    public async getByTarghe(utente: { id: number, ruolo: string }, targhe: string[]): Promise<Veicolo[]> {
+        try {
+            if (utente.ruolo === RuoloUtente.AUTOMOBILISTA) {
+                return await Veicolo.findAll({
+                    where: {
+                        targa: { [Op.in]: targhe },
+                        utente: { [Op.eq]: utente.id }
+                    },
+                    attributes: ['targa']
+                });
+            }
+            else if (utente.ruolo === RuoloUtente.OPERATORE) {
+                return await Veicolo.findAll({
+                    where: {
+                        targa: { [Op.in]: targhe }
+                    },
+                    attributes: ['targa']
+                });
+            }
+            else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato.");
+            }
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }
     }
 

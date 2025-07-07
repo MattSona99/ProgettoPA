@@ -173,6 +173,11 @@ class TransitoRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingMulta = await multaDao.getByTransito(id);
+            if (existingMulta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata.");
+            }
+
             const [rows, deletedTransito] = await transitoDao.delete(id, { transaction });
             await transaction.commit();
             return [rows, deletedTransito];

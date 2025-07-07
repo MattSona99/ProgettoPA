@@ -1,9 +1,12 @@
 import multaDao from "../dao/multaDao";
 import transitoDao from "../dao/transitoDao";
 import trattaDao from "../dao/trattaDao";
+import utenteDao from "../dao/utenteDao";
 import varcoDao from "../dao/varcoDao";
+import veicoloDao from "../dao/veicoloDao";
 import Multa, { IMultaCreationAttributes } from "../models/multa";
 import Database from "../utils/database";
+import { HttpError, HttpErrorCodes, HttpErrorFactory } from "../utils/errorHandler";
 
 /**
  * Classe MultaRepository che gestisce le operazioni relative alle multe.
@@ -38,8 +41,29 @@ class multaRepository {
      * @returns - Una promessa che risolve con un array di multe.
      */
     public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }) {
-        const multe = await multaDao.getMulteByTargheEPeriodo(targhe, dataIn, dataOut, utente);
-        return await this.enrichMulte(multe);
+        try {
+            // 1) Prendo tutti i veicoli dell'utente
+            const veicoli = await veicoloDao.getByTarghe(utente, targhe);
+            if (veicoli.length === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Veicolo con targa ${targhe} non trovato o non associato all'utente.`);
+            }
+
+            // 2) Prendo i transiti con le targhe dell'utente, filtrati per periodo
+            const transiti = await transitoDao.getByVeicoli(veicoli, dataIn, dataOut);
+            if (transiti.length === 0) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Nessun transito trovato per le targhe ${targhe} e il periodo specificato.`);
+            }
+
+            // 3) Recupero le multe che fanno riferimento a quegli id_transito
+            const multe = await multaDao.getByTransiti(transiti);
+            return await this.enrichMulte(multe);
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
+            }
+        }
     }
 
 
@@ -50,8 +74,33 @@ class multaRepository {
      * @param idUtente - L'ID dell'utente.
      * @returns {Promise<Multa>} - Una promessa che risolve con la multa con informazioni aggiuntive.
      */
-    public async getMultaByUtente(idMulta: number, idUtente: number): Promise<Multa> {
-        return await multaDao.getMultaByUtente(idMulta, idUtente);
+    public async getMultaByUtente(idMulta: number, idUtente: number){
+        try {
+
+            // 1) Recupero la multa
+            const multa = await multaDao.getById(idMulta);
+
+            // 2) Recupero l'utente
+            const utente = await utenteDao.getById(idUtente);
+
+            // 3) Recupero il transito
+            const transito = await transitoDao.getById(multa.transito);
+
+            // 4) Recupero il veicolo
+            const veicolo = await veicoloDao.getById(transito.targa);
+
+            // 5) Verifico che la multa appartenga all'utente
+            if (veicolo.utente !== utente.id_utente) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Multa con ID ${idMulta} non appartiene all'utente con ID ${idUtente}.`);
+            }
+            return multa;
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della multa.");
+            }
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
+import transitoDao from "../dao/transitoDao";
 import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
-import Transito from "../models/transito";
 import Tratta from "../models/tratta";
 import { ITrattaAttributes, ITrattaCreationAttributes } from "../models/tratta";
 import Varco from "../models/varco";
@@ -181,10 +181,11 @@ class TrattaRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const transito = await Transito.findOne({ where: { tratta: id } });
+            const transito = await transitoDao.getByTratta(id);
             if (transito) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare una tratta perchè associata ad un transito.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare una tratta con almeno un transito.");
             }
+            
             const [rows, deletedTransito] = await trattaDao.delete(id);
             await transaction.commit();
             return [rows, deletedTransito];

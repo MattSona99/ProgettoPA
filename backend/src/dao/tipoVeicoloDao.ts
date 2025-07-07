@@ -96,6 +96,7 @@ class TipoVeicoloDao /*  implements ITipoVeicoloDAO */ {
             if (!tipoVeicolo) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
             }
+
             const rows = await TipoVeicolo.destroy({ where: { id_tipo_veicolo: id }, ...options });
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non eliminato.`);

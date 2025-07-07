@@ -3,7 +3,6 @@ import transitoRepository from '../repositories/transitoRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
-import Multa from '../models/multa';
 import { RuoloUtente } from '../enums/RuoloUtente';
 import trattaDao from '../dao/trattaDao';
 
@@ -69,7 +68,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             }
 
             // Creazione del transito a seconda del tipo di varco
-            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
+            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
 
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -130,7 +129,7 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
             data_out: new Date()
         };
 
-        const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
+        const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
 
         if (createdMulta) {
             res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -170,11 +169,6 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
 export const deleteTransito = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-
-        const existingMulta = await Multa.findOne({ where: { transito: id } });
-        if (existingMulta) {
-            next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata."));
-        }
 
         const [deleted, deletedTransito] = await transitoRepository.deleteTransito(parseInt(id));
 
