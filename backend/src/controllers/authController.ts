@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import utenteDao from "../dao/utenteDao";
 import { generateToken } from "../utils/jwt";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
-import bcrypt from 'bcrypt';
 
 /**
  * Funzione per effettuare il login dell'utente.

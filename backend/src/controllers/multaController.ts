@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import multaDao from '../dao/multaDao';
 import transitoRepository from '../repositories/transitoRepository';
 import { generateBollettinoPDFBuffer } from '../utils/bollettino';
+import { Formato } from '../enums/Formato';
 
 /**
  * Funzione per creare una multa
@@ -34,7 +35,7 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
  */
 export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { targa, dataIn, dataOut } = req.query;
+        const { targa, dataIn, dataOut, formato } = req.query;
         const utente = (req as any).user;
         const arrayTarga = Array.isArray(targa) ? targa : [targa];
 
@@ -44,7 +45,19 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
             dataOut as string,
             utente as { id: number, ruolo: string }
         );
-        res.status(StatusCodes.OK).json(multe);
+        switch (formato) {
+            case Formato.JSON:
+                res.status(StatusCodes.OK).json(multe);
+                break;
+            case Formato.CSV:
+                res.status(StatusCodes.NOT_IMPLEMENTED).json({ message: "Formato CSV non implementato." });
+                break;
+            case Formato.PDF:
+                res.status(StatusCodes.NOT_IMPLEMENTED).json({ message: "Formato PDF non implementato." });
+                break;
+            default:
+                res.status(StatusCodes.OK).json(multe);
+        }
     } catch (error) {
         next(error);
     }

@@ -22,5 +22,6 @@ export const validateGetMulteByTargheEPeriodo = [
     query('targa.*').matches(targaRegex).withMessage('Targa deve essere una registrazione valida.'),
     query('dataIn').isISO8601().withMessage('Data di inizio deve essere una data valida (YYYY-MM-DD).'),
     query('dataOut').isISO8601().withMessage('Data di fine deve essere una data valida (YYYY-MM-DD).'),
+    query('formato').isString().withMessage('Formato deve essere una stringa.'),
     validateRequest
 ];
