@@ -1,5 +1,5 @@
-// src/middleware/upload.ts
 import multer from 'multer';
+import { HttpErrorFactory, HttpErrorCodes } from '../../utils/errorHandler';
 
 // Storage in memoria (se passi poi a tesseract.js dalla buffer)
 const storage = multer.memoryStorage();
@@ -10,7 +10,7 @@ export const uploadImage = multer({
   limits: { fileSize: 5 * 1024 * 1024 },        // max 5MB
   fileFilter: (_, file, cb) => {
     if (!file.mimetype.match(/^image\/(png|jpe?g)$/)) {
-      return cb(new Error('Tipo di file non consentito') as any, false);
+      return cb(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, 'Formato immagine non valido.'));
     }
     cb(null, true);
   }

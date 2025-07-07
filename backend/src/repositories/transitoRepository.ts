@@ -14,6 +14,7 @@ import Veicolo from '../models/veicolo';
 import Tratta from '../models/tratta';
 import TipoVeicolo from '../models/tipoVeicolo';
 import { v4 as uuidv4 } from 'uuid';
+import sharp from 'sharp';
 
 /**
  * Classe TransitoRepository che gestisce le operazioni relative ai transiti.
@@ -265,8 +266,14 @@ class TransitoRepository {
      */
     public async processImage(file: Express.Multer.File): Promise<string | null> {
         try {
-            const { data: { text } } = await Tesseract.recognize(file.buffer, 'ita')
+            const processedImage = await this.preprocessImage(file.buffer);
+            const { data: { text } } = await Tesseract.recognize(
+                processedImage,
+                'ita',
+                { logger: m => console.log(m) }
+            )
             const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
+            console.log(text);
             const match = text.match(regex);
             return match ? match[0] : null;
         } catch {
@@ -287,6 +294,19 @@ class TransitoRepository {
         const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
         const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
+    }
+
+
+    /** 
+     * Funzione di preprocessing dell'immagine.
+     * 
+     * @param image - L'immagine da pre-processare.
+     * @returns - L'immagine pre-processata.
+     */
+    private async preprocessImage(image: Buffer): Promise<Buffer> {
+
+        return image;
+
     }
 }
 

@@ -3,9 +3,9 @@ import transitoRepository from '../repositories/transitoRepository';
 import { StatusCodes } from 'http-status-codes';
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
 import IsVarco from '../models/isVarco';
-import varcoRepository from '../repositories/varcoRepository';
 import Multa from '../models/multa';
 import { RuoloUtente } from '../enums/RuoloUtente';
+import trattaDao from '../dao/trattaDao';
 
 /**
  * Funzione per ottenere tutti i transiti.
@@ -67,11 +67,9 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             if (!isVarcoAssociato) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente.");
             }
-            // Recupera il varco associato all'utente
-            const varco = await varcoRepository.getVarcoById(isVarcoAssociato.id_varco);
 
             // Creazione del transito a seconda del tipo di varco
-            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, varco);
+            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
 
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -97,14 +95,49 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
     if (!req.file) {
         return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "File non fornito o non valido."));
     }
+    const id_utente = (req as any).user.id;
+    const ruolo = (req as any).user.ruolo;
+    const data_in = req.body;
+
     try {
+        if (ruolo !== RuoloUtente.VARCO) {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.Forbidden, "Accesso negato: l'utente non è autorizzato a creare transiti."));
+        }
         const file = req.file as Express.Multer.File;
         // Processamento dell'immagine della targa per ottenere di ritorno la stessa
         // Utilizzo di tesseract.js o un altro OCR per leggere la targa
         const targa = await transitoRepository.processImage(file);
+        if (!targa) {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Errore nel processamento dell'immagine della targa."));
+        }
 
-        // DA COMPLETARE CON L'AGGIUNTA DEL TRANSITO
-        res.status(StatusCodes.OK).json({ targa });
+        // Verifica se l'utente è associato a un varco
+        const isVarcoAssociato = await IsVarco.findOne({ where: { id_varco: id_utente } });
+        if (!isVarcoAssociato) {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Accesso negato: il varco non è stato associato correttamente ad un utente."));
+        }
+
+        // Verifica se il varco è associato a una tratta
+        const tratta = await trattaDao.getTrattaByVarcoOut(isVarcoAssociato.id_varco);
+        if (!tratta) {
+            return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Tratta non trovata."));
+        }
+
+        const newTransito = {
+            targa,
+            tratta: tratta.id_tratta,
+            data_in: data_in,
+            data_out: new Date()
+        };
+
+        const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
+
+        if (createdMulta) {
+            res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
+        }
+        else {
+            res.status(StatusCodes.CREATED).json(createdTransito);
+        }
     } catch (error) {
         next(error);
     }
@@ -146,7 +179,7 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         const [deleted, deletedTransito] = await transitoRepository.deleteTransito(parseInt(id));
 
         res.status(StatusCodes.OK).json({ message: `Row eliminate: ${deleted}, Transito con id = ${id} eliminato con successo:`, transito: deletedTransito });
-        
+
     } catch (error) {
         next(error);
     }

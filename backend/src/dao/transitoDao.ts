@@ -4,7 +4,7 @@ import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandl
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
 interface ITransitoDAO extends DAO<ITransitoAttributes, number> {
-    // metodi da aggiungere nel caso specifico dei transiti
+    // metodi da aggiungere nel caso specifico dei transiti)
 }
 
 // Classe TransitoDao che implementa l'interfaccia TransitoDAO

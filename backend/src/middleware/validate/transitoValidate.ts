@@ -21,6 +21,11 @@ export const validateCreateTransito = [
     validateRequest
 ]
 
+export const validateCreateTransitoByVarco = [
+    body('data_in').isISO8601().toDate().withMessage('Data di ingresso deve essere una data valida.'),
+    validateRequest
+]
+
 export const validateUpdateTransito = [
     param('id').isInt({ min: 1 }).withMessage('ID del transito deve essere un numero intero.'),
     body('targa').optional().matches(targaRegex).withMessage('Targa del veicolo deve rispettare il formato AA123AA.'),

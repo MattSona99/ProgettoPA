@@ -3,7 +3,8 @@ import {
     validateGetTransitoById,
     validateCreateTransito,
     validateUpdateTransito,
-    validateDeleteTransito
+    validateDeleteTransito,
+    validateCreateTransitoByVarco
 } from '../middleware/validate/transitoValidate';
 import { authMiddleware, authorize } from '../middleware/authMiddleware';
 import {
@@ -14,7 +15,7 @@ import {
     deleteTransito,
     getAllTransiti
 } from '../controllers/transitoController';
-import { uploadImage } from '../utils/upload';
+import { uploadImage } from '../middleware/validate/validateUpload';
 import { RuoloUtente } from '../enums/RuoloUtente';
 
 const router = Router();
@@ -26,7 +27,7 @@ router.use(authMiddleware);
 router.get('/transito', authorize([RuoloUtente.OPERATORE]), getAllTransiti);
 router.get('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateGetTransitoById, getTransitoById);
 router.post('/transito/smart', authorize([RuoloUtente.OPERATORE, RuoloUtente.VARCO]), validateCreateTransito, createTransito);
-router.post('/transito/manuale', authorize([RuoloUtente.VARCO]), uploadImage.single('image'), createTransitoByVarco);
+router.post('/transito/manuale', authorize([RuoloUtente.VARCO]), uploadImage.single('image'), validateCreateTransitoByVarco, createTransitoByVarco);
 router.put('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize([RuoloUtente.OPERATORE]), validateDeleteTransito, deleteTransito);
 

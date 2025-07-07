@@ -7,6 +7,7 @@ import { Transaction } from 'sequelize';
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
 interface ITrattaDAO extends DAO<ITrattaAttributes, number> {
     // Metodi specifici per Tratta, se necessari
+    getTrattaByVarcoOut(id_varco_out: number): Promise<Tratta | null>;
 }
 
 // Classe TrattaDao che implementa l'interfaccia TrattaDAO
@@ -108,6 +109,20 @@ class TrattaDao implements ITrattaDAO {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della tratta con ID ${id}.`);
             }
+        }
+    }
+
+    /**
+     * Funzione per ottenere una tratta da un varco di uscita.
+     * 
+     * @param {number} id_varco_out - L'ID del varco di uscita.
+     * @returns {Promise<Tratta | null>} - Una promessa che risolve con la tratta trovata o null se non trovata.
+     */
+    public async getTrattaByVarcoOut(id_varco_out: number): Promise<Tratta | null> {
+        try {
+            return await Tratta.findOne({ where: { varco_out: id_varco_out } });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con varco di uscita ${id_varco_out}.`);
         }
     }
 }
