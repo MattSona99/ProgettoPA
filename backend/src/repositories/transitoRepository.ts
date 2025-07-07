@@ -266,15 +266,19 @@ class TransitoRepository {
      */
     public async processImage(file: Express.Multer.File): Promise<string | null> {
         try {
-            const processedImage = await this.preprocessImage(file.buffer);
+            // Preprocessing dell'immagine
+            const preprocessedBuffer = await sharp(file.buffer)
+                .greyscale()
+                .sharpen()
+                .toBuffer();
+
             const { data: { text } } = await Tesseract.recognize(
-                processedImage,
-                'ita',
-                { logger: m => console.log(m) }
+                preprocessedBuffer,
+                'ita'
             )
             const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
             console.log(text);
-            const match = text.match(regex);
+            const match = text.replace(/\s+/g, '').toUpperCase().match(regex);
             return match ? match[0] : null;
         } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel processamento dell'immagine della targa.");
@@ -294,19 +298,6 @@ class TransitoRepository {
         const velocitaMedia = parseFloat((distanza / (tempoPercorrenza)).toFixed(5));
         const deltaVelocita = parseFloat((velocitaMedia - limiteVelocita).toFixed(5));
         return { ...transito, velocita_media: velocitaMedia, delta_velocita: deltaVelocita };
-    }
-
-
-    /** 
-     * Funzione di preprocessing dell'immagine.
-     * 
-     * @param image - L'immagine da pre-processare.
-     * @returns - L'immagine pre-processata.
-     */
-    private async preprocessImage(image: Buffer): Promise<Buffer> {
-
-        return image;
-
     }
 }
 

@@ -1,6 +1,7 @@
 import Transito, { ITransitoAttributes, ITransitoCreationAttributes } from "../models/transito";
 import { Transaction } from "sequelize";
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
+import { DAO } from "./daoInterface";
 
 // Interfaccia TransitoDAO che estende la DAO per includere metodi specifici per Transito
 interface ITransitoDAO extends DAO<ITransitoAttributes, number> {

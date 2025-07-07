@@ -132,7 +132,7 @@ INSERT INTO veicolo (targa, tipo_veicolo, utente) VALUES
     ('YZ741AB', 7, 2),
     ('CD852EF', 1, 3),
     ('GH963IJ', 2, 4),
-    ('KL159MN', 3, 5);
+    ('GA129KM', 3, 5);
 
 -- Inserimento dati tabella TRATTA --
 INSERT INTO tratta (varco_in, varco_out, distanza) VALUES
@@ -162,7 +162,7 @@ INSERT INTO transito (tratta, targa, data_in, data_out, velocita_media, delta_ve
 -- Veicolo 9, tratta 1, limite 130
 (1, 'GH963IJ', '2025-06-28 08:00:00', '2025-06-28 08:40:00', 39.7 / (40.0/60), (39.7 / (40.0/60)) - 130), -- sotto limite (~59.55 km/h)
 -- Veicolo 10, tratta 2, limite 80 - 20 = 60
-(2, 'KL159MN', '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60); -- sopra limite (~97.2 km/h)
+(2, 'GA129KM', '2025-06-28 09:00:00', '2025-06-28 09:25:00', 40.5 / (25.0/60), (40.5 / (25.0/60)) - 60); -- sopra limite (~97.2 km/h)
 
 -- Inserimento dati tabella MULTA --
 INSERT INTO multa (transito, importo) VALUES

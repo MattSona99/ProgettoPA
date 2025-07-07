@@ -126,9 +126,10 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
         const newTransito = {
             targa,
             tratta: tratta.id_tratta,
-            data_in: data_in,
+            data_in: data_in.data_in,
             data_out: new Date()
         };
+        console.log(newTransito);
 
         const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito, ruolo);
 
