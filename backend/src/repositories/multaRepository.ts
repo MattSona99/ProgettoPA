@@ -3,11 +3,7 @@ import transitoDao from "../dao/transitoDao";
 import trattaDao from "../dao/trattaDao";
 import varcoDao from "../dao/varcoDao";
 import Multa, { IMultaCreationAttributes } from "../models/multa";
-import Transito from "../models/transito";
-import Tratta from "../models/tratta";
-import Varco from "../models/varco";
 import Database from "../utils/database";
-import { HttpErrorFactory, HttpErrorCodes } from "../utils/errorHandler";
 
 /**
  * Classe MultaRepository che gestisce le operazioni relative alle multe.
