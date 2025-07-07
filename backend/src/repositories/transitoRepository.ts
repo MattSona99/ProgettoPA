@@ -116,6 +116,13 @@ class TransitoRepository {
         // Controllo se il transito esiste
         const existingTransito = await transitoDao.getById(id);
 
+
+        // Controllo se esiste una multa per il transito
+        const existingMulta = await multaDao.getByTransito(id);
+        if (existingMulta) {
+            throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il transito con ID ${id} è utilizzato in una multa. Non può essere aggiornato. Multa ID: ${existingMulta.id_multa}`);
+        }
+
         // Controllo se la tratta non sia vuota
         if (transito.tratta) {
             // Controllo se la tratta esiste
@@ -175,7 +182,7 @@ class TransitoRepository {
         try {
             const existingMulta = await multaDao.getByTransito(id);
             if (existingMulta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Impossibile eliminare un transito con una multa associata.");
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il transito con ID ${id} è utilizzato in una multa. Non può essere eliminato. Multa ID: ${existingMulta.id_multa}`);
             }
 
             const [rows, deletedTransito] = await transitoDao.delete(id, { transaction });

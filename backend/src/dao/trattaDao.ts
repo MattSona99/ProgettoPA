@@ -2,12 +2,13 @@ import Tratta, { ITrattaCreationAttributes } from '../models/tratta';
 import { DAO } from './daoInterface';
 import { ITrattaAttributes } from '../models/tratta';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 
 // Interfaccia TrattaDAO che estende la DAO per includere metodi specifici per Tratta
 interface ITrattaDAO extends DAO<ITrattaAttributes, number> {
     // Metodi specifici per Tratta, se necessari
     getTrattaByVarcoOut(id_varco_out: number): Promise<Tratta | null>;
+    getByVarco(id: number): Promise<Tratta | null>;
 }
 
 // Classe TrattaDao che implementa l'interfaccia TrattaDAO
@@ -46,6 +47,22 @@ class TrattaDao implements ITrattaDAO {
             } else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con ID ${id}.`);
             }
+        }
+    }
+
+    public async getByVarco(id: number): Promise<Tratta | null> {
+        try {
+            return await Tratta.findOne({
+                where:
+                {
+                    [Op.or]: [
+                        { varco_in: id },
+                        { varco_out: id }
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con varco di uscita ${id}.`);
         }
     }
 

@@ -1,4 +1,4 @@
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
@@ -25,3 +25,8 @@ export const validateGetMulteByTargheEPeriodo = [
     query('formato').isString().withMessage('Formato deve essere una stringa.'),
     validateRequest
 ];
+
+export const validateDeleteMulta =[
+  param('id').isInt({min: 1}).withMessage('ID deve essere un numero intero.'),
+  validateRequest
+]

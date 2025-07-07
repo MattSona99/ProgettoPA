@@ -101,6 +101,30 @@ class multaRepository {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero della multa.");
             }
         }
+    };
+
+    /**
+     * Funzione per eliminare una multa.
+     * 
+     * @param idMulta - L'ID della multa da eliminare.
+     * @returns {Promise<[number, Multa]>} - Una promessa che risolve con il numero di righe eliminate e la multa eliminata.
+     */
+
+    public async deleteMulta(idMulta: number) {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
+        try {
+            const [rows, deletedMulta] = await multaDao.delete(idMulta, { transaction });
+            await transaction.commit();
+            return [rows, deletedMulta];
+        } catch (error) {
+            await transaction.rollback();
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'eliminazione della multa con ID ${idMulta}.`);
+            }
+        }
     }
 
     /**
@@ -149,6 +173,6 @@ class multaRepository {
         }));
         return multaCompleta.filter(m => m !== null);
     }
-}
+};
 
 export default new multaRepository();

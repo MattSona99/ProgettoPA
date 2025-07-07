@@ -4,6 +4,7 @@ import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import utenteDao from '../dao/utenteDao';
 import IsVarco from '../models/isVarco';
+import trattaDao from '../dao/trattaDao';
 
 /**
  * Classe VarcoRepository che gestisce le operazioni relative ai varchi.
@@ -62,9 +63,22 @@ class VarcoRepository {
      * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
     public async updateVarco(id: number, varcoData: Varco): Promise<[number, Varco[]]> {
-        await varcoDao.getById(id);
-        const [rows, updatedVarco] = await varcoDao.update(id, varcoData);
-        return [rows, updatedVarco];
+        try {
+            const existingTratta = await trattaDao.getByVarco(id);
+            if (existingTratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco con ID ${id} è utilizzato in una tratta. Non puoi aggiornarlo. Tratta ID: ${existingTratta.id_tratta}`);
+            }
+            await varcoDao.getById(id);
+            const [rows, updatedVarco] = await varcoDao.update(id, varcoData);
+            return [rows, updatedVarco];
+        }
+        catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del varco con ID ${id}.`);
+            }
+        }
     }
 
     /**
@@ -77,6 +91,11 @@ class VarcoRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingTratta = await trattaDao.getByVarco(id);
+            if (existingTratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco con ID ${id} è utilizzato in una tratta. Non puoi eliminarlo. Tratta ID: ${existingTratta.id_tratta}`);
+            }
+
             const [rows, deletedVarco] = await varcoDao.delete(id, { transaction });
             await transaction.commit();
             return [rows, deletedVarco];

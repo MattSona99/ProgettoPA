@@ -153,7 +153,7 @@ class MultaDao implements IMultaDAO {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero delle multe.");
             }
         }
-    }
+    };
 }
 
 export default new MultaDao();

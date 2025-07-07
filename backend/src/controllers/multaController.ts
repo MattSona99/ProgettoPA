@@ -86,4 +86,22 @@ export const downloadBollettinoPDF = async (req: Request, res: Response, next: N
     catch (error) {
         next(error);
     }
+};
+
+/**
+ * Funzione per eliminare una multa
+ * 
+ * @param id - L'ID della multa da eliminare
+ * @returns - Una promessa che risolve con un messaggio di conferma dell'eliminazione
+ */
+export const deleteMulta = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+
+        const [rows, deletedMulta] = await multaRepository.deleteMulta(parseInt(id));
+
+        res.status(StatusCodes.OK).json({ message: `Row eliminate: ${rows}, Multa con id = ${id} eliminata con successo:`, multa: deletedMulta });
+    } catch (error) {
+        next(error);
+    }
 }

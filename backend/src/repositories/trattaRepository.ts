@@ -76,6 +76,12 @@ class TrattaRepository {
             // Controlla se la tratta esiste
             const trattaToUpdate = await trattaDao.getById(id);
 
+            // Controllo se la tratta è associata ad un transito
+            const existingTransito = await transitoDao.getByTratta(id);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} é utilizzata in un transito. Non può essere aggiornata. Transito ID: ${existingTransito.id_transito}`);
+            }
+
             // Controllo quali id dei varchi sono stati inseriti
             if (!tratta.varco_in && !tratta.varco_out) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Inserire almeno un varco.");
@@ -181,9 +187,9 @@ class TrattaRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const transito = await transitoDao.getByTratta(id);
-            if (transito) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "Non e' possibile eliminare una tratta con almeno un transito.");
+            const existingTransito = await transitoDao.getByTratta(id);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} è utilizzata in un transito. Non può essere eliminata. Transito ID: ${existingTransito.id_transito}`);
             }
             
             const [rows, deletedTransito] = await trattaDao.delete(id);
