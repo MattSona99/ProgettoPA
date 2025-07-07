@@ -759,7 +759,7 @@ All'interno del sistema sono presenti delle rotte aggiuntive per permettere di v
 ```json
 {
   "email": "mrossi@example.com",
-  "password": "password
+  "password": "password"
 }
 ```
 *Risposta:*
