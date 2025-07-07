@@ -1800,6 +1800,7 @@ Params
 targa: EF456GH
 dataIn: 2025-01-28
 dataOut: 2025-12-28
+formato: JSON
 ```
 
 *Risposta:*
