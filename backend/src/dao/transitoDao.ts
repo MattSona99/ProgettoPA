@@ -8,7 +8,8 @@ import Veicolo from "../models/veicolo";
 interface ITransitoDAO extends DAO<ITransitoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei transiti
     getByTratta(id: number): Promise<Transito | null>;
-    getByVeicoli(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]>
+    getByVeicolo(targa: string): Promise<Transito | null>;
+    getByVeicoliEPeriodo(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]>
 }
 
 // Classe TransitoDao che implementa l'interfaccia TransitoDAO
@@ -65,9 +66,25 @@ class TransitoDao implements ITransitoDAO {
         } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${id}.`);
         }
+    };
+
+    /**
+     * Funzione per ottenere un transito da una targa
+     * 
+     * @param targa - La targa del veicolo da utilizzare per ottenere il transito
+     * @returns {Promise<Transito | null>} - Una promessa che risolve con il transito trovato o null se non trovato
+     */
+
+    public async getByVeicolo(targa: string): Promise<Transito | null> {
+        try {
+            const transito = await Transito.findOne({ where: { targa: targa } });
+            return transito;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con targa ${targa}.`);
+        }
     }
 
-    public async getByVeicoli(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]> {
+    public async getByVeicoliEPeriodo(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]> {
         try {
             return await Transito.findAll({
                 where: {

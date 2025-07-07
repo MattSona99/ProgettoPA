@@ -1,4 +1,5 @@
 import tipoVeicoloDao from '../dao/tipoVeicoloDao';
+import transitoDao from '../dao/transitoDao';
 import utenteDao from '../dao/utenteDao';
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
@@ -65,9 +66,20 @@ class VeicoloRepository {
      * @returns {Promise<[number, Veicolo]>} - Una promessa che risolve con il numero di righe aggiornate.
      */
     public async updateVeicolo(targa: string, item: IVeicoloAttributes): Promise<[number, Veicolo[]]> {
-        await this.getVeicoloById(targa);
-        const [rows, updatedVeicolo] = await veicoloDao.update(targa, item);
-        return [rows, updatedVeicolo];
+        try {
+            const existingTransito = await transitoDao.getByVeicolo(targa);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il veicolo con targa ${targa} è utilizato in un transito. Non può essere aggiornato. Transito ID: ${existingTransito.id_transito}`);
+            }
+            const [rows, updatedVeicolo] = await veicoloDao.update(targa, item);
+            return [rows, updatedVeicolo];
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}.`);
+            }
+        }
     }
 
     /**
@@ -80,6 +92,10 @@ class VeicoloRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingTransito = await transitoDao.getByVeicolo(targa);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il veicolo con targa ${targa} è utilizato in un transito. Non può essere eliminato. Transito ID: ${existingTransito.id_transito}`);
+            }
             const [rows, deletedVeicolo] = await veicoloDao.delete(targa);
             await transaction.commit();
             return [rows, deletedVeicolo];

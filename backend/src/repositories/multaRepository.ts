@@ -49,7 +49,7 @@ class multaRepository {
             }
 
             // 2) Prendo i transiti con le targhe dell'utente, filtrati per periodo
-            const transiti = await transitoDao.getByVeicoli(veicoli, dataIn, dataOut);
+            const transiti = await transitoDao.getByVeicoliEPeriodo(veicoli, dataIn, dataOut);
             if (transiti.length === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Nessun transito trovato per le targhe ${targhe} e il periodo specificato.`);
             }
