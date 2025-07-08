@@ -105,9 +105,9 @@ ProgettoPA
 |   └── init.sql
 ├── images
 ├── test_postman
-├──docker-compose.yml
-├──LICENSE
-└──README.md
+├── docker-compose.yml
+├── LICENSE
+└── README.md
 ```
 ---
 
