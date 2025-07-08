@@ -367,6 +367,7 @@ sequenceDiagram
   participant CN as VeicoloController
   participant R as VeicoloRepository
   participant D as VeicoloDAO
+  participant TD as TransitoDAO
   participant S as Sequelize
   participant F as Factory
 
@@ -377,6 +378,10 @@ sequenceDiagram
   V -->> A: 
   A ->> CN: deleteVeicolo
   CN ->> R: veicoloRepository.deleteVeicolo
+  R ->> TD: transitoDao.getByVeicolo
+  TD ->> S: Transito.findOne
+  S -->> TD:
+  TD -->> R: Verifica che il veicolo non abbia un transito associato
   R ->> D: veicoloDao.delete
   D ->> S: Veicolo.findByPk
   S -->> D: 
@@ -413,6 +418,10 @@ sequenceDiagram
   V -->> A: 
   A ->> CN: createTratta
   CN ->> R: trattaRepository.createTratta
+  R ->> TD: trattaDao.verifyCreateTratta
+  TD ->> S: Tratta.findOne
+  S -->> TD:
+  TD -->> R: Verifica che la tratta non esiste già
   R ->> VD: varcoDao.getById (x2)
   VD ->> S: Varco.findByPk (x2)
   S -->> VD: (x2)
@@ -440,6 +449,7 @@ sequenceDiagram
   participant CN as TrattaController
   participant R as TrattaRepository
   participant TD as TrattaDAO
+  participant TRD as TransitoDAO
   participant S as Sequelize
   participant F as Factory
 
@@ -449,9 +459,11 @@ sequenceDiagram
   A ->> V: validateDeleteTratta
   V -->> A: 
   A ->> CN: deleteTratta
-  CN ->> S: Transito.findOne
-  S -->> CN: Se non c'è nessun transito associato
   CN ->> R: trattaRepository.deleteTratta
+  R ->> TRD: transitoDao.getByTratta
+  TRD ->> S: Transito.findOne
+  S -->> TRD:
+  TRD -->> R: Se non c'è nessun transito associato alla tratta
   R ->> TD: trattaDao.delete
   TD ->> S: Tratta.findByPk
   S -->> TD: 
@@ -506,11 +518,15 @@ sequenceDiagram
   R ->> TTD: trattaDao.getById
   TTD ->> S: Tratta.findByPk
   S -->> TTD: 
-  TTD -->> R: 
-  R ->> S: Veicolo.findOne
-  S ->> R: 
-  R ->> S: TipoVeicolo.findOne
-  S -->> R: 
+  TTD -->> R:
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findOne
+  S -->> VD:
+  VD -->> R:
+  R ->> TVD: tipoVeicoloDao.getById
+  TVD ->> S: TipoVeicolo.findOne
+  S -->> TVD:
+  TVD -->> R:  
   R -->> CN: 
   CN ->> F: createError
   F -->> CN: 
@@ -592,6 +608,11 @@ sequenceDiagram
   participant TV as TransitoValidate
   participant CN as TransitoController
   participant R as TransitoRepository
+  participant TTD as TrattaDAO
+  participant VD as VeicoloDAO
+  participant TVD as TipoVeicoloDAO
+  participant VCD as VarcoDAO
+  participant TD as TransitoDAO
   participant S as Sequelize
   participant F as Factory
 
@@ -602,13 +623,39 @@ sequenceDiagram
   TV -->> A:
   A ->> CN: createTransitoByVarco
   CN ->> R: transitoRepository.processImage
+  R -->> CN:
+  CN ->> TTD: trattaDao.getTrattaByVarcoOut
+  TTD ->> S: Tratta.findOne
+  S -->> TTD:
+  TTD -->> CN:
+  CN ->> R: transitoRepository.createTransito
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD:
+  VD -->> R:
+  R ->> TVD: tipoVeicoloDao.getById
+  TVD ->> S: TipoVeicolo.findByPk
+  S -->> TVD:
+  TVD -->> R:
+  R ->> TTD: trattaDao.getById
+  TTD ->> S: Tratta.findByPk
+  S -->> TTD:
+  TTD -->> R:
+  R ->> VCD: varcoDao.getById (x2)
+  VCD ->> S: Varco.findByPk (x2)
+  S -->> VCD: (x2)
+  VCD -->> R: (x2)
+  R ->> TD: transitoDao.create
+  TD ->> S: Transito.create
+  S -->> TD:
+  TD -->> R:
   R -->> CN: 
   CN ->> F: createError
   F -->> CN: 
   CN -->> A: 
   A ->> M: errorHandler
   M -->> A: 
-  A -->> C: 
+  A -->> C:  
 ```
   
 - **DELETE /transito**
@@ -637,9 +684,11 @@ sequenceDiagram
   A ->> TV: validateDeleteTransito
   TV -->> A: 
   A ->> CN: deleteTransito
-  CN ->> S: Multa.findOne
-  S -->> CN: Se la Multa non esiste, si può eliminare il Transito
   CN ->> R: transitoRepository.deleteTransito
+  R ->> MD: multaDao.getByTransito
+  MD ->> S: Multa.findOne
+  S -->> MD:
+  MD -->> R: Se non ci sono multe associate
   R ->> TD: transitoDao.delete
   TD ->> S: Transito.destroy
   S -->> TD:
@@ -663,6 +712,8 @@ sequenceDiagram
   participant MV as MultaValidate
   participant CN as MultaController
   participant R as MultaRepository
+  participant VD as VeicoloDAO
+  participant TD as TransitoDAO
   participant MD as MultaDAO
   participant S as Sequelize
   participant F as Factory
@@ -674,20 +725,18 @@ sequenceDiagram
   MV -->> A: 
   A ->> CN: getMulteByTargheEPeriodo
   CN ->> R: multaRepository.getMulteByTargheEPeriodo
-  R ->> MD: multaDao.getMulteByTargheEPeriodo
-  MD ->> S: Veicolo.findAll
-  S -->> MD:
-  MD ->> S: Transito.findAll
-  S -->> MD:
+  R ->> VD: veicoloDao.getByTarghe
+  VD ->> S: Veicolo.findAll
+  S -->> VD: 
+  VD -->> R:
+  R ->> TD: transitoDao.getByVeicoliEPeriodo
+  TD ->> S: Transito.findAll
+  S -->> TD:
+  TD -->> R: 
+  R ->> MD: multaDao.getByTransiti
   MD ->> S: Multa.findAll
-  S -->> MD:
-  MD -->> R:
-  R ->> S: Transito.findAll
-  S -->> R:
-  R ->> S: Tratta.findAll
-  S -->> R:
-  R ->> S: Varco.findAll (x2)
-  S -->> R: (x2)
+  S -->> MD:   
+  MD -->> R: 
   R -->> CN: 
   CN ->> F: createError
   F -->> CN: 
@@ -710,6 +759,8 @@ sequenceDiagram
   participant R as MultaRepository
   participant TR as TransitoRepository
   participant MD as MultaDAO
+  participant UD as UtenteDAO
+  participant VD as VeicoloDAO
   participant TD as TransitoDAO
   participant S as Sequelize
   participant F as Factory
@@ -718,22 +769,30 @@ sequenceDiagram
   A ->> M: Token e ruolo verificati
   M -->> A:
   A ->> CN: downlaodBollettinoPDF
-  CN ->> MD: multaDao.getMultaByUtente
+  CN ->> R: multaRepository.getMultaByUtente
+  R ->> MD: multaDao.getById
   MD ->> S: Multa.findByPk
   S -->> MD:
-  MD ->> S: Utente.findByPk
-  S -->> MD:
-  MD ->> S: Transito.findByPk
-  S -->> MD:
-  MD ->> S: Veicolo.findByPk
-  S -->> MD:
-  MD -->> CN:
+  MD -->> R:
+  R ->> UD: utenteDao.getById
+  UD ->> S: Utente.findByPk
+  S -->> UD:
+  UD -->> R:
+  R ->> TD: transitoDao.getById
+  TD ->> S: Transito.findByPk
+  S -->> TD:
+  TD -->> R:
+  R ->> VD: veicoloDao.getById
+  VD ->> S: Veicolo.findByPk
+  S -->> VD:
+  VD -->> R:
+  R -->> CN:
   CN ->> TR: transitoRepository.getTransitoById
   TR ->> TD: transitoDao.getById
   TD ->> S: Transito.findByPk
   S -->> TD:
-  TD -->> TR:
-  TR -->> CN: 
+  TD -->> TR: 
+  TR -->> CN: Genera il bollettino PDF
   CN ->> F: createError
   F -->> CN: 
   CN -->> A: 
