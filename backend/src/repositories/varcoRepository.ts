@@ -42,6 +42,11 @@ class VarcoRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingVarco = await varcoDao.verifyCreateVarco(varcoData);
+            if (existingVarco) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco con ID ${existingVarco.id_varco} esiste già.`);
+            }
+
             const newVarco = await varcoDao.create(varcoData, { transaction });
             await transaction.commit();
             return newVarco;
@@ -63,16 +68,23 @@ class VarcoRepository {
      * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
     public async updateVarco(id: number, varcoData: Varco): Promise<[number, Varco[]]> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
         try {
             const existingTratta = await trattaDao.getByVarco(id);
             if (existingTratta) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco con ID ${id} è utilizzato in una tratta. Non puoi aggiornarlo. Tratta ID: ${existingTratta.id_tratta}`);
             }
-            await varcoDao.getById(id);
-            const [rows, updatedVarco] = await varcoDao.update(id, varcoData);
+            const [rows, updatedVarco] = await varcoDao.update(id, varcoData, { transaction });
+            const existingVarco = await varcoDao.verifyUpdateVarco(updatedVarco[0]);
+            if (existingVarco) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il varco con ID ${existingVarco.id_varco} esiste già.`);
+            }
+            await transaction.commit();
             return [rows, updatedVarco];
         }
         catch (error) {
+            await transaction.rollback();
             if (error instanceof HttpError) {
                 throw error;
             } else {

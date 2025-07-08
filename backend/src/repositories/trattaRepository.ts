@@ -45,6 +45,10 @@ class TrattaRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
+            const existingTratta = await trattaDao.verifyCreateTratta(tratta);
+            if (existingTratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${tratta.id_tratta} esiste già.`);
+            }
             const varcoIn = await varcoDao.getById(tratta.varco_in);
             const varcoOut = await varcoDao.getById(tratta.varco_out);
             if (!(varcoIn.nome_autostrada === varcoOut.nome_autostrada)) {
@@ -72,6 +76,8 @@ class TrattaRepository {
      * @returns {Promise<[number, Tratta[]]>} Una promessa che risolve con il numero di righe aggiornate e un array di tratte aggiornate.
      */
     public async updateTratta(id: number, tratta: ITrattaAttributes): Promise<[number, Tratta[]]> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
         try {
             // Controlla se la tratta esiste
             const trattaToUpdate = await trattaDao.getById(id);
@@ -109,10 +115,17 @@ class TrattaRepository {
                     id_tratta: id,
                     distanza: trattaModificata.distanza !== undefined ? trattaModificata.distanza : 0
                 };
-                return await trattaDao.update(id, trattaCompleta);
+                const [rows, updatedTratta] = await trattaDao.update(id, trattaCompleta, { transaction });
+                const existingTratta = await trattaDao.verifyUpdateTratta(updatedTratta[0]);
+                if (existingTratta) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} esiste gia.`);
+                }
+
+                await transaction.commit();
+                return [rows, updatedTratta];
             }
             else if (tratta.varco_out && !tratta.varco_in) {
-                // Controllo se il varco out esiste
+                // Controllo se il varco OUT inserito esiste
                 const varcoOut = await varcoDao.getById(tratta.varco_out);
 
                 // Controllo se il nuovo varco é uguale al precedente
@@ -133,7 +146,15 @@ class TrattaRepository {
                     id_tratta: id,
                     distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
                 };
-                return await trattaDao.update(id, trattaCompleta);
+
+                const [rows, updatedTratta] = await trattaDao.update(id, trattaCompleta, { transaction });
+                const existingTratta = await trattaDao.verifyUpdateTratta(updatedTratta[0]);
+                if (existingTratta) {
+                    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} esiste gia.`);
+                }
+
+                await transaction.commit();
+                return [rows, updatedTratta];
             }
             // Controllo se entrambi i varchi esistono
             const varcoOut = await varcoDao.getById(tratta.varco_out);
@@ -166,9 +187,18 @@ class TrattaRepository {
                 id_tratta: id,
                 distanza: trattaModificata.distanza ? trattaModificata.distanza : 0
             };
-            return await trattaDao.update(id, trattaCompleta);
+
+            const [rows, updatedTratta] = await trattaDao.update(id, trattaCompleta, { transaction });
+            const existingTratta = await trattaDao.verifyUpdateTratta(updatedTratta[0]);
+            if (existingTratta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} esiste gia.`);
+            }
+
+            await transaction.commit();
+            return [rows, updatedTratta];
 
         } catch (error) {
+            await transaction.rollback();
             if (error instanceof HttpError) {
                 throw error;
             } else {
@@ -191,7 +221,7 @@ class TrattaRepository {
             if (existingTransito) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${id} è utilizzata in un transito. Non può essere eliminata. Transito ID: ${existingTransito.id_transito}`);
             }
-            
+
             const [rows, deletedTransito] = await trattaDao.delete(id);
             await transaction.commit();
             return [rows, deletedTransito];

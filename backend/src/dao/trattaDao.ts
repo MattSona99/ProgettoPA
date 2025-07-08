@@ -9,6 +9,8 @@ interface ITrattaDAO extends DAO<ITrattaAttributes, number> {
     // Metodi specifici per Tratta, se necessari
     getTrattaByVarcoOut(id_varco_out: number): Promise<Tratta | null>;
     getByVarco(id: number): Promise<Tratta | null>;
+    verifyCreateTratta(tratta: Tratta): Promise<Tratta | null>;
+    verifyUpdateTratta(tratta: Tratta): Promise<Tratta | null>;
 }
 
 // Classe TrattaDao che implementa l'interfaccia TrattaDAO
@@ -50,6 +52,12 @@ class TrattaDao implements ITrattaDAO {
         }
     }
 
+    /**
+     * Funzione per ottenere una tratta da un varco.
+     * 
+     * @param {number} id - L'ID del varco.
+     * @returns {Promise<Tratta | null>} Una promessa che risolve con la tratta trovata o null se non trovata.
+     */
     public async getByVarco(id: number): Promise<Tratta | null> {
         try {
             return await Tratta.findOne({
@@ -63,6 +71,55 @@ class TrattaDao implements ITrattaDAO {
             });
         } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con varco di uscita ${id}.`);
+        }
+    };
+
+    /**
+     * 
+     * Funzione per verificare se una tratta già esiste con le stesse varco di ingresso e uscita.
+     * 
+     * @param {ITrattaCreationAttributes} tratta - L'oggetto Tratta da verificare.
+     * @returns {Promise<Tratta | null>} Una promessa che risolve con la tratta trovata o null se non trovata.
+     */
+    public async verifyCreateTratta(tratta: ITrattaCreationAttributes): Promise<Tratta | null> {
+        try {
+            return await Tratta.findOne({
+                where:
+                {
+                    [Op.and]: [
+                        { varco_in: tratta.varco_in },
+                        { varco_out: tratta.varco_out }
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con varco di entrata ${tratta.varco_in} e varco di uscita ${tratta.varco_out}.`);
+        }
+    };
+
+    /**
+     * 
+     * Funzione per verificare se una tratta già esiste con le stesse varco di ingresso e uscita per l'aggiornamento.
+     * 
+     * @param {Tratta} tratta - L'oggetto Tratta da verificare.
+     * @returns {Promise<Tratta | null>} Una promessa che risolve con la tratta trovata o null se non trovata.
+     */
+    public async verifyUpdateTratta(tratta: Tratta): Promise<Tratta | null> {
+        try {
+            return await Tratta.findOne({
+                where:
+                {
+                    [Op.and]: [
+                        { varco_in: tratta.varco_in },
+                        { varco_out: tratta.varco_out }
+                    ],
+                    [Op.not]: [
+                        { id_tratta: tratta.id_tratta }
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero della tratta con varco di entrata ${tratta.varco_in} e varco di uscita ${tratta.varco_out}.`);
         }
     }
 
@@ -87,9 +144,9 @@ class TrattaDao implements ITrattaDAO {
      * @param {TrattaAttributes} item - L'oggetto parziale della tratta da aggiornare.
      * @returns {Promise<[number, Tratta[]]>} Una promessa che risolve con il numero di righe aggiornate e un array di tratte aggiornate.
      */
-    public async update(id: number, item: ITrattaAttributes): Promise<[number, Tratta[]]> {
+    public async update(id: number, item: ITrattaAttributes, options?: { transaction?: Transaction }): Promise<[number, Tratta[]]> {
         try {
-            const [rows, updatedTratta] = await Tratta.update(item, { where: { id_tratta: id }, returning: true });
+            const [rows, updatedTratta] = await Tratta.update(item, { where: { id_tratta: id }, ...options, returning: true });
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tratta con ID ${id} non aggiornata.`);
             }

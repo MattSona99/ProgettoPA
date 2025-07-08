@@ -1,15 +1,18 @@
-import { Transaction } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import Varco, { IVarcoAttributes, IVarcoCreationAttributes } from "../models/varco";
 // import { DAO } from "./daoInterface";
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
+import { DAO } from "./daoInterface";
 
 // Interfaccia VarcoDAO che estende la DAO per includere metodi specifici per Varco
-/* interface IVarcoDAO extends DAO<IVarcoAttributes, number> {
+interface IVarcoDAO extends DAO<IVarcoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei varchi
-} */
+    verifyCreateVarco(varco: Varco): Promise<Varco | null>;
+    verifyUpdateVarco(varco: Varco): Promise<Varco | null>;
+}
 
 // Classe VarcoDao che implementa l'interfaccia VarcoDAO
-class VarcoDao /* implements IVarcoDAO */ {
+class VarcoDao implements IVarcoDAO {
 
     /**
      * Funzione per ottenere tutti i varchi.
@@ -48,6 +51,59 @@ class VarcoDao /* implements IVarcoDAO */ {
     }
 
     /**
+     * Funzione per verificare se un varco già esiste.
+     * 
+     * @param {Varco} varco - Il varco da utilizzare per verificare l'esistenza.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
+     */
+
+    public async verifyCreateVarco(varco: Varco): Promise<Varco | null> {
+        try {
+            const existingVarco = await Varco.findOne(
+                {
+                    where:
+                    {
+                        [Op.and]: [
+                            { nome_autostrada: varco.nome_autostrada },
+                            { km: varco.km },
+                            { smart: varco.smart }
+                        ]
+                    }
+                });
+            return existingVarco;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${varco.id_varco}.`);
+        }
+    }
+
+    /**
+     * Funzione per verificare se un varco già esiste per l'aggiornamento.
+     * 
+     * @param {Varco} varco - Il varco da utilizzare per verificare l'esistenza.
+     * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
+     */
+
+    public async verifyUpdateVarco(varco: Varco): Promise<Varco | null> {
+        try {
+            const existingVarco = await Varco.findOne(
+                {
+                    where:
+                    {
+                        [Op.and]: [
+                            { nome_autostrada: varco.nome_autostrada },
+                            { km: varco.km },
+                            { smart: varco.smart },
+                        ],
+                        [Op.not]: [{ id_varco: varco.id_varco }]
+                    }
+                });
+            return existingVarco;
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${varco.id_varco}.`);
+        }
+    }
+
+    /**
      * Funzione per la creazione di un nuovo varco.
      * 
      * @param item - L'oggetto parziale del varco da creare.
@@ -68,9 +124,9 @@ class VarcoDao /* implements IVarcoDAO */ {
      * @param item - L'oggetto parziale del varco da aggiornare.
      * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
-    public async update(id: number, item: IVarcoAttributes): Promise<[number, Varco[]]> {
+    public async update(id: number, item: IVarcoAttributes, options?: { transaction?: Transaction }): Promise<[number, Varco[]]> {
         try {
-            const [rows, updatedVarco] = await Varco.update(item, { where: { id_varco: id }, returning: true });
+            const [rows, updatedVarco] = await Varco.update(item, { where: { id_varco: id }, ...options, returning: true});
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Varco con ID ${id} non aggiornato .`);
             }
