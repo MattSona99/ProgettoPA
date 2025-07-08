@@ -1,4 +1,4 @@
-import TipoVeicolo, { ITipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
+import TipoVeicolo, { ITipoVeicoloAttributes, ITipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
 import { Transaction } from 'sequelize';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 
@@ -68,9 +68,9 @@ class TipoVeicoloDao /*  implements ITipoVeicoloDAO */ {
      * @returns {Promise<[number, TipoVeicolo[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di tipi di veicolo.
      */
 
-    public async update(id: number, item: TipoVeicolo): Promise<[number, TipoVeicolo[]]> {
+    public async update(id: number, item: ITipoVeicoloAttributes, options?: { transaction?: Transaction }): Promise<[number, TipoVeicolo[]]> {
         try {
-            const [rows, updatedTipoVeicolo] = await TipoVeicolo.update(item, { where: { id_tipo_veicolo: id }, returning: true });
+            const [rows, updatedTipoVeicolo] = await TipoVeicolo.update(item, { where: { id_tipo_veicolo: id }, ...options, returning: true });
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non aggiornato.`);
             }

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import tipoVeicoloDao from '../dao/tipoVeicoloDao';
+import tipoVeicoloRepository from '../repositories/tipoVeicoloRepository';
+
 import { StatusCodes } from 'http-status-codes';
 
 /**
@@ -7,7 +8,7 @@ import { StatusCodes } from 'http-status-codes';
  */
 export const getAllTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const tipiVeicolo = await tipoVeicoloDao.getAll();
+        const tipiVeicolo = await tipoVeicoloRepository.getAllTipoVeicolo();
 
         res.status(StatusCodes.OK).json(tipiVeicolo);
 
@@ -23,7 +24,7 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
     try {
         const id = parseInt(req.params.id);
 
-        const tipoVeicolo = await tipoVeicoloDao.getById(id);
+        const tipoVeicolo = await tipoVeicoloRepository.getTipoVeicoloById(id);
 
         res.status(StatusCodes.OK).json(tipoVeicolo);
 
@@ -37,7 +38,7 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
  */
 export const createTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const nuovoTipoVeicolo = await tipoVeicoloDao.create(req.body);
+        const nuovoTipoVeicolo = await tipoVeicoloRepository.createTipoVeicolo(req.body);
         
         res.status(StatusCodes.CREATED).json(nuovoTipoVeicolo);
 
@@ -53,10 +54,9 @@ export const updateTipoVeicolo = async (req: Request, res: Response, next: NextF
     try {
         const id = parseInt(req.params.id);
         
-        const [rows, updatedTipoVeicolo] = await tipoVeicoloDao.update(id, req.body);
+        const [rows, updatedTipoVeicolo] = await tipoVeicoloRepository.updateTipoVeicolo(id, req.body);
         
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${rows}, Tipo di veicolo con id = ${id} aggiornato con successo.`, tipoVeicolo: updatedTipoVeicolo });
-        
     } catch (error) {
         next(error);
     }
@@ -69,7 +69,7 @@ export const deleteTipoVeicolo = async (req: Request, res: Response, next: NextF
     try {
         const id = parseInt(req.params.id);
 
-        const [rows, deletedTipoVeicolo] = await tipoVeicoloDao.delete(id);
+        const [rows, deletedTipoVeicolo] = await tipoVeicoloRepository.deleteTipoVeicolo(id);
         
         res.status(StatusCodes.OK).json({ message: `Row eliminate: ${rows}, Tipo di veicolo con id = ${id} eliminato con successo.`, tipoVeicolo: deletedTipoVeicolo });
         
