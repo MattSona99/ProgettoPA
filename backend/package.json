@@ -4,10 +4,8 @@
   "description": "Backend per il progetto di Programmazione Avanzata di gestione dei tutor",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "serve": "node dist/server.js"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "dependencies": "^0.0.1",
