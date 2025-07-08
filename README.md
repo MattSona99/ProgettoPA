@@ -770,7 +770,7 @@ sequenceDiagram
   M -->> A:
   A ->> CN: downlaodBollettinoPDF
   CN ->> R: multaRepository.getMultaByUtente
-  R --> MD: multaDao.getById
+  R ->> MD: multaDao.getById
   MD ->> S: Multa.findByPk
   S -->> MD:
   MD -->> R:
