@@ -104,14 +104,10 @@ ProgettoPA
 ├── db
 |   └── init.sql
 ├── images
-|   ├── logo.png
-|   ├── targa1.png
-|   ├── targa2.png
-│   └── targa3.png
 ├── test_postman
-├──docker-compose.yml
-├──LICENSE
-└──README.md
+├── docker-compose.yml
+├── LICENSE
+└── README.md
 ```
 ---
 
