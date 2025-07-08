@@ -66,7 +66,7 @@ export const createVeicolo = async (req: Request, res: Response, next: NextFunct
  */
 export const updateVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { targa } = req.params;
+        const targa = req.params.targa;
 
         // Validazione del formato della targa
         if (!validateTarga(targa)) {

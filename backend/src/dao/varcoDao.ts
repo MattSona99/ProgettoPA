@@ -101,7 +101,7 @@ class VarcoDao implements IVarcoDAO {
         } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del varco con ID ${varco.id_varco}.`);
         }
-    }
+    };
 
     /**
      * Funzione per la creazione di un nuovo varco.
