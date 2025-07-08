@@ -47,7 +47,7 @@ class TrattaRepository {
         try {
             const existingTratta = await trattaDao.verifyCreateTratta(tratta);
             if (existingTratta) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${tratta.id_tratta} esiste già.`);
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `La tratta con ID ${existingTratta.id_tratta} esiste già.`);
             }
             const varcoIn = await varcoDao.getById(tratta.varco_in);
             const varcoOut = await varcoDao.getById(tratta.varco_out);
