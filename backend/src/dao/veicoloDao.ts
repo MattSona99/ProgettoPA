@@ -8,6 +8,7 @@ import { RuoloUtente } from '../enums/RuoloUtente';
 interface IVeicoloDAO extends DAO<IVeicoloAttributes, string> {
     // Metodi specifici per Veicolo, se necessari
     getByTarghe(utente: { id: number, ruolo: string }, targhe: string[]): Promise<Veicolo[]>
+    getByTipoVeicolo(id: number ): Promise<Veicolo | null>
 }
 
 // Classe VeicoloDao che implementa l'interfaccia VeicoloDAO
@@ -79,6 +80,18 @@ class VeicoloDao implements IVeicoloDAO {
             else {
                 throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, "Utente non autorizzato.");
             }
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
+        }
+    };
+
+    public async getByTipoVeicolo(id: number): Promise<Veicolo | null> {
+        try {
+            return await Veicolo.findOne({
+                where: {
+                    tipo_veicolo: id
+                }
+            });
         } catch {
             throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nel recupero dei veicoli.");
         }

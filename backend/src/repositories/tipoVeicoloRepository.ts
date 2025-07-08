@@ -1,4 +1,5 @@
 import tipoVeicoloDao from "../dao/tipoVeicoloDao";
+import veicoloDao from "../dao/veicoloDao";
 import TipoVeicolo, { ITipoVeicoloAttributes, ITipoVeicoloCreationAttributes } from "../models/tipoVeicolo";
 import Database from "../utils/database";
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
@@ -38,9 +39,25 @@ class TipoVeicoloRepository {
      * @returns {Promise<TipoVeicolo>} - Una promessa che risolve con il nuovo tipo di veicolo creato.
      */
     public async createTipoVeicolo(item: ITipoVeicoloCreationAttributes): Promise<ITipoVeicoloAttributes> {
-        const nuovoTipoVeicolo = await tipoVeicoloDao.create(item);
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
+        try {
+            const existingTipoVeicolo = await tipoVeicoloDao.verifyCreateTipoVeicolo(item);
+            if (existingTipoVeicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Tipo di veicolo con id ${existingTipoVeicolo.id_tipo_veicolo} già esistente.`);
+            }
 
-        return nuovoTipoVeicolo;
+            const nuovoTipoVeicolo = await tipoVeicoloDao.create(item, { transaction });
+            await transaction.commit();
+            return nuovoTipoVeicolo;
+        } catch (error) {
+            await transaction.rollback();
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella creazione del tipo di veicolo con id ${item.id_tipo_veicolo}.`);
+            }
+        }
     }
 
     /**
@@ -58,6 +75,12 @@ class TipoVeicoloRepository {
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non aggiornato.`);
             }
+
+            const existingTipoVeicolo = await tipoVeicoloDao.verifyUpdateTipoVeicolo(updatedTipoVeicolo[0]);
+            if (existingTipoVeicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Tipo di veicolo con id ${existingTipoVeicolo.id_tipo_veicolo} già esistente.`);
+            }
+
             await transaction.commit();
             return [rows, updatedTipoVeicolo];
         } catch (error) {
@@ -80,11 +103,11 @@ class TipoVeicoloRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
-            const tipoVeicolo = await tipoVeicoloDao.getById(id);
-            if (!tipoVeicolo) {
-                throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Tipo di veicolo con id ${id} non trovato.`);
+            const existingVeicolo = await veicoloDao.getByTipoVeicolo(id);
+            if (existingVeicolo) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il tipo di veicolo con id ${id} è utilizato da un veicolo. Non può essere eliminato. Veicolo targa: ${existingVeicolo.targa}.`);
             }
-
+            
             const [rows, deletedTipoVeicolo] = await tipoVeicoloDao.delete(id);
             await transaction.commit();
             return [rows, deletedTipoVeicolo];

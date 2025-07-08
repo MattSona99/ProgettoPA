@@ -9,7 +9,9 @@ interface ITransitoDAO extends DAO<ITransitoAttributes, number> {
     // metodi da aggiungere nel caso specifico dei transiti
     getByTratta(id: number): Promise<Transito | null>;
     getByVeicolo(targa: string): Promise<Transito | null>;
-    getByVeicoliEPeriodo(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]>
+    getByVeicoliEPeriodo(veicoli: Veicolo[], dataIn: string, dataOut: string): Promise<Transito[]>;
+    verifyCreateTransito(transito: ITransitoCreationAttributes): Promise<Transito | null>;
+    verifyUpdateTransito(transito: ITransitoCreationAttributes): Promise<Transito | null>;
 }
 
 // Classe TransitoDao che implementa l'interfaccia TransitoDAO
@@ -106,6 +108,55 @@ class TransitoDao implements ITransitoDAO {
     }
 
     /**
+     * Funzione per verificare la creazione di un nuovo transito
+     * 
+     * @param transito - L'oggetto transito da verificare
+     * @returns {Promise<Transito | null>} - Una promessa che risolve con il transito trovato o null se non trovato
+     */
+    public async verifyCreateTransito(transito: ITransitoCreationAttributes): Promise<Transito | null> {
+        try {
+            return await Transito.findOne({
+                where: {
+                    [Op.and]: [
+                        { targa: transito.targa },
+                        { tratta: { [Op.eq]: transito.tratta } },
+                        { data_in: { [Op.lte]: transito.data_in } },
+                        { data_out: { [Op.gte]: transito.data_out } }
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero dei transiti per le targhe ${transito.targa} e il periodo specificato.`);
+        }
+    }
+
+    /**
+     * Funzione per verificare l'aggiornamento di un transito
+     * 
+     * @param transito - L'oggetto transito da verificare
+     * @returns {Promise<Transito | null>} - Una promessa che risolve con il transito trovato o null se non trovato
+     */
+    public async verifyUpdateTransito(transito: ITransitoCreationAttributes): Promise<Transito | null> {
+        try {
+            return await Transito.findOne({
+                where: {
+                    [Op.and]: [
+                        { id_transito: { [Op.ne]: transito.id_transito } },
+                        { targa: transito.targa },
+                        { tratta: transito.tratta },
+                        { data_in: transito.data_in },
+                        { data_out: transito.data_out }
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del transito con ID ${transito.id_transito}.`);
+
+        }
+    }
+
+
+    /**
      * Funzione per creare un nuovo transito.
      * 
      * @param transito - L'oggetto transito da creare.
@@ -126,9 +177,9 @@ class TransitoDao implements ITransitoDAO {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di transiti aggiornati.
      */
-    public async update(id: number, transito: ITransitoAttributes): Promise<[number, Transito[]]> {
+    public async update(id: number, transito: ITransitoAttributes, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
         try {
-            const [rows, updatedTransito] = await Transito.update(transito, { where: { id_transito: id }, returning: true });
+            const [rows, updatedTransito] = await Transito.update(transito, { where: { id_transito: id }, ...options, returning: true });
             if (rows === 0) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.NotFound, `Transito con ID ${id} non aggiornato.`);
             }

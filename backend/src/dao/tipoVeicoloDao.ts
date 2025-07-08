@@ -1,14 +1,17 @@
 import TipoVeicolo, { ITipoVeicoloAttributes, ITipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
+import { DAO } from './daoInterface';
 
 // Interfaccia TipoVeicoloDAO che estende la DAO per includere metodi specifici per TipoVeicolo
-/* interface ITipoVeicoloDAO extends DAO<ITipoVeicoloAttributes, number> {
+interface ITipoVeicoloDAO extends DAO<ITipoVeicoloAttributes, number> {
     // Metodi specifici per TipoVeicolo, se necessari
-} */
+    verifyCreateTipoVeicolo(tipoVeicolo: ITipoVeicoloCreationAttributes): Promise<TipoVeicolo | null>;
+    verifyUpdateTipoVeicolo(tipoVeicolo: ITipoVeicoloAttributes): Promise<TipoVeicolo | null>;
+}
 
 // Classe TipoVeicoloDao che implementa l'interfaccia TipoVeicoloDAO
-class TipoVeicoloDao /*  implements ITipoVeicoloDAO */ {
+class TipoVeicoloDao  implements ITipoVeicoloDAO {
 
     /**
      * Funzione per ottenere tutti i tipi di veicolo.
@@ -44,7 +47,52 @@ class TipoVeicoloDao /*  implements ITipoVeicoloDAO */ {
                 throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nel recupero del tipo di veicolo con id ${id}.`);
             }
         }
+    };
+
+    /**
+     * Funzione che verifica la creazione di un nuovo tipo di veicolo.
+     * 
+     * @param tipoVeicolo - L'oggetto parziale del tipo di veicolo da creare.
+     * @returns {Promise<TipoVeicolo | null>} - Una promessa che risolve con il tipo di veicolo trovato o null se non trovato.
+     */
+
+    verifyCreateTipoVeicolo(tipoVeicolo: ITipoVeicoloCreationAttributes): Promise<TipoVeicolo | null> {
+        try {
+            return TipoVeicolo.findOne({ 
+                where: {
+                    [Op.and]: [
+                        {tipo: tipoVeicolo.tipo}
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella verifica del tipo di veicolo con id ${tipoVeicolo.id_tipo_veicolo}.`);
+        }
+    };
+
+    /**
+     * Funzione che verifica l'aggiornamento di un tipo di veicolo.
+     * 
+     * @param tipoVeicolo - L'oggetto parziale del tipo di veicolo da aggiornare.
+     * @returns {Promise<TipoVeicolo | null>} - Una promessa che risolve con il tipo di veicolo trovato o null se non trovato.
+     */
+
+    public async verifyUpdateTipoVeicolo(tipoVeicolo: ITipoVeicoloAttributes): Promise<TipoVeicolo | null> {
+        try{
+            return await TipoVeicolo.findOne({ 
+                where: {
+                    [Op.and]: [
+                        {id_tipo_veicolo: { [Op.ne]: tipoVeicolo.id_tipo_veicolo}},
+                        {tipo: tipoVeicolo.tipo}
+                    ]
+                }
+            });
+        } catch {
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nella verifica del tipo di veicolo con id ${tipoVeicolo.id_tipo_veicolo}.`);
+        }
     }
+
+
 
     /**
      * Funzione che crea un nuovo tipo di veicolo.

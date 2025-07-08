@@ -44,14 +44,9 @@ class TransitoRepository {
      * Funzione per creare un nuovo transito.
      * 
      * @param transito - L'oggetto transito da creare.
-     * @param ruolo - Il ruolo dell'utente.
-     * @returns {Promise<{ transito: Transito | null, multa: Multa | null }>} - Una promessa che risolve con il transito creato e la multa associata se presente.
+     * @returns {Promise<[Transito, Multa | null]>} - Una promessa che risolve con il transito creato e la multa associata se presente.
      */
-    public async createTransito(transito: ITransitoCreationAttributes): Promise<{ transito: Transito | null, multa: Multa | null }> {
-        const response = {
-            transito: null as Transito | null,
-            multa: null as Multa | null
-        };
+    public async createTransito(transito: ITransitoCreationAttributes): Promise<[Transito, Multa | null]> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
 
@@ -77,20 +72,23 @@ class TransitoRepository {
         // Calcolo della velocità media e del delta
         const transitoCompleto = await this.calcoloVelocita(transito, limiteVelocita, existingTratta.distanza);
         try {
+            const existingTransito = await transitoDao.verifyCreateTransito(transitoCompleto);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il transito con targa ${existingTransito.targa}, tratta ${existingTransito.tratta}, data ingresso ${existingTransito.data_in} e data uscita ${existingTransito.data_out} esiste gia`);
+            }
 
             const newTransito = await transitoDao.create(transitoCompleto, { transaction });
-
-            response['transito'] = newTransito;
 
             // Se il transito ha una velocità superiore a quella consentita, si crea una multa
             if (newTransito.delta_velocita > 0) { // Se il transito ha una velocità superiore a quella consentita, si crea una multa
                 const multa: IMultaCreationAttributes = this.createMulta(newTransito);
                 const newMulta = await multaDao.create(multa, { transaction });
-                response['multa'] = newMulta;
+                await transaction.commit();
+                return [newTransito, newMulta];
             }
 
             await transaction.commit();
-            return response;
+            return [newTransito, null];
         } catch (error) {
             await transaction.rollback();
             if (error instanceof HttpError) {
@@ -108,66 +106,90 @@ class TransitoRepository {
      * @param transito - L'oggetto transito da aggiornare.
      * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di transiti aggiornati.
      */
-    public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[]]> {
+    public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[], Multa | null]> {
         let tratta: Tratta | null = null;
         let veicolo: Veicolo | null = null;
         let tipoVeicolo: TipoVeicolo | null = null;
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
+        try {
 
-        // Controllo se il transito esiste
-        const existingTransito = await transitoDao.getById(id);
+            // Controllo se il transito esiste
+            const existingTransitoToUpdate = await transitoDao.getById(id);
 
 
-        // Controllo se esiste una multa per il transito
-        const existingMulta = await multaDao.getByTransito(id);
-        if (existingMulta) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il transito con ID ${id} è utilizzato in una multa. Non può essere aggiornato. Multa ID: ${existingMulta.id_multa}`);
+            // Controllo se esiste una multa per il transito
+            const existingMulta = await multaDao.getByTransito(id);
+            if (existingMulta) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Il transito con ID ${id} è utilizzato in una multa. Non può essere aggiornato. Multa ID: ${existingMulta.id_multa}`);
+            }
+
+            // Controllo se la tratta non sia vuota
+            if (transito.tratta) {
+                // Controllo se la tratta esiste
+                tratta = await trattaDao.getById(transito.tratta);
+            } else {
+                tratta = await trattaDao.getById(existingTransitoToUpdate!.tratta);
+            }
+
+            // Controllo se la targa non sia vuota
+            if (transito.targa) {
+                // Controllo se il veicolo esiste dalla targa
+                veicolo = await veicoloDao.getById(transito.targa);
+
+                // Cerco il tipo di veicolo per prendere il limite di velocità
+                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
+            } else {
+                // Prendo il veicolo dalla targa del transito esistente
+                veicolo = await veicoloDao.getById(existingTransitoToUpdate!.targa);
+
+                // Cerco il tipo di veicolo per prendere il limite di velocità
+                tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
+            }
+
+            // Controllo se la data di ingresso non sia vuota
+            if (!transito.data_in) {
+                transito.data_in = existingTransitoToUpdate!.data_in;
+            }
+
+            // Controllo se la data di uscita non sia vuota
+            if (!transito.data_out) {
+                transito.data_out = existingTransitoToUpdate!.data_out;
+            }
+
+            // Aggiorno il transito
+            const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
+            const transitoAggiornato: ITransitoAttributes = {
+                id_transito: id,
+                tratta: tratta!.id_tratta,
+                targa: veicolo!.targa,
+                data_in: transitoCompleto.data_in,
+                data_out: transitoCompleto.data_out,
+                velocita_media: transitoCompleto.velocita_media ?? 0,
+                delta_velocita: transitoCompleto.delta_velocita ?? 0
+            }
+            const [rows, updatedTransito] = await transitoDao.update(id, transitoAggiornato, { transaction });
+            const existingTransito = await transitoDao.verifyUpdateTransito(updatedTransito[0]);
+            if (existingTransito) {
+                throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, `Transito con ID ${existingTransito.id_transito} esiste già.`);
+            }
+            if (updatedTransito[0].delta_velocita >0){
+                const multa: IMultaCreationAttributes = this.createMulta(updatedTransito[0]);
+                const newMulta = await multaDao.create(multa, { transaction });
+                await transaction.commit();
+                return [rows, updatedTransito, newMulta];
+            }
+
+            await transaction.commit();
+            return [rows, updatedTransito, null];
+        } catch (error) {
+            await transaction.rollback();
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, `Errore nell'aggiornamento del transito con ID ${id}.`);
+            }
         }
-
-        // Controllo se la tratta non sia vuota
-        if (transito.tratta) {
-            // Controllo se la tratta esiste
-            tratta = await trattaDao.getById(transito.tratta);
-        } else {
-            tratta = await trattaDao.getById(existingTransito!.tratta);
-        }
-
-        // Controllo se la targa non sia vuota
-        if (transito.targa) {
-            // Controllo se il veicolo esiste dalla targa
-            veicolo = await veicoloDao.getById(transito.targa);
-
-            // Cerco il tipo di veicolo per prendere il limite di velocità
-            tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
-        } else {
-            // Prendo il veicolo dalla targa del transito esistente
-            veicolo = await veicoloDao.getById(existingTransito!.targa);
-
-            // Cerco il tipo di veicolo per prendere il limite di velocità
-            tipoVeicolo = await tipoVeicoloDao.getById(veicolo!.tipo_veicolo);
-        }
-
-        // Controllo se la data di ingresso non sia vuota
-        if (!transito.data_in) {
-            transito.data_in = existingTransito!.data_in;
-        }
-
-        // Controllo se la data di uscita non sia vuota
-        if (!transito.data_out) {
-            transito.data_out = existingTransito!.data_out;
-        }
-
-        // Aggiorno il transito
-        const transitoCompleto = await this.calcoloVelocita(transito, tipoVeicolo!.limite_velocita, tratta!.distanza);
-        const transitoAggiornato: ITransitoAttributes = {
-            id_transito: id,
-            tratta: tratta!.id_tratta,
-            targa: veicolo!.targa,
-            data_in: transitoCompleto.data_in,
-            data_out: transitoCompleto.data_out,
-            velocita_media: transitoCompleto.velocita_media ?? 0,
-            delta_velocita: transitoCompleto.delta_velocita ?? 0
-        }
-        return await transitoDao.update(id, transitoAggiornato);
     }
 
     /**

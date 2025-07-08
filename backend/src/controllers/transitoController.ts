@@ -53,7 +53,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
 
     try {
         if (ruolo === RuoloUtente.OPERATORE) { // Operatore forza manualmente l'inserimento del transito
-            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
+            const [createdTransito, createdMulta] = await transitoRepository.createTransito(newTransito);
 
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -68,7 +68,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
             }
 
             // Creazione del transito a seconda del tipo di varco
-            const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
+            const [createdTransito, createdMulta] = await transitoRepository.createTransito(newTransito);
 
             if (createdMulta) {
                 res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -129,7 +129,7 @@ export const createTransitoByVarco = async (req: Request, res: Response, next: N
             data_out: new Date()
         };
 
-        const { transito: createdTransito, multa: createdMulta } = await transitoRepository.createTransito(newTransito);
+        const [createdTransito, createdMulta ] = await transitoRepository.createTransito(newTransito);
 
         if (createdMulta) {
             res.status(StatusCodes.CREATED).json({ transito: createdTransito, multa: createdMulta });
@@ -151,8 +151,11 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
         const { id } = req.params;
         const updatedData = req.body;
 
-        const [row, updatedTransito] = await transitoRepository.updateTransito(parseInt(id), updatedData);
+        const [row, updatedTransito, newMulta] = await transitoRepository.updateTransito(parseInt(id), updatedData);
 
+        if (newMulta) {
+            res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito, multa: newMulta });
+        }
         res.status(StatusCodes.OK).json({ message: `Row modificate: ${row}, Transito con id = ${id} aggiornato con successo.`, transito: updatedTransito });
 
     } catch (error) {
