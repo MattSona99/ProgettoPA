@@ -1,0 +1,897 @@
+{
+	"id": "fbeab152-5e29-4117-b911-ae9e331b43c0",
+	"name": "ProgettoPA",
+	"timestamp": "2025-07-08T15:58:39.172Z",
+	"collection_id": "43871108-f0c83143-b77e-4ba2-98cd-f58ff620f370",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 14,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-07-08T15:58:33.759Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "044089b7-4c77-4b12-be29-268b33130414",
+			"name": "LOGIN_Operatore",
+			"url": "http://localhost:3000/login",
+			"time": 53,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Save token": true
+			},
+			"testPassFailCounts": {
+				"Save token": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				53
+			],
+			"allTests": [
+				{
+					"Save token": true
+				}
+			]
+		},
+		{
+			"id": "302551fa-93b7-47d2-a490-316ac30ae685",
+			"name": "LOGIN_Automobilista",
+			"url": "http://localhost:3000/login",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Save token": true
+			},
+			"testPassFailCounts": {
+				"Save token": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"Save token": true
+				}
+			]
+		},
+		{
+			"id": "1d508efd-aadb-4c14-b6c0-192fbfdae799",
+			"name": "LOGIN_Varco",
+			"url": "http://localhost:3000/login",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Save token": true
+			},
+			"testPassFailCounts": {
+				"Save token": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Save token": true
+				}
+			]
+		},
+		{
+			"id": "3baae339-fd2e-4e25-a69a-34c452f1d7d9",
+			"name": "GETTipiVeicolo",
+			"url": "http://localhost:3000/tipoveicolo",
+			"time": 24,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				24
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2b6c6a81-4371-443e-80ed-b90c2781df0c",
+			"name": "GETTipoVeicoloByID",
+			"url": "http://localhost:3000/tipoveicolo/2",
+			"time": 31,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				31
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "372f7069-1636-4fc7-956b-9a67fe76c32a",
+			"name": "POSTTipoVeicolo",
+			"url": "http://localhost:3000/tipoveicolo",
+			"time": 123,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				123
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "1eaab1a2-c7f8-4744-88ca-db8c47958dd0",
+			"name": "UPDATETipoVeicolo",
+			"url": "http://localhost:3000/tipoveicolo/8",
+			"time": 77,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				77
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "1fa2b775-4b10-4675-be85-8ea1a0a16b7a",
+			"name": "DELETETipoVeicolo",
+			"url": "http://localhost:3000/tipoveicolo/8",
+			"time": 47,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				47
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "d7054cc9-415c-4782-abe6-0ea663a79e24",
+			"name": "GETVeicoli",
+			"url": "http://localhost:3000/veicolo",
+			"time": 153,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				153
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "287164d2-56ed-4f9f-8c37-49a80c4b8178",
+			"name": "GETVeicoloByTarga",
+			"url": "http://localhost:3000/veicolo/MN321OP",
+			"time": 49,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				49
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2b4c028c-9458-4b9b-8492-b215b3e4bdf7",
+			"name": "POSTVeicolo",
+			"url": "http://localhost:3000/veicolo",
+			"time": 22,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				22
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "eb6c3b22-91b7-4793-8f81-1b8c8ab77502",
+			"name": "UPDATEVeicolo",
+			"url": "http://localhost:3000/veicolo/MN321OZ",
+			"time": 27,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				27
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "fe7d3b74-a18a-4ce1-a007-a9ab43dadaa4",
+			"name": "DELETEVeicolo",
+			"url": "http://localhost:3000/veicolo/MN321OZ",
+			"time": 47,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				47
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "b7a98c88-d286-4c42-8128-cd98063ca6f0",
+			"name": "GETVarco",
+			"url": "http://localhost:3000/varco",
+			"time": 19,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				19
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "f734f77f-fd38-4624-bc07-699f4a3c8ba3",
+			"name": "GETVarcoByID",
+			"url": "http://localhost:3000/varco/3",
+			"time": 27,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				27
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "be38917e-bcc8-4b1e-be11-b869773adde0",
+			"name": "POSTVarco_IN",
+			"url": "http://localhost:3000/varco",
+			"time": 52,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				52
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "7ea48929-d59a-4afd-aa7a-28598d13f1e5",
+			"name": "POSTVarco_OUT",
+			"url": "http://localhost:3000/varco",
+			"time": 43,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				43
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "a76032dc-f4a8-4de8-9a2d-3e9e9683929c",
+			"name": "POSTVarco_OUT_NEW",
+			"url": "http://localhost:3000/varco",
+			"time": 38,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				38
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "0fca4e80-d7b3-4db9-960e-ffeba3decf1e",
+			"name": "UPDATEVarco",
+			"url": "http://localhost:3000/varco/9",
+			"time": 52,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				52
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "3d01e8c6-b7c7-4ffa-9b94-2b087060aa58",
+			"name": "DELETEVarco",
+			"url": "http://localhost:3000/varco/4",
+			"time": 45,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code 400 quando il varco è in uso": true,
+				"Messaggio di errore corretto": true
+			},
+			"testPassFailCounts": {
+				"Status code 400 quando il varco è in uso": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Messaggio di errore corretto": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				45
+			],
+			"allTests": [
+				{
+					"Status code 400 quando il varco è in uso": true,
+					"Messaggio di errore corretto": true
+				}
+			]
+		},
+		{
+			"id": "1573d9c9-1539-48e3-90eb-7c1630139127",
+			"name": "GETTratte",
+			"url": "http://localhost:3000/tratta",
+			"time": 62,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				62
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2acf3ed0-1a75-4a7a-a789-66b540960221",
+			"name": "GETTrattaByID",
+			"url": "http://localhost:3000/tratta/3",
+			"time": 46,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				46
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "6df2b473-bf85-4c6f-bd31-5bcf8a38b610",
+			"name": "POSTTratta",
+			"url": "http://localhost:3000/tratta",
+			"time": 71,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"La risposta contiene una distanza valida": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La risposta contiene una distanza valida": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				71
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"La risposta contiene una distanza valida": true
+				}
+			]
+		},
+		{
+			"id": "262e3cce-da45-4321-bbda-af0dabd7c58d",
+			"name": "UPDATETratta",
+			"url": "http://localhost:3000/tratta/5",
+			"time": 96,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				96
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "6fbf2857-d69c-4ea9-b11f-7d5d224f8e4e",
+			"name": "DELETETratta",
+			"url": "http://localhost:3000/tratta/5",
+			"time": 42,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				42
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "9c32ae22-7e36-4a3d-b87b-0c145c3f573b",
+			"name": "GETTransiti",
+			"url": "http://localhost:3000/transito",
+			"time": 19,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				19
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "a048d1f5-c909-485a-ab19-2bf1507e5fc2",
+			"name": "GETTransitoByID",
+			"url": "http://localhost:3000/transito/10",
+			"time": 31,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				31
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "5a3f46d1-12d1-408f-946d-5802248f8dcf",
+			"name": "POSTTransito(OP)",
+			"url": "http://localhost:3000/transito/smart",
+			"time": 118,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"La risposta contiene un oggetto transito valido": true,
+				"Velocità media e delta sono numerici e coerenti": true,
+				"Multa correttamente generata": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La risposta contiene un oggetto transito valido": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Velocità media e delta sono numerici e coerenti": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Multa correttamente generata": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				118
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"La risposta contiene un oggetto transito valido": true,
+					"Velocità media e delta sono numerici e coerenti": true,
+					"Multa correttamente generata": true
+				}
+			]
+		},
+		{
+			"id": "80028357-2449-48f2-8590-f3a2e0299532",
+			"name": "POSTTransito(OP)_NoMulta",
+			"url": "http://localhost:3000/transito/smart",
+			"time": 87,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				87
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "346e8a73-a673-456e-9b57-eb28e5c06e38",
+			"name": "POSTTransito(VC)",
+			"url": "http://localhost:3000/transito/manuale",
+			"time": 1396,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1396
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "b40da269-0f60-4c0c-a294-95e862ddd3f6",
+			"name": "UPDATETransito",
+			"url": "http://localhost:3000/transito/12",
+			"time": 95,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				95
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "c71bbd26-3bad-4454-8d77-667fcae91006",
+			"name": "DELETETransito",
+			"url": "http://localhost:3000/transito/12",
+			"time": 50,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				50
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "49d42b40-413e-41b2-b55d-27484ffacc83",
+			"name": "GETMulte",
+			"url": "http://localhost:3000/multa",
+			"time": 34,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				34
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "81f4e110-1a50-4736-b0f2-b6e68af6256c",
+			"name": "GETMultaByTargaEPeriodo",
+			"url": "http://localhost:3000/multa/dettagli/?targa=EF456GH&dataIn=2025-01-28&dataOut=2025-12-28 &formato=JSON",
+			"time": 96,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"La risposta è un array di multe": true,
+				"Ogni multa contiene i campi chiave e struttura nidificata": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La risposta è un array di multe": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Ogni multa contiene i campi chiave e struttura nidificata": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				96
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"La risposta è un array di multe": true,
+					"Ogni multa contiene i campi chiave e struttura nidificata": true
+				}
+			]
+		},
+		{
+			"id": "39944db9-fe5d-4044-bc87-5892261d4d68",
+			"name": "GETDownloadMulta",
+			"url": "http://localhost:3000/multa/download/1",
+			"time": 258,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				258
+			],
+			"allTests": [
+				{}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 3461,
+	"collection": {
+		"requests": [
+			{
+				"id": "044089b7-4c77-4b12-be29-268b33130414",
+				"method": "POST"
+			},
+			{
+				"id": "302551fa-93b7-47d2-a490-316ac30ae685",
+				"method": "POST"
+			},
+			{
+				"id": "1d508efd-aadb-4c14-b6c0-192fbfdae799",
+				"method": "POST"
+			},
+			{
+				"id": "3baae339-fd2e-4e25-a69a-34c452f1d7d9",
+				"method": "GET"
+			},
+			{
+				"id": "2b6c6a81-4371-443e-80ed-b90c2781df0c",
+				"method": "GET"
+			},
+			{
+				"id": "372f7069-1636-4fc7-956b-9a67fe76c32a",
+				"method": "POST"
+			},
+			{
+				"id": "1eaab1a2-c7f8-4744-88ca-db8c47958dd0",
+				"method": "PUT"
+			},
+			{
+				"id": "1fa2b775-4b10-4675-be85-8ea1a0a16b7a",
+				"method": "DELETE"
+			},
+			{
+				"id": "d7054cc9-415c-4782-abe6-0ea663a79e24",
+				"method": "GET"
+			},
+			{
+				"id": "287164d2-56ed-4f9f-8c37-49a80c4b8178",
+				"method": "GET"
+			},
+			{
+				"id": "2b4c028c-9458-4b9b-8492-b215b3e4bdf7",
+				"method": "POST"
+			},
+			{
+				"id": "eb6c3b22-91b7-4793-8f81-1b8c8ab77502",
+				"method": "PUT"
+			},
+			{
+				"id": "fe7d3b74-a18a-4ce1-a007-a9ab43dadaa4",
+				"method": "DELETE"
+			},
+			{
+				"id": "b7a98c88-d286-4c42-8128-cd98063ca6f0",
+				"method": "GET"
+			},
+			{
+				"id": "f734f77f-fd38-4624-bc07-699f4a3c8ba3",
+				"method": "GET"
+			},
+			{
+				"id": "be38917e-bcc8-4b1e-be11-b869773adde0",
+				"method": "POST"
+			},
+			{
+				"id": "7ea48929-d59a-4afd-aa7a-28598d13f1e5",
+				"method": "POST"
+			},
+			{
+				"id": "a76032dc-f4a8-4de8-9a2d-3e9e9683929c",
+				"method": "POST"
+			},
+			{
+				"id": "0fca4e80-d7b3-4db9-960e-ffeba3decf1e",
+				"method": "PUT"
+			},
+			{
+				"id": "3d01e8c6-b7c7-4ffa-9b94-2b087060aa58",
+				"method": "DELETE"
+			},
+			{
+				"id": "1573d9c9-1539-48e3-90eb-7c1630139127",
+				"method": "GET"
+			},
+			{
+				"id": "2acf3ed0-1a75-4a7a-a789-66b540960221",
+				"method": "GET"
+			},
+			{
+				"id": "6df2b473-bf85-4c6f-bd31-5bcf8a38b610",
+				"method": "POST"
+			},
+			{
+				"id": "262e3cce-da45-4321-bbda-af0dabd7c58d",
+				"method": "PUT"
+			},
+			{
+				"id": "6fbf2857-d69c-4ea9-b11f-7d5d224f8e4e",
+				"method": "DELETE"
+			},
+			{
+				"id": "9c32ae22-7e36-4a3d-b87b-0c145c3f573b",
+				"method": "GET"
+			},
+			{
+				"id": "a048d1f5-c909-485a-ab19-2bf1507e5fc2",
+				"method": "GET"
+			},
+			{
+				"id": "5a3f46d1-12d1-408f-946d-5802248f8dcf",
+				"method": "POST"
+			},
+			{
+				"id": "80028357-2449-48f2-8590-f3a2e0299532",
+				"method": "POST"
+			},
+			{
+				"id": "346e8a73-a673-456e-9b57-eb28e5c06e38",
+				"method": "POST"
+			},
+			{
+				"id": "b40da269-0f60-4c0c-a294-95e862ddd3f6",
+				"method": "PUT"
+			},
+			{
+				"id": "c71bbd26-3bad-4454-8d77-667fcae91006",
+				"method": "DELETE"
+			},
+			{
+				"id": "49d42b40-413e-41b2-b55d-27484ffacc83",
+				"method": "GET"
+			},
+			{
+				"id": "81f4e110-1a50-4736-b0f2-b6e68af6256c",
+				"method": "GET"
+			},
+			{
+				"id": "39944db9-fe5d-4044-bc87-5892261d4d68",
+				"method": "GET"
+			}
+		]
+	}
+}
