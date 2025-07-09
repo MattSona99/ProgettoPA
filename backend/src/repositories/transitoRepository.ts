@@ -290,7 +290,6 @@ class TransitoRepository {
                 'ita'
             )
             const regex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/; // Regex per validare la targa italiana
-            console.log(text);
             const match = text.replace(/\s+/g, '').toUpperCase().match(regex);
             return match ? match[0] : null;
         } catch {
