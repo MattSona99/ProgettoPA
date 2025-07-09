@@ -4,6 +4,7 @@ import trattaDao from "../dao/trattaDao";
 import utenteDao from "../dao/utenteDao";
 import varcoDao from "../dao/varcoDao";
 import veicoloDao from "../dao/veicoloDao";
+import { UserPayload } from "../middleware/authMiddleware";
 import Multa, { IMultaCreationAttributes } from "../models/multa";
 import Database from "../utils/database";
 import { HttpError, HttpErrorCodes, HttpErrorFactory } from "../utils/errorHandler";
@@ -40,7 +41,7 @@ class multaRepository {
      * @param dataOut - La data di fine del periodo.
      * @returns - Una promessa che risolve con un array di multe.
      */
-    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: { id: number, ruolo: string }) {
+    public async getMulteByTargheEPeriodo(targhe: string[], dataIn: string, dataOut: string, utente: UserPayload) {
         try {
             // 1) Prendo tutti i veicoli dell'utente
             const veicoli = await veicoloDao.getByTarghe(utente, targhe);

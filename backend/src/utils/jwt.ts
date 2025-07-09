@@ -1,4 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { HttpErrorCodes, HttpErrorFactory } from "./errorHandler";
 
 // Caricamento della variabile d'ambiente JWT_SECRET
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
@@ -12,8 +13,8 @@ export const generateToken = (payload: JwtPayload): string => {
     try {
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
         return token;
-    } catch (error: any) {
-        throw new Error("Errore nella generazione del token JWT: " + error.message);
+    } catch {
+        throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella generazione del token JWT: ");
     }
 }
 
@@ -23,14 +24,14 @@ export const verifyToken = (token: string): JwtPayload => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         return decoded as JwtPayload;
-    } catch (error: any) {
+    } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
-            throw new Error("Token JWT non valido: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InvalidToken, "Token JWT non valido: ");
         }
         else if (error instanceof jwt.TokenExpiredError) {
-            throw new Error("Token JWT scaduto: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.TokenExpiredError, "Token JWT scaduto: ");
         } else {
-            throw new Error("Errore nella verifica del token JWT: " + error.message);
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella verifica del token JWT: ");
         }
     }
 }

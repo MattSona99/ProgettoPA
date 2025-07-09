@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { HttpError, HttpErrorCodes, HttpErrorFactory } from '../utils/errorHandler';
 
 /**
  * Middleware per la gestione degli errori personalizzati e generici.
  */
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: any, req: Request, res: Response) => {
     let finalError: HttpError;
 
     if (err && err.statusCode && err.code && err.message) {

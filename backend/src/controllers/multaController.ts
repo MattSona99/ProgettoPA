@@ -5,6 +5,7 @@ import multaDao from '../dao/multaDao';
 import transitoRepository from '../repositories/transitoRepository';
 import { generateBollettinoPDFBuffer } from '../utils/bollettino';
 import { Formato } from '../enums/Formato';
+import { RequestWithUser } from '../middleware/authMiddleware';
 
 /**
  * Funzione per creare una multa
@@ -33,17 +34,17 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
 /**
  * Funzione per ottenere le multe per le targhe e il periodo specificato.
  */
-export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next: NextFunction) => {
+export const getMulteByTargheEPeriodo = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
         const { targa, dataIn, dataOut, formato } = req.query;
-        const utente = (req as any).user;
+        const utente = req.user;
         const arrayTarga = Array.isArray(targa) ? targa : [targa];
 
         const multe = await multaRepository.getMulteByTargheEPeriodo(
             arrayTarga as string[],
             dataIn as string,
             dataOut as string,
-            utente as { id: number, ruolo: string }
+            utente
         );
         switch (formato) {
             case Formato.JSON:
@@ -63,9 +64,9 @@ export const getMulteByTargheEPeriodo = async (req: Request, res: Response, next
     }
 }
 
-export const downloadBollettinoPDF = async (req: Request, res: Response, next: NextFunction) => {
+export const downloadBollettinoPDF = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-        const id_utente = (req as any).user.id;
+        const id_utente = req.user.id;
         const { id } = req.params;
         
         // Verifico che la multa sia associata all'utente e la recupero
