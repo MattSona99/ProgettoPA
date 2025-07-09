@@ -4,7 +4,7 @@ import { HttpError, HttpErrorCodes, HttpErrorFactory } from '../utils/errorHandl
 /**
  * Middleware per la gestione degli errori personalizzati e generici.
  */
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     let finalError: HttpError;
 
     if (err && err.statusCode && err.code && err.message) {
