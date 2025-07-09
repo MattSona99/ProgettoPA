@@ -47,10 +47,10 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
  * 
  * @returns - Una promessa che risolve con il transito creato.
  */
-export const createTransito = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     const newTransito = req.body;
-    const ruolo = req.user.ruolo;  // Ruolo dell'utente passato nell'header
-    const id_utente = req.user.id; // ID dell'utente passato nell'header
+    const ruolo = (req as RequestWithUser).user.ruolo;  // Ruolo dell'utente passato nell'header
+    const id_utente = (req as RequestWithUser).user.id; // ID dell'utente passato nell'header
 
     try {
         if (ruolo === RuoloUtente.OPERATORE) { // Operatore forza manualmente l'inserimento del transito
@@ -90,13 +90,13 @@ export const createTransito = async (req: RequestWithUser, res: Response, next: 
  * 
  * @returns - Una promessa che risolve con il transito creato.
 */
-export const createTransitoByVarco = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const createTransitoByVarco = async (req: Request, res: Response, next: NextFunction) => {
     // Verifica se il file è stato caricato correttamente
     if (!req.file) {
         return next(HttpErrorFactory.createError(HttpErrorCodes.BadRequest, "File non fornito o non valido."));
     }
-    const id_utente = req.user.id;
-    const ruolo = req.user.ruolo;
+    const id_utente = (req as RequestWithUser).user.id;
+    const ruolo = (req as RequestWithUser).user.ruolo;
     const data_in = req.body;
 
     try {

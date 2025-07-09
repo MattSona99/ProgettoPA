@@ -26,12 +26,12 @@ export const verifyToken = (token: string): JwtPayload => {
         return decoded as JwtPayload;
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InvalidToken, "Token JWT non valido: ");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InvalidToken, "Token JWT non valido.");
         }
         else if (error instanceof jwt.TokenExpiredError) {
-            throw HttpErrorFactory.createError(HttpErrorCodes.TokenExpiredError, "Token JWT scaduto: ");
+            throw HttpErrorFactory.createError(HttpErrorCodes.TokenExpiredError, "Token JWT scaduto.");
         } else {
-            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella verifica del token JWT: ");
+            throw HttpErrorFactory.createError(HttpErrorCodes.InternalServerError, "Errore nella verifica del token JWT.");
         }
     }
 }

@@ -19,7 +19,7 @@ export interface RequestWithUser extends Request {
 /**
  * Middleware per la verifica e decodifica del token JWT
  */
-export const authMiddleware = (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         // Controllo se il token è presente nell'intestazione della richiesta
         const token = req.header('Authorization')?.replace('Bearer ', ''); // Estrazione del token dall'intestazione della richiesta
@@ -31,7 +31,7 @@ export const authMiddleware = (req: RequestWithUser, res: Response, next: NextFu
             throw HttpErrorFactory.createError(HttpErrorCodes.TokenExpiredError, 'Token scaduto.');
         }
 
-        req.user = { id: payload.id, ruolo: payload.ruolo }; // Aggiunta del payload alla richiesta
+        (req as RequestWithUser).user = { id: payload.id, ruolo: payload.ruolo }; // Aggiunta del payload alla richiesta
         next();
     } catch (error) {
         next(error);
@@ -42,10 +42,10 @@ export const authMiddleware = (req: RequestWithUser, res: Response, next: NextFu
  * Verifica dell'autorizzazione in base al ruolo dell'utente
  */
 export const authorize = (roles: string[]) => {
-    return (req: RequestWithUser, res: Response, next: NextFunction) => {
+    return (req: Request, res: Response, next: NextFunction) => {
         try {
             // Recupero dell'utente dalla richiesta
-            const user = req.user;
+            const user = (req as RequestWithUser).user;
             if (!user) {
                 throw HttpErrorFactory.createError(HttpErrorCodes.Forbidden, 'Utente non autenticato.');
             }

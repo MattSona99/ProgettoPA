@@ -3,7 +3,6 @@ import { DAO } from './daoInterface';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
 import { Op, Transaction } from 'sequelize';
 import { RuoloUtente } from '../enums/RuoloUtente';
-import { UserPayload } from '../middleware/authMiddleware';
 
 // Interfaccia VeicoloDAO che estende la DAO per includere metodi specifici per Veicolo
 interface IVeicoloDAO extends DAO<IVeicoloAttributes, string> {
@@ -59,7 +58,7 @@ class VeicoloDao implements IVeicoloDAO {
      * @returns {Promise<Veicolo[]>} - Una promessa che risolve con i veicoli trovati.
      */
 
-    public async getByTarghe(utente: UserPayload, targhe: string[]): Promise<Veicolo[]> {
+    public async getByTarghe(utente: { id: number, ruolo: string }, targhe: string[]): Promise<Veicolo[]> {
         try {
             if (utente.ruolo === RuoloUtente.AUTOMOBILISTA) {
                 return await Veicolo.findAll({
