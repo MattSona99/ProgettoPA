@@ -1707,12 +1707,18 @@ Authorization: Bearer {authToken}
 }
 ```
 
-- `POST /manuale` – Inserimento da operatore o varco non smart [operatore/varco]
+- `POST /manuale` – Inserimento da varco non smart [varco]
 
 *Richiesta Body/Query*
 ```bash
 Authorization: Bearer {authToken}
 ```
+Params
+```
+image: targa_1.png
+data_in: 2025-07-09 17:30:00
+```
+
 ```json
 {
     "targa": "UV987WX",
@@ -1735,7 +1741,7 @@ Authorization: Bearer {authToken}
 }
 ```
 
-- `POST /smart` – Inserimento da varco smart [varco]
+- `POST /smart` – Inserimento da operatore o varco smart [operatore/varco]
 
 *Richiesta Body/Query*
 ```bash
@@ -1745,7 +1751,13 @@ Authorization: Bearer {authToken}
 *Risposta:*
 ```json
 {
-  "": 
+    "id_transito": 13,
+    "targa": "GA129KM",
+    "tratta": 2,
+    "data_in": "2025-07-09T17:30:00.000Z",
+    "data_out": "2025-07-09T16:13:13.544Z",
+    "velocita_media": -31.65123,
+    "delta_velocita": -91.65123
 }
 ```
 
