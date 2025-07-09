@@ -7,13 +7,17 @@ import { HttpErrorFactory, HttpErrorCodes } from '../../utils/errorHandler';
  */
 
 const validateRequest = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validationResult(req); // Recupero gli errori di validazione
+  try {
+    const errors = validationResult(req); // Recupero gli errori di validazione
 
-  // Se ci sono errori accumulati allora ritorno l'errore
-  if (!errors.isEmpty()) {
-    throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, errors.array()[0].msg);
+    // Se ci sono errori accumulati allora ritorno l'errore
+    if (!errors.isEmpty()) {
+      throw HttpErrorFactory.createError(HttpErrorCodes.BadRequest, errors.array()[0].msg);
+    }
+    next(); // Passaggio dell'errore al middleware successivo
+  } catch (error) {
+    next(error);
   }
-  next(); // Passaggio dell'errore al middleware successivo
 };
 
 export default validateRequest;
