@@ -13,7 +13,7 @@ import { HttpErrorCodes, HttpErrorFactory } from "./errorHandler";
  */
 export async function generateBollettinoPDFBuffer(multa: IMultaAttributes, targa: string): Promise<Buffer> {
     const pdf = new jsPDF();
-    const qrData = `Targa: ${targa}\nImporto: ${multa.importo}\nID: ${multa.id_multa}\nUUID: ${multa.uuid_pagamento}`;
+    const qrData = `<${multa.uuid_pagamento}>|<${multa.id_multa}>|<${targa}>|<${multa.importo}>`;
 
     try {
         // genera QR code in PNG
