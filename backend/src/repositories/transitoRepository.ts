@@ -275,7 +275,7 @@ class TransitoRepository {
      * Funzione per processare l'immagine della targa.
      * 
      * @param file - Il file dell'immagine da processare
-     * @returns - Una promessa che risolve con la targa o null.
+     * @returns {Promise<string | null>} - Una promessa che risolve con la targa o null.
      */
     public async processImage(file: Express.Multer.File): Promise<string | null> {
         try {
