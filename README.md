@@ -1921,11 +1921,22 @@ Authorization: Bearer {authToken}
 Per facilitare lo sviluppo didattico del progetto, sono state adottate alcune scelte implementative mirate.
 Come già evidenziato, l'intero sistema è stato progettato secondo un approccio modulare, realizzato attraverso lo sviluppo di un backend utilizzato il pattern MVC, per facilitare possibili implementazioni e modifiche future.
 
-Considerata la natura del progetto, che non include lo sviluppo di un frontend, le rotte sono state testate tramite Postman. Ogni rotta prevede meccanismi di autenticazione ed autorizzazione, modulati in base al ruolo dell'utente. Inoltre, per l'agevolazione delle richieste, si consiglia di inserire nella rotta di `login` (Post-response) il seguente script, per settare in modo automatico il `BearerToken` per le autorizzazioni delle restanti rotte:
+Considerata la natura del progetto, che non include lo sviluppo di un frontend, le rotte sono state testate tramite Postman. Ogni rotta prevede meccanismi di autenticazione ed autorizzazione, modulati in base al ruolo dell'utente. Inoltre, per l'agevolazione delle richieste, si consiglia di inserire nelle rotte di `login` (Post-response) i seguenti script, per settare in modo automatico il `BearerToken` (uno per ogni ruolo) per le autorizzazioni delle restanti rotte:
 ```javascript
+// Operatore
 pm.test("Save token", function () {
     const response = pm.response.json();
-    pm.globals.set("BearerToken", response.token);
+    pm.globals.set("BearerTokenOp", response.token);
+});
+// Varco
+pm.test("Save token", function () {
+    const response = pm.response.json();
+    pm.globals.set("BearerTokenVc", response.token);
+});
+// Automobilista
+pm.test("Save token", function () {
+    const response = pm.response.json();
+    pm.globals.set("BearerTokenAu", response.token);
 });
 ```
 
