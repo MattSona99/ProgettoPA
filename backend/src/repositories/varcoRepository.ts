@@ -1,4 +1,4 @@
-import Varco from '../models/varco';
+import Varco, { IVarcoAttributes, IVarcoCreationAttributes } from '../models/varco';
 import varcoDao from '../dao/varcoDao';
 import Database from '../utils/database';
 import { HttpErrorFactory, HttpErrorCodes, HttpError } from '../utils/errorHandler';
@@ -35,10 +35,10 @@ class VarcoRepository {
     /**
      * Funzione per la creazione di un nuovo varco.
      * 
-     * @param varcoData - L'oggetto parziale del varco da creare.
+     * @param {IVarcoCreationAttributes} varcoData - L'oggetto parziale del varco da creare.
      * @returns {Promise<Varco>} - Una promessa che risolve con il nuovo varco creato.
      */
-    public async createVarco(varcoData: Varco): Promise<Varco> {
+    public async createVarco(varcoData: IVarcoCreationAttributes): Promise<Varco> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
@@ -63,11 +63,11 @@ class VarcoRepository {
     /**
      * Funzione per aggiornare un varco.
      * 
-     * @param id - L'ID del varco da aggiornare.
-     * @param varcoData - L'oggetto parziale del varco da aggiornare.
+     * @param {number} id - L'ID del varco da aggiornare.
+     * @param {IVarcoAttributes} varcoData - L'oggetto parziale del varco da aggiornare.
      * @returns {Promise<[number, Varco[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di varchi aggiornati.
      */
-    public async updateVarco(id: number, varcoData: Varco): Promise<[number, Varco[]]> {
+    public async updateVarco(id: number, varcoData: IVarcoAttributes): Promise<[number, Varco[]]> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
         try {
@@ -96,7 +96,7 @@ class VarcoRepository {
     /**
      * Funzione per eliminare un varco.
      * 
-     * @param id - L'ID del varco da eliminare.
+     * @param {number} id - L'ID del varco da eliminare.
      * @returns {Promise<[number, Varco]>} - Una promessa che risolve con il numero di righe eliminate e il varco eliminato.
      */
     public async deleteVarco(id: number): Promise<[number, Varco]> {

@@ -43,7 +43,7 @@ class TransitoRepository {
     /**
      * Funzione per creare un nuovo transito.
      * 
-     * @param transito - L'oggetto transito da creare.
+     * @param {ITransitoCreationAttributes} transito - L'oggetto transito da creare.
      * @returns {Promise<[Transito, Multa | null]>} - Una promessa che risolve con il transito creato e la multa associata se presente.
      */
     public async createTransito(transito: ITransitoCreationAttributes): Promise<[Transito, Multa | null]> {
@@ -102,11 +102,11 @@ class TransitoRepository {
     /**
      * Funzione per aggiornare un transito.
      * 
-     * @param id - L'ID del transito da aggiornare.
-     * @param transito - L'oggetto transito da aggiornare.
+     * @param {number} id - L'ID del transito da aggiornare.
+     * @param {ITransitoAttributes} transito - L'oggetto transito da aggiornare.
      * @returns {Promise<[number, Transito[]]>} - Una promessa che risolve con il numero di righe aggiornate e un array di transiti aggiornati.
      */
-    public async updateTransito(id: number, transito: ITransitoCreationAttributes): Promise<[number, Transito[], Multa | null]> {
+    public async updateTransito(id: number, transito: ITransitoAttributes): Promise<[number, Transito[], Multa | null]> {
         let tratta: Tratta | null = null;
         let veicolo: Veicolo | null = null;
         let tipoVeicolo: TipoVeicolo | null = null;

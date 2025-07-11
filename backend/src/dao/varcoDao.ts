@@ -53,11 +53,11 @@ class VarcoDao implements IVarcoDAO {
     /**
      * Funzione per verificare se un varco già esiste.
      * 
-     * @param {Varco} varco - Il varco da utilizzare per verificare l'esistenza.
+     * @param {IVarcoCreationAttributes} varco - Il varco da utilizzare per verificare l'esistenza.
      * @returns {Promise<Varco>} - Una promessa che risolve con il varco trovato.
      */
 
-    public async verifyCreateVarco(varco: Varco): Promise<Varco | null> {
+    public async verifyCreateVarco(varco: IVarcoCreationAttributes): Promise<Varco | null> {
         try {
             const existingVarco = await Varco.findOne(
                 {
