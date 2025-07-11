@@ -74,20 +74,20 @@ CREATE TABLE IF NOT EXISTS multa (
 
 -- Inserimento dati tabella UTENTE --
 INSERT INTO utente (nome, cognome, email, password, ruolo) VALUES
-    ('Matteo', 'Sonaglioni', 'msonaglioni@example.com', 'password', 'automobilista'),
-    ('Enzo', 'Cingoli', 'ecingoli@example.com', 'password', 'automobilista'),
-    ('Giuseppe', 'Verdi', 'gverdi@example.com', 'password', 'automobilista'),
-    ('Mario', 'Bianchi', 'mbianchi@example.com', 'password', 'automobilista'),
-    ('Luigi', 'Verdi', 'lverdi@example.com', 'password', 'automobilista'),
-    ('Mario', 'Rossi', 'mrossi@example.com', 'password', 'operatore'),
-    ('', '', 'varco_1@example.com', 'password', 'varco'),
-    ('', '', 'varco_2@example.com', 'password', 'varco'),
-    ('', '', 'varco_3@example.com', 'password', 'varco'),
-    ('', '', 'varco_4@example.com', 'password', 'varco'),
-    ('', '', 'varco_5@example.com', 'password', 'varco'),
-    ('', '', 'varco_6@example.com', 'password', 'varco'),
-    ('', '', 'varco_7@example.com', 'password', 'varco'),
-    ('', '', 'varco_8@example.com', 'password', 'varco');
+    ('Matteo', 'Sonaglioni', 'msonaglioni@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'automobilista'),
+    ('Enzo', 'Cingoli', 'ecingoli@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'automobilista'),
+    ('Giuseppe', 'Verdi', 'gverdi@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'automobilista'),
+    ('Mario', 'Bianchi', 'mbianchi@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'automobilista'),
+    ('Luigi', 'Verdi', 'lverdi@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'automobilista'),
+    ('Mario', 'Rossi', 'mrossi@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'operatore'),
+    ('', '', 'varco_1@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_2@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_3@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_4@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_5@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_6@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_7@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco'),
+    ('', '', 'varco_8@example.com', '$2a$10$uDROO71uQOE1LzqCSzcH4ej1fUMBUmMlBD4gyUVhmlA6UIGfrk0xW', 'varco');
 
 -- Inserimento dati tabella VARCO --
 INSERT INTO varco (nome_autostrada, km, smart, pioggia) VALUES

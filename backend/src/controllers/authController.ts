@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import utenteDao from "../dao/utenteDao";
 import { generateToken } from "../utils/jwt";
 import { HttpErrorFactory, HttpErrorCodes } from '../utils/errorHandler';
+import bcrypt from 'bcrypt';
 
 /**
  * Funzione per effettuare il login dell'utente.
@@ -24,11 +25,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         // Verifica della password
-        if (password !== user.password) {
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
             throw HttpErrorFactory.createError(HttpErrorCodes.Unauthorized, 'Password non corretta.');
         }
 
-        // genera un token JWT
+        // Genera un token JWT
         const token = generateToken({ id: user.id_utente, ruolo: user.ruolo });
         res.status(StatusCodes.OK).json({ token });
     } catch (error) {
