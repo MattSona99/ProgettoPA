@@ -40,17 +40,7 @@ cd ProgettoPA
 # Avvia il progetto
 docker-compose up --build
 ```
-Esempio di file .env
-```
-DB_NAME=progettoPA_DB
-DB_USER=myuser
-DB_PASSWORD=mypassword
-DB_PORT=5432
-DB_HOST=postgres
 
-BACKEND_PORT=3000
-JWT_SECRET=your_secret_key
-```
 Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. Le rotte API possono essere testate tramite [Postman](https://www.postman.com/).
 
 ---
